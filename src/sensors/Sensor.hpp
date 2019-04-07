@@ -29,9 +29,6 @@
 template <int dims, const char* name>
 class Sensor
 {
-  template <typename>
-  friend class SensorFactory;
-
 public:
   const SensorData<dims> Data(std::time_t timestamp_sec, const Eigen::Matrix<double, dims, 1>& z)
   {
@@ -58,9 +55,10 @@ public:
     return dims;
   }
 
-private:
+protected:
   explicit Sensor(const Eigen::Matrix<double, dims, dims>& measurement_covariance_matrix);
 
+private:
   Eigen::Matrix<double, dims, dims> measurement_covariance_matrix_;
 };
 

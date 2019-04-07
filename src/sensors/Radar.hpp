@@ -31,6 +31,9 @@ extern const char kRadarName[];
 
 class Radar : public Sensor<3, kRadarName>
 {
+  template <typename>
+  friend class SensorFactory;
+
 public:
   static Radar FromJson(const char* json_str);
 
@@ -38,6 +41,9 @@ public:
   {
     return SensorFactory<Radar>::FromParams(mtx);
   }
+
+private:
+  explicit Radar(const Eigen::Matrix<double, Radar::Dims(), Radar::Dims()>& measurement_covariance_matrix);
 };
 
 #endif //SENSOR_FUSION_RADAR_HPP

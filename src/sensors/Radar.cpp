@@ -26,3 +26,9 @@ Radar Radar::FromJson(const char* json_str)
   return SensorFactory<Radar>::FromJson(json_str);
 }
 
+Radar::Radar(const Eigen::Matrix<double, Radar::Dims(), Radar::Dims()>& measurement_covariance_matrix) :
+    Sensor{measurement_covariance_matrix}
+{
+
+}
+

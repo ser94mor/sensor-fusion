@@ -27,3 +27,10 @@ Lidar Lidar::FromJson(const char* json_str)
 {
   return SensorFactory<Lidar>::FromJson(json_str);
 }
+
+
+Lidar::Lidar(const Eigen::Matrix<double, Lidar::Dims(), Lidar::Dims()>& measurement_covariance_matrix) :
+    Sensor{measurement_covariance_matrix}
+{
+
+}

@@ -28,6 +28,9 @@ extern const char kLidarName[];
 
 class Lidar : public Sensor<2, kLidarName>
 {
+  template <typename>
+  friend class SensorFactory;
+
 public:
   static Lidar FromJson(const char* json_str);
 
@@ -35,6 +38,9 @@ public:
   {
     return SensorFactory<Lidar>::FromParams(mtx);
   }
+
+private:
+  explicit Lidar(const Eigen::Matrix<double, Lidar::Dims(), Lidar::Dims()>& measurement_covariance_matrix);
 };
 
 

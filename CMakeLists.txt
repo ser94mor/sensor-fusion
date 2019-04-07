@@ -22,8 +22,6 @@ add_executable(sensor_fusion
         src/models/ConstantVelocityModel.h
         src/models/MotionModel.cpp
         src/models/MotionModel.h
-        src/sensors/LidarData.hpp
-        src/sensors/RadarData.hpp
         src/sensors/SensorData.hpp
         src/main.cpp
         src/SensorFusion.cpp

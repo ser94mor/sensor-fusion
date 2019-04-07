@@ -43,11 +43,11 @@ public:
 template<typename SensorT>
 SensorT SensorFactory<SensorT>::FromJson(const char* json_str)
 {
-  SensorT sensor;
+  Eigen::Matrix<double, SensorT::Dims(), SensorT::Dims()> measurement_covariance_matrix;
 
   auto j = json::parse(json_str);
 
-  if (j["type"].get<std::string>() != sensor.Type() or j["name"].get<std::string>() != sensor.Name())
+  if (j["type"].get<std::string>() != SensorT::Type() or j["name"].get<std::string>() != SensorT::Name())
   {
     throw std::runtime_error("invalid json string");
   }
@@ -58,20 +58,17 @@ SensorT SensorFactory<SensorT>::FromJson(const char* json_str)
   {
     for (int c = 0; c < mtx[0].size(); ++c)
     {
-      sensor.measurement_covariance_matrix_(r, c) = mtx[r][c];
+      measurement_covariance_matrix(r, c) = mtx[r][c];
     }
   }
 
-  return sensor;
+  return SensorT{measurement_covariance_matrix};
 }
 
 template<typename SensorT>
 SensorT SensorFactory<SensorT>::FromParams(const Eigen::Matrix<double, SensorT::Dims(), SensorT::Dims()>& mtx)
 {
-  SensorT sensor;
-  sensor.measurement_covariance_matrix_ = mtx;
-
-  return sensor;
+  return SensorT{mtx};
 }
 
 
