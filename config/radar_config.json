@@ -1,0 +1,9 @@
+{
+  "type": "SENSOR",
+  "name": "RADAR",
+  "measurement_covariance_matrix": [
+    [0.09,    0.0,  0.0],
+    [ 0.0, 0.0009,  0.0],
+    [ 0.0,    0.0, 0.09]
+  ]
+}
