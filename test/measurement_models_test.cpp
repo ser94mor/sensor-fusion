@@ -15,15 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_CONSTANTTURNRATEANDVELOCITY_H
-#define SENSOR_FUSION_CONSTANTTURNRATEANDVELOCITY_H
+
+#include "measurement_models.hpp"
+
+#include <catch.hpp>
+#include <iostream>
 
 
-#include "MotionModel.h"
-
-class ConstantTurnRateAndVelocityModel : public MotionModel {
-
-};
+using namespace ser94mor::sensor_fusion;
 
 
-#endif //SENSOR_FUSION_CONSTANTTURNRATEANDVELOCITY_H
+TEST_CASE("LidarMeasurementModel::", "[measurement_model]")
+{
+  LidarMeasurementModel<10> lidar_mm;
+
+  std::cout << lidar_mm.C(1) << std::endl;
+}

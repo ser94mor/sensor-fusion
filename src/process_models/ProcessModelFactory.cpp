@@ -15,22 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "ProcessModelFactory.hpp"
 
-#include "Lidar.hpp"
-#include "SensorFactory.hpp"
-
-
-extern const char kLidarName[]{"LIDAR"};
+#include <json.hpp>
 
 
-Lidar Lidar::FromJson(const char* json_str)
-{
-  return SensorFactory<Lidar>::FromJson(json_str);
-}
 
-
-Lidar::Lidar(const Eigen::Matrix<double, Lidar::Dims(), Lidar::Dims()>& measurement_covariance_matrix) :
-    Sensor{measurement_covariance_matrix}
-{
-
-}
+//namespace ser94mor::sensor_fusion
+//{
+//  using json = nlohmann::json;
+//
+//  std::unique_ptr<ProcessModel> FromJson(const char* json_str)
+//}

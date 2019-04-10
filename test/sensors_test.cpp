@@ -15,15 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Eigen/Dense"
+
 #include "sensors.hpp"
 
+#include <Eigen/Dense>
 #include <catch.hpp>
 
 using namespace Eigen;
+using namespace ser94mor::sensor_fusion;
 
 
-TEST_CASE("Radar::FromJson", "[sensors]")
+TEST_CASE("RadarSensor::FromJson", "[sensors]")
 {
   const char* radar_json{"{\n"
                          "  \"type\": \"SENSOR\",\n"
@@ -39,65 +41,67 @@ TEST_CASE("Radar::FromJson", "[sensors]")
                 0.0, 0.0009,  0.0,
                 0.0,    0.0, 0.09;
 
-  auto radar{Radar::FromJson(radar_json)};
+  auto radar{SensorFactory<RadarSensor>::FromJson(radar_json)};
 
   REQUIRE(radar.MeasurementCovarianceMatrix().isApprox(radar_mtx));
 }
 
 
-TEST_CASE("Radar::Dims", "[sensors]")
+TEST_CASE("RadarSensor::Dims", "[sensors]")
 {
-  REQUIRE(Radar::Dims() == 3);
+  REQUIRE(RadarSensor::Dims() == 3);
 }
 
 
-TEST_CASE("Radar::Type", "[sensors]")
+TEST_CASE("RadarSensor::Type", "[sensors]")
 {
-  REQUIRE(std::string(Radar::Type()) == "SENSOR");
+  REQUIRE(std::string(RadarSensor::Type()) == "SENSOR");
 }
 
 
-TEST_CASE("Radar::Name", "[sensors]")
+TEST_CASE("RadarSensor::Name", "[sensors]")
 {
-  REQUIRE(std::string(Radar::Name()) == "RADAR");
+  REQUIRE(std::string(RadarSensor::Name()) == "RADAR");
 }
 
 
-TEST_CASE("Radar::FromParams", "[sensors]")
+TEST_CASE("RadarSensor::FromParams", "[sensors]")
 {
-  Matrix<double, Radar::Dims(), Radar::Dims()> radar_mtx;
+  Matrix<double, RadarSensor::Dims(), RadarSensor::Dims()> radar_mtx;
   radar_mtx << 0.09,    0.0,  0.0,
                 0.0, 0.0009,  0.0,
                 0.0,    0.0, 0.09;
 
-  auto radar = Radar::FromParams(radar_mtx);
+  RadarSensor radar;
+  radar.SetMeasurementCovarianceMatrix(radar_mtx);
 
   REQUIRE(radar.MeasurementCovarianceMatrix().isApprox(radar_mtx));
 }
 
 
-TEST_CASE("Radar::Data", "[sensor]")
-{
-  std::time_t t{333};
-  Vector3d z;
-  z << 1, 2, 3;
+//TEST_CASE("RadarSensor::Data", "[sensor]")
+//{
+//  std::time_t t{333};
+//  Vector3d z;
+//  z << 1, 2, 3;
+//
+//  Matrix<double, RadarSensor::Dims(), RadarSensor::Dims()> radar_mtx;
+//  radar_mtx << 0.09,    0.0,  0.0,
+//                0.0, 0.0009,  0.0,
+//                0.0,    0.0, 0.09;
+//
+//  RadarSensor radar;
+//  radar.SetMeasurementCovarianceMatrix(radar_mtx);
+//
+//  auto radar_data{radar.Data(t, z)};
+//
+//  REQUIRE(radar_data.t == t);
+//  REQUIRE(radar_data.z.isApprox(z));
+//  REQUIRE(radar_data.Q.isApprox(radar_mtx));
+//}
 
-  Matrix<double, Radar::Dims(), Radar::Dims()> radar_mtx;
-  radar_mtx << 0.09,    0.0,  0.0,
-                0.0, 0.0009,  0.0,
-                0.0,    0.0, 0.09;
 
-  auto radar{Radar::FromParams(radar_mtx)};
-
-  auto radar_data{radar.Data(t, z)};
-
-  REQUIRE(radar_data.t() == t);
-  REQUIRE(radar_data.z().isApprox(z));
-  REQUIRE(radar_data.Q().isApprox(radar_mtx));
-}
-
-
-TEST_CASE("Lidar::FromJson", "[sensors]")
+TEST_CASE("LidarSensor::FromJson", "[sensors]")
 {
   const char* lidar_json{"{\n"
                          "  \"type\": \"SENSOR\",\n"
@@ -111,57 +115,59 @@ TEST_CASE("Lidar::FromJson", "[sensors]")
   lidar_mtx << 0.0225,    0.0,
                   0.0, 0.0225;
 
-  auto lidar{Lidar::FromJson(lidar_json)};
+  auto lidar{LidarSensor::FromJson(lidar_json)};
 
   REQUIRE(lidar.MeasurementCovarianceMatrix().isApprox(lidar_mtx));
 }
 
 
-TEST_CASE("Lidar::Dims", "[sensors]")
+TEST_CASE("LidarSensor::Dims", "[sensors]")
 {
-  REQUIRE(Lidar::Dims() == 2);
+  REQUIRE(LidarSensor::Dims() == 2);
 }
 
 
-TEST_CASE("Lidar::Type", "[sensors]")
+TEST_CASE("LidarSensor::Type", "[sensors]")
 {
-  REQUIRE(std::string(Lidar::Type()) == "SENSOR");
+  REQUIRE(std::string(LidarSensor::Type()) == "SENSOR");
 }
 
 
-TEST_CASE("Lidar::Name", "[sensors]")
+TEST_CASE("LidarSensor::Name", "[sensors]")
 {
-  REQUIRE(std::string(Lidar::Name()) == "LIDAR");
+  REQUIRE(std::string(LidarSensor::Name()) == "LIDAR");
 }
 
 
-TEST_CASE("Lidar::FromParams", "[sensors]")
+TEST_CASE("LidarSensor::FromParams", "[sensors]")
 {
-  Matrix<double, Lidar::Dims(), Lidar::Dims()> lidar_mtx;
+  Matrix<double, LidarSensor::Dims(), LidarSensor::Dims()> lidar_mtx;
   lidar_mtx << 0.0225,    0.0,
                   0.0, 0.0225;
 
-  auto lidar = Lidar::FromParams(lidar_mtx);
+  LidarSensor lidar;
+  lidar.SetMeasurementCovarianceMatrix(lidar_mtx);
 
   REQUIRE(lidar.MeasurementCovarianceMatrix().isApprox(lidar_mtx));
 }
 
 
-TEST_CASE("Lidar::Data", "[sensor]")
-{
-  std::time_t t{333};
-  Vector2d z;
-  z << 1, 2;
-
-  Matrix<double, Lidar::Dims(), Lidar::Dims()> lidar_mtx;
-  lidar_mtx << 0.0225,    0.0,
-                  0.0, 0.0225;
-
-  auto lidar{Lidar::FromParams(lidar_mtx)};
-
-  auto lidar_data{lidar.Data(t, z)};
-
-  REQUIRE(lidar_data.t() == t);
-  REQUIRE(lidar_data.z().isApprox(z));
-  REQUIRE(lidar_data.Q().isApprox(lidar_mtx));
-}
+//TEST_CASE("LidarSensor::Data", "[sensor]")
+//{
+//  std::time_t t{333};
+//  Vector2d z;
+//  z << 1, 2;
+//
+//  Matrix<double, LidarSensor::Dims(), LidarSensor::Dims()> lidar_mtx;
+//  lidar_mtx << 0.0225,    0.0,
+//                  0.0, 0.0225;
+//
+//  LidarSensor lidar;
+//  lidar.SetMeasurementCovarianceMatrix(lidar_mtx);
+//
+//  auto lidar_data{lidar.Data(t, z)};
+//
+//  REQUIRE(lidar_data.t == t);
+//  REQUIRE(lidar_data.z.isApprox(z));
+//  REQUIRE(lidar_data.Q.isApprox(lidar_mtx));
+//}

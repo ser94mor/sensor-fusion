@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SensorFusion.hpp"
-#include "filters/ExtendedKalmanFilter.h"
-#include "filters/UnscentedKalmanFilter.h"
+#include "Fusion.hpp"
+#include "../filters/ExtendedKalmanFilter.h"
+#include "../filters/UnscentedKalmanFilter.h"
 #include "models/ConstantTurnRateAndVelocityModel.h"
-#include "models/ConstantVelocityModel.h"
+#include "models/ConstantVelocityModel.hpp"
 
 SensorFusion::SensorFusion(filter_t filter, motion_model_t motion_model, int sensor_types) {
     switch (filter) {
@@ -42,7 +42,7 @@ SensorFusion::SensorFusion(filter_t filter, motion_model_t motion_model, int sen
             break;
         }
         case CV: {
-            motion_model_ = ConstantVelocityModel();
+            motion_model_ = CVProcessModel();
             break;
         }
         default: {
@@ -73,3 +73,5 @@ void SensorFusion::ProcessMeasurement(const MeasurementPackage &meas_pack) {
 }
 
 SensorFusion::~SensorFusion() {}
+
+

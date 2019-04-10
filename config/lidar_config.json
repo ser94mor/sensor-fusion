@@ -1,8 +1,0 @@
-{
-  "type": "SENSOR",
-  "name": "LIDAR",
-  "measurement_covariance_matrix": [
-    [0.0225,    0.0],
-    [   0.0, 0.0225]
-  ]
-}

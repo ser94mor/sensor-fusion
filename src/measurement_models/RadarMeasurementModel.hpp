@@ -15,12 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_SENSORS_HPP
-#define SENSOR_FUSION_SENSORS_HPP
+#ifndef SENSOR_FUSION_RADARMEASUREMENTMODEL_HPP
+#define SENSOR_FUSION_RADARMEASUREMENTMODEL_HPP
+
+#include "MeasurementModel.hpp"
 
 
-#include "../src/sensors/RadarSensor.hpp"
-#include "../src/sensors/LidarSensor.hpp"
+namespace ser94mor::sensor_fusion
+{
+
+  template <int state_dims>
+  class RadarMeasurementModel :
+      public MeasurementModel<kRadarMeasurementVectorDims, state_dims, kRadarMeasurementModelName>
+  {
+
+  };
+
+}
 
 
-#endif //SENSOR_FUSION_SENSORS_HPP
+#endif //SENSOR_FUSION_RADARMEASUREMENTMODEL_HPP

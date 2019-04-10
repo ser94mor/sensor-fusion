@@ -15,12 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_SENSORS_HPP
-#define SENSOR_FUSION_SENSORS_HPP
+#ifndef SENSOR_FUSION_PRIMITIVES_HPP
+#define SENSOR_FUSION_PRIMITIVES_HPP
 
+#include "../src/primitives/Belief.hpp"
+#include "../src/primitives/Measurement.hpp"
 
-#include "../src/sensors/RadarSensor.hpp"
-#include "../src/sensors/LidarSensor.hpp"
-
-
-#endif //SENSOR_FUSION_SENSORS_HPP
+#endif //SENSOR_FUSION_PRIMITIVES_HPP

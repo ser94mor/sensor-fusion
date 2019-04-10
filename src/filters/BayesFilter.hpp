@@ -19,27 +19,15 @@
 #define SENSOR_FUSION_BAYESFILTER_HPP
 
 
-#include "SensorData.hpp"
-#include "State.hpp"
+#include "primitives.hpp"
 
 
 class BayesFilter {
 
 public:
-  template <int dims> 
-  void Predict(State<dims>& state)
-  {
+  virtual GaussianBelief Predict(const GaussianBelief& state) = 0;
 
-  }
-
-  template <int state_dims, int sensor_data_dims>
-  void Update(State<state_dims>& state, const SensorData<sensor_data_dims>& sensor_data)
-  {
-    
-  }
-  
-protected:
-  
+  virtual GaussianBelief Update(const GaussianBelief& state, const Measurement& measurement) = 0;
 
 };
 

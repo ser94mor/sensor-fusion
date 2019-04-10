@@ -15,25 +15,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_MOTIONMODEL_H
-#define SENSOR_FUSION_MOTIONMODEL_H
-
-#include <type_traits>
-#include <eigen3/Eigen/Dense>
-
-#include <type_traits>
-
-template< int dims >
-class MotionModel {
-
-protected:
-    MotionModel();
-
-    virtual ~MotionModel();
-
-private:
-    Eigen::Ref<Eigen::VectorXd> state_;
-};
+#ifndef SENSOR_FUSION_MEASUREMENT_HPP
+#define SENSOR_FUSION_MEASUREMENT_HPP
 
 
-#endif //SENSOR_FUSION_MOTIONMODEL_H
+#include <ctime>
+
+
+namespace ser94mor::sensor_fusion
+{
+
+  template <class MeasurementVector, class MeasurementCovarianceMatrix>
+  struct Measurement
+  {
+    std::time_t t() const
+    {
+      return timestamp;
+    }
+
+    const MeasurementVector& z()
+    {
+      return measurement_vector;
+    }
+
+    const MeasurementCovarianceMatrix& Q()
+    {
+      return measurement_covariance_matrix;
+    }
+
+    const std::time_t timestamp;
+    const MeasurementVector measurement_vector;
+    const MeasurementCovarianceMatrix& measurement_covariance_matrix;
+  };
+
+}
+
+
+#endif //SENSOR_FUSION_MEASUREMENT_HPP

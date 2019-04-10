@@ -8,28 +8,28 @@ include_directories(third_parties/nlohmann-3.6.1)
 include_directories(third_parties/catch2-2.7.0)
 include_directories(include)
 
+file(GLOB sensors_SRC src/sensors/*)
+file(GLOB process_models_SRC src/process_models/*)
+file(GLOB measurement_models_SRC src/measurement_models/*)
+file(GLOB filters_SRC src/filters/*)
+file(GLOB primitives_SRC src/primitives/*)
+file(GLOB fusion_SRC src/fusion/*)
+
 add_executable(sensor_fusion
-        src/filters/ExtendedKalmanFilter.cpp
-        src/filters/ExtendedKalmanFilter.h
-        src/filters/BayesFilter.hpp
-        src/filters/KalmanFilter.cpp
-        src/filters/KalmanFilter.hpp
-        src/filters/UnscentedKalmanFilter.cpp
-        src/filters/UnscentedKalmanFilter.h
-        src/models/ConstantTurnRateAndVelocityModel.cpp
-        src/models/ConstantTurnRateAndVelocityModel.h
-        src/models/ConstantVelocityModel.cpp
-        src/models/ConstantVelocityModel.h
-        src/models/MotionModel.cpp
-        src/models/MotionModel.h
-        src/sensors/SensorData.hpp
+        ${sensors_SRC}
+        ${states_SRC}
+        ${process_models_SRC}
+        ${measurement_models_SRC}
+        ${filters_SRC}
+        ${fusion_SRC}
         src/main.cpp
-        src/SensorFusion.cpp
-        src/SensorFusion.hpp src/models/State.hpp src/models/CTRVState.hpp src/models/CVState.hpp src/sensors/Radar.hpp src/sensors/Sensor.hpp src/sensors/SensorFactory.hpp src/sensors/Radar.cpp src/sensors/Lidar.cpp src/sensors/Lidar.hpp test/sensors_test.cpp test/test.cpp include/sensors.hpp)
+)
 
 add_library(Catch INTERFACE)
 add_executable( sensor_fusion_test
-        test/sensors_test.cpp src/sensors/Radar.cpp src/sensors/Radar.hpp src/sensors/Sensor.hpp src/sensors/SensorFactory.hpp src/sensors/Lidar.hpp src/sensors/Lidar.cpp
+        test/sensors_test.cpp ${sensors_SRC}
+        test/process_models_test.cpp src/process_models/CVProcessModel.cpp
+        test/measurement_models_test.cpp src/measurement_models/LidarMeasurementModel.cpp
         test/test.cpp
 )
 target_link_libraries(sensor_fusion_test Catch)

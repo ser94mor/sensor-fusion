@@ -30,7 +30,7 @@
 using json = nlohmann::json;
 
 
-template <typename SensorT>
+template <class SensorT>
 class SensorFactory
 {
 public:
@@ -40,7 +40,7 @@ public:
 };
 
 
-template<typename SensorT>
+template<class SensorT>
 SensorT SensorFactory<SensorT>::FromJson(const char* json_str)
 {
   Eigen::Matrix<double, SensorT::Dims(), SensorT::Dims()> measurement_covariance_matrix;
@@ -62,13 +62,15 @@ SensorT SensorFactory<SensorT>::FromJson(const char* json_str)
     }
   }
 
-  return SensorT{measurement_covariance_matrix};
+  return SensorFactory<SensorT>::FromParams(measurement_covariance_matrix);
 }
 
-template<typename SensorT>
+template<class SensorT>
 SensorT SensorFactory<SensorT>::FromParams(const Eigen::Matrix<double, SensorT::Dims(), SensorT::Dims()>& mtx)
 {
-  return SensorT{mtx};
+  SensorT sensor;
+  sensor.SetMeasurementCovarianceMatrix(mtx);
+  return sensor;
 }
 
 

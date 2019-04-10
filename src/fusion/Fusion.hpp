@@ -15,63 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_SENSORFUSION_HPP
-#define SENSOR_FUSION_SENSORFUSION_HPP
+#ifndef SENSOR_FUSION_FUSION_HPP
+#define SENSOR_FUSION_FUSION_HPP
 
 
-#include "BayesFilter.hpp"
-#include "State.hpp"
+#include <json.hpp>
+#include <tuple>
 
-#include <eigen3/Eigen/Dense>
+namespace ser94mor::sensor_fusion
+{
 
-typedef enum {
-    LIDAR = 0x01,
-    RADAR = 0x02,
-} sensor_t;
+  template <class ProcessModel, class Filter, class... Sensor>
+  class Fusion
+  {
+    using Belief = typename ProcessModel::Belief_type;
 
-typedef enum {
-    CTRV = 1,
-    CV   = 2,
-} motion_model_t;
-
-typedef enum {
-    EKF = 1,
-    UKF = 2,
-} filter_t;
-
-struct MeasurementPackage {
-    long long timestamp;
-
-    sensor_t sensor_type;
-
-    Eigen::VectorXd raw_measurements;
-};
-
-class SensorFusion {
-
-public:
+  public:
     /**
      * Constructor.
      */
-    SensorFusion(filter_t filter, motion_model_t motion_model, int sensor_types);
-
-    /**
-    * Destructor.
-    */
-    virtual ~SensorFusion();
+    Fusion(std::initializer_list<const char*> json_configs);
 
     /**
     * Run the whole flow of the Kalman Filter from here.
     */
-    void ProcessMeasurement(const MeasurementPackage &meas_pack);
+    [[noreturn]] void Start();
 
-private:
-
-    // concrete implementation of filter
-    BayesFilter filter_;
-
-    // mean and covariance matrix
-    State state_;
+  private:
 
     // flag indicating whether the first measurement processed
     bool initialized_;
@@ -82,12 +52,31 @@ private:
     // timestamp of the previously processed measurement
     uint64_t prev_meas_timestamp_;
 
-    // data from which sensors to process
-    int sensor_types_;
+
+    Belief belief_;
+    ProcessModel process_model_;
+    Filter filter_;
+    std::tuple<Sensor...> sensors_;
+
+  };
+
+  template<class ProcessModel, class Filter, class... Sensor>
+  Fusion<ProcessModel, Filter, Sensor...>::Fusion(std::initializer_list<const char*> json_configs)
+  {
+    for (auto json_str : json_configs)
+    {
+      auto json = nlohmann::json::parse(json_str);
+
+    }
+  }
+
+  template<class ProcessModel, class Filter, class... Sensor>
+  void Fusion<ProcessModel, Filter, Sensor...>::Start()
+  {
+
+  }
+
+}
 
 
-
-};
-
-
-#endif //SENSOR_FUSION_SENSORFUSION_HPP
+#endif //SENSOR_FUSION_FUSION_HPP

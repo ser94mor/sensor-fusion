@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SensorFusion.hpp"
+#include "fusion/Fusion.hpp"
 
 #include <syslog.h>
 #include <iostream>

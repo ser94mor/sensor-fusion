@@ -15,4 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ConstantVelocityModel.h"
+#ifndef SENSOR_FUSION_CONSTANTTURNRATEANDVELOCITY_HPP
+#define SENSOR_FUSION_CONSTANTTURNRATEANDVELOCITY_HPP
+
+
+#include "ProcessModel.hpp"
+
+
+namespace ser94mor::sensor_fusion
+{
+
+  class ConstantTurnRateAndVelocityModel : public ProcessModel
+  {
+
+  };
+
+}
+
+
+#endif //SENSOR_FUSION_CONSTANTTURNRATEANDVELOCITY_HPP

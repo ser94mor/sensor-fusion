@@ -15,4 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 #include "KalmanFilter.hpp"
+
+
+GaussianBelief KalmanFilter::Predict(const GaussianBelief& state)
+{
+  StateVector mu_hat = A;
+  StateCovarianceMatrix Sigma_hat;
+
+  x_ = F_ * x_; // u is zero vector; omitted for optimization purposes
+  MatrixXd Ft = F_.transpose();
+  P_ = F_ * P_ * Ft + Q_;
+}
+
+GaussianBelief KalmanFilter::Update(const GaussianBelief& state, const Measurement& measurement)
+{
+
+}

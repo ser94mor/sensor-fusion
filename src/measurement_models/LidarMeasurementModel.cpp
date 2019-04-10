@@ -15,20 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Radar.hpp"
-#include "SensorFactory.hpp"
+#include "LidarMeasurementModel.hpp"
 
 
-const char kRadarName[]{"RADAR"};
-
-Radar Radar::FromJson(const char* json_str)
-{
-  return SensorFactory<Radar>::FromJson(json_str);
-}
-
-Radar::Radar(const Eigen::Matrix<double, Radar::Dims(), Radar::Dims()>& measurement_covariance_matrix) :
-    Sensor{measurement_covariance_matrix}
+namespace ser94mor::sensor_fusion
 {
 
-}
+  const char kLidarMeasurementModelName[]{"LIDAR"};
 
+}

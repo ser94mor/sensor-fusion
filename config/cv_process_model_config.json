@@ -1,0 +1,7 @@
+{
+  "type": "PROCESS MODEL",
+  "name": "CV",
+  "cov_ax_ax": 9.0,
+  "cov_ay_ay": 9.0,
+  "cov_ax_ay": 0.0
+}

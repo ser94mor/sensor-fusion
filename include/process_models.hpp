@@ -15,15 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_STATE_HPP
-#define SENSOR_FUSION_STATE_HPP
+#ifndef SENSOR_FUSION_PROCESS_MODELS_HPP
+#define SENSOR_FUSION_PROCESS_MODELS_HPP
 
-#include <eigen3/Eigen/Dense>
+#include "../src/process_models/CVProcessModel.hpp"
+//#include "../src/process_models/ConstantTurnRateAndVelocityModel.hpp"
 
-template <int dims>
-struct State {
-    Eigen::Matrix<double, dims, 1> x;
-    Eigen::Matrix<double, dims, dims> P;
-};
-
-#endif //SENSOR_FUSION_STATE_HPP
+#endif //SENSOR_FUSION_PROCESS_MODELS_HPP

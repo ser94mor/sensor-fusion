@@ -15,12 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_SENSORS_HPP
-#define SENSOR_FUSION_SENSORS_HPP
+
+#include "LidarSensor.hpp"
+#include "SensorFactory.hpp"
 
 
-#include "../src/sensors/RadarSensor.hpp"
-#include "../src/sensors/LidarSensor.hpp"
+namespace ser94mor::sensor_fusion
+{
 
+  const char kLidarSensorName[]{"LIDAR"};
 
-#endif //SENSOR_FUSION_SENSORS_HPP
+  LidarSensor LidarSensor::FromJson(const char* json_str)
+  {
+    return SensorFactory<LidarSensor>::FromJson(json_str);
+  }
+
+}

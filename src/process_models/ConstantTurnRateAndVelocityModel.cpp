@@ -15,19 +15,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_CONSTANTVELOCITY_H
-#define SENSOR_FUSION_CONSTANTVELOCITY_H
-
-
-#include "MotionModel.h"
-#include <eigen3/Eigen/Dense>
-
-using namespace Eigen;
-
-class ConstantVelocityModel : public MotionModel<4> {
-private:
-    Vector4d state_;
-};
-
-
-#endif //SENSOR_FUSION_CONSTANTVELOCITY_H
+#include "ConstantTurnRateAndVelocityModel.hpp"

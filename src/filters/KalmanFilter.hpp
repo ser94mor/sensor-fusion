@@ -21,8 +21,12 @@
 
 #include "BayesFilter.hpp"
 
-class KalmanFilter : public BayesFilter {
 
+class KalmanFilter : public BayesFilter {
+public:
+  GaussianBelief Predict(const GaussianBelief& state) override;
+
+  GaussianBelief Update(const GaussianBelief& state, const Measurement& measurement) override;
 };
 
 

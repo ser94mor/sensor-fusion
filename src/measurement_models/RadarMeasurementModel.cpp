@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_SENSORS_HPP
-#define SENSOR_FUSION_SENSORS_HPP
+#include "RadarMeasurementModel.hpp"
 
 
-#include "../src/sensors/RadarSensor.hpp"
-#include "../src/sensors/LidarSensor.hpp"
+namespace ser94mor::sensor_fusion
+{
 
+  const char kRadarMeasurementModelName[]{"RADAR"};
 
-#endif //SENSOR_FUSION_SENSORS_HPP
+}

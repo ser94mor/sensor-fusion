@@ -19,54 +19,61 @@
 #define SENSOR_FUSION_SENSOR_HPP
 
 
-#include "SensorData.hpp"
+#include "definitions.hpp"
+#include "SensorFactory.hpp"
+//#include "primitives.hpp"
 
 #include <ctime>
-#include <Eigen/Dense>
-#include <unordered_map>
 
 
-template <int dims, const char* name>
-class Sensor
+namespace  ser94mor::sensor_fusion
 {
-public:
-  const SensorData<dims> Data(std::time_t timestamp_sec, const Eigen::Matrix<double, dims, 1>& z)
+
+  template<int measurement_dims, const char* name, class CMeasurementCovarianceMatrix>
+  class Sensor
   {
-    return SensorData<dims>(timestamp_sec, z, measurement_covariance_matrix_);
-  }
+  public:
+    //const GaussianMeasurement Data(std::time_t timestamp_sec, const Eigen::Matrix<double, measurement_dims, 1>& z) const
+    //{
+    //  return {
+    //      .t = timestamp_sec,
+    //      .z = z,
+    //      .Q = measurement_covariance_matrix_,
+    //  };
+    //}
 
-  const Eigen::Matrix<double, dims, dims>& MeasurementCovarianceMatrix() const
+    const CMeasurementCovarianceMatrix& MeasurementCovarianceMatrix() const
+    {
+      return measurement_covariance_matrix_;
+    }
+
+    constexpr static const char* Type()
+    {
+      return kSensorType;
+    }
+
+    constexpr static const char* Name()
+    {
+      return name;
+    }
+
+    constexpr static int Dims()
+    {
+      return measurement_dims;
+    }
+
+    void SetMeasurementCovarianceMatrix(const CMeasurementCovarianceMatrix& mtx);
+  private:
+
+    CMeasurementCovarianceMatrix measurement_covariance_matrix_;
+  };
+
+  template<int measurement_dims, const char* name, class CMeasurementCovarianceMatrix>
+  void Sensor<measurement_dims, name, CMeasurementCovarianceMatrix>::SetMeasurementCovarianceMatrix(
+      const CMeasurementCovarianceMatrix& mtx)
   {
-    return measurement_covariance_matrix_;
+    measurement_covariance_matrix_ = mtx;
   }
-
-  constexpr static const char* Type()
-  {
-    return "SENSOR";
-  }
-
-  constexpr static const char* Name()
-  {
-    return name;
-  }
-
-  constexpr static int Dims()
-  {
-    return dims;
-  }
-
-protected:
-  explicit Sensor(const Eigen::Matrix<double, dims, dims>& measurement_covariance_matrix);
-
-private:
-  Eigen::Matrix<double, dims, dims> measurement_covariance_matrix_;
-};
-
-
-template<int dims, const char* name>
-Sensor<dims, name>::Sensor(const Eigen::Matrix<double, dims, dims>& measurement_covariance_matrix) :
-    measurement_covariance_matrix_{measurement_covariance_matrix}
-{
 
 }
 

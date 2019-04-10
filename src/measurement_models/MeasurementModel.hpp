@@ -15,33 +15,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_LIDAR_HPP
-#define SENSOR_FUSION_LIDAR_HPP
+#ifndef SENSOR_FUSION_MEASUREMENTMODEL_HPP
+#define SENSOR_FUSION_MEASUREMENTMODEL_HPP
 
 
-#include "Sensor.hpp"
-#include "SensorFactory.hpp"
+#include "definitions.hpp"
 
 
-extern const char kLidarName[];
-
-
-class Lidar : public Sensor<2, kLidarName>
+namespace ser94mor::sensor_fusion
 {
-  template <typename>
-  friend class SensorFactory;
 
-public:
-  static Lidar FromJson(const char* json_str);
-
-  static Lidar FromParams(const Eigen::Matrix<double, Lidar::Dims(), Lidar::Dims()>& mtx)
+  template<int measurement_dims, int state_dims, const char* name>
+  class MeasurementModel
   {
-    return SensorFactory<Lidar>::FromParams(mtx);
-  }
+  public:
+    constexpr static const char* Type()
+    {
+      return kMeasurementModelType;
+    }
 
-private:
-  explicit Lidar(const Eigen::Matrix<double, Lidar::Dims(), Lidar::Dims()>& measurement_covariance_matrix);
-};
+    constexpr static const char* Name()
+    {
+      return name;
+    }
 
+    constexpr static int MeasurementDims()
+    {
+      return measurement_dims;
+    }
 
-#endif //SENSOR_FUSION_LIDAR_HPP
+    constexpr static int StateDims()
+    {
+      return state_dims;
+    }
+  };
+
+}
+
+#endif //SENSOR_FUSION_MEASUREMENTMODEL_HPP
