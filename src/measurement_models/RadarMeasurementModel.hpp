@@ -19,6 +19,7 @@
 #define SENSOR_FUSION_RADARMEASUREMENTMODEL_HPP
 
 #include "MeasurementModel.hpp"
+#include "sensors.hpp"
 
 
 namespace ser94mor::sensor_fusion
@@ -26,7 +27,7 @@ namespace ser94mor::sensor_fusion
 
   template <int state_dims>
   class RadarMeasurementModel :
-      public MeasurementModel<kRadarMeasurementVectorDims, state_dims, kRadarMeasurementModelName>
+      public MeasurementModel<kRadarMeasurementVectorDims, state_dims, kRadarMeasurementModelName, RadarSensor>
   {
 
   };

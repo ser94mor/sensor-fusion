@@ -16,45 +16,45 @@
  */
 
 
-#include "measurement_models.hpp"
+//#include "primitives.hpp"
+#include "filters.hpp"
+#include "definitions.hpp"
+#include "process_models.hpp"
 
 #include <catch.hpp>
 #include <iostream>
 
-
 using namespace ser94mor::sensor_fusion;
 
 
-TEST_CASE("LidarMeasurementModel::C", "[measurement_model]")
+TEST_CASE("KalmanFilter::Predict", "[filters]")
 {
+  CVProcessModel cv_pm{9.0, 9.0, 0.0};
+
   Eigen::Matrix<double, LidarSensor::Dims(), LidarSensor::Dims()> lidar_mtx;
   lidar_mtx << 0.0225,    0.0,
                   0.0, 0.0225;
-
   LidarSensor lidar;
   lidar.SetMeasurementCovarianceMatrix(lidar_mtx);
-  LidarMeasurementModel<CVStateVector> lidar_mm{lidar};
+  LidarMeasurementModel<CVStateVector> l_mm{lidar};
 
-  Eigen::Matrix<double, LidarMeasurementModel<CVStateVector>::MeasurementDims(),
-                        LidarMeasurementModel<CVStateVector>::StateDims()>
-  meas_mtx;
-  meas_mtx << 1.0, 0.0, 0.0, 0.0,
-              0.0, 1.0, 0.0, 0.0;
+  KalmanFilter<CVProcessModel, LidarMeasurementModel<CVStateVector>> kf{cv_pm, l_mm};
 
-  auto Ct = lidar_mm.C(555);
-  REQUIRE(Ct.isApprox(meas_mtx));
+  CVProcessModel::Belief_type bel;
+  LidarMeasurementVector v;
+  LidarMeasurementCovarianceMatrix m;
+  LidarMeasurementModel<CVStateVector>::Measurement_type meas{
+    .timestamp = 1,
+    .measurement_vector = v,
+    .measurement_covariance_matrix = m,
+  };
+  auto foo = kf.Predict(bel, 1);
+
+  std::cout << foo.Sigma() << std::endl;
 }
 
 
-TEST_CASE("LidarMeasurementModel::Q", "[measurement_model]")
+TEST_CASE("KalmanFilter::Update", "[filters]")
 {
-  Eigen::Matrix<double, LidarSensor::Dims(), LidarSensor::Dims()> lidar_mtx;
-  lidar_mtx << 0.0225,    0.0,
-                  0.0, 0.0225;
 
-  LidarSensor lidar;
-  lidar.SetMeasurementCovarianceMatrix(lidar_mtx);
-  LidarMeasurementModel<CVStateVector> lidar_mm{lidar};
-
-  REQUIRE(lidar_mm.Q(222).isApprox(lidar_mtx));
 }

@@ -20,15 +20,18 @@
 
 
 #include "definitions.hpp"
-
+#include "primitives.hpp"
 
 namespace ser94mor::sensor_fusion
 {
 
-  template<int measurement_dims, int state_dims, const char* name>
+  template<class MeasurementVector, class MeasurementCovarianceMatrix,
+           class StateVector, class Sensor, const char* name>
   class MeasurementModel
   {
   public:
+    using Measurement_type = Measurement<MeasurementVector, MeasurementCovarianceMatrix>;
+
     constexpr static const char* Type()
     {
       return kMeasurementModelType;
@@ -41,13 +44,21 @@ namespace ser94mor::sensor_fusion
 
     constexpr static int MeasurementDims()
     {
-      return measurement_dims;
+      return MeasurementVector::SizeAtCompileTime;
     }
 
     constexpr static int StateDims()
     {
-      return state_dims;
+      return StateVector::SizeAtCompileTime;
     }
+
+    explicit MeasurementModel(const Sensor& sensor) : sensor_{sensor}
+    {
+
+    }
+
+  protected:
+    const Sensor& sensor_;
   };
 
 }

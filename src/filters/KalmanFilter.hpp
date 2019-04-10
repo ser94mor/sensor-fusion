@@ -19,15 +19,67 @@
 #define SENSOR_FUSION_KALMANFILTER_HPP
 
 
-#include "BayesFilter.hpp"
+#include <ctime>
+#include <iostream>
+#include <Eigen/Dense>
 
 
-class KalmanFilter : public BayesFilter {
-public:
-  GaussianBelief Predict(const GaussianBelief& state) override;
+namespace ser94mor::sensor_fusion
+{
 
-  GaussianBelief Update(const GaussianBelief& state, const Measurement& measurement) override;
-};
+  template<class ProcessModel, class MeasurementModel>
+  class KalmanFilter
+  {
+    using Belief = typename ProcessModel::Belief_type;
+    using Measurement = typename MeasurementModel::Measurement_type;
+  public:
+    virtual Belief Predict(const Belief& belief_posterior, std::time_t dt);
 
+    virtual Belief Update(const Belief& belief_prior, const Measurement& measurement, std::time_t dt);
+
+    KalmanFilter(const ProcessModel& process_model, const MeasurementModel& measurement_model);
+
+  protected:
+    const ProcessModel& process_model_;
+    const MeasurementModel& measurement_model_;
+  };
+
+  template<class ProcessModel, class MeasurementModel>
+  typename KalmanFilter<ProcessModel, MeasurementModel>::Belief
+  KalmanFilter<ProcessModel, MeasurementModel>::Predict(const Belief& belief_posterior, std::time_t dt)
+  {
+    auto At{process_model_.A(dt)};
+    return {
+      .state_vector = At * belief_posterior.mu(),
+      .state_covariance_matrix = At * belief_posterior.Sigma() * At.transpose() + process_model_.R(dt),
+    };
+  }
+
+  template<class ProcessModel, class MeasurementModel>
+  typename KalmanFilter<ProcessModel, MeasurementModel>::Belief
+  KalmanFilter<ProcessModel, MeasurementModel>::Update(const Belief& belief_prior, const Measurement& measurement,
+      std::time_t dt)
+  {
+    auto Ct{measurement_model_.C(dt)};
+    auto mu{belief_prior.mu()};
+    auto Sigma{belief_prior.Sigma()};
+    auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + measurement_model_.Q(dt)).inverse()};
+    auto I{Eigen::Matrix<double, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
+
+    return {
+      .state_vector = mu + Kt * (measurement.z() - Ct * mu),
+      .state_covariance_matrix = (I - Kt * Ct) * Sigma,
+    };
+  }
+
+  template<class ProcessModel, class MeasurementModel>
+  KalmanFilter<ProcessModel, MeasurementModel>::KalmanFilter(const ProcessModel& process_model,
+                                                             const MeasurementModel& measurement_model) :
+    process_model_{process_model}, measurement_model_{measurement_model}
+  {
+
+  }
+
+}
 
 #endif //SENSOR_FUSION_KALMANFILTER_HPP

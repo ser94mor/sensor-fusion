@@ -33,12 +33,12 @@ namespace ser94mor::sensor_fusion
       return timestamp;
     }
 
-    const MeasurementVector& z()
+    const MeasurementVector& z() const
     {
       return measurement_vector;
     }
 
-    const MeasurementCovarianceMatrix& Q()
+    const MeasurementCovarianceMatrix& Q() const
     {
       return measurement_covariance_matrix;
     }

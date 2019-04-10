@@ -29,29 +29,36 @@
 namespace ser94mor::sensor_fusion
 {
 
-  template<int state_dims>
+  template<class StateVector>
   class LidarMeasurementModel :
-      public MeasurementModel<kLidarMeasurementVectorDims, state_dims, kLidarMeasurementModelName>
+      public MeasurementModel<LidarMeasurementVector, LidarMeasurementCovarianceMatrix,
+                              StateVector, LidarSensor, kLidarMeasurementModelName>
   {
+  public:
     using MeasurementMatrix =
         Eigen::Matrix<double, LidarMeasurementModel::MeasurementDims(), LidarMeasurementModel::StateDims()>;
-  public:
-    LidarMeasurementModel();
 
-    const MeasurementMatrix& C(std::time_t dt)
+    explicit LidarMeasurementModel(const LidarSensor&  sensor) :
+      MeasurementModel<LidarMeasurementVector, LidarMeasurementCovarianceMatrix,
+                       StateVector, LidarSensor, kLidarMeasurementModelName>{sensor}
+    {
+      measurement_matrix_.setIdentity();
+    }
+
+    const MeasurementMatrix& C(std::time_t dt) const
     {
       return measurement_matrix_;
     }
 
+    const LidarMeasurementCovarianceMatrix& Q(std::time_t dt) const
+    {
+      return this->sensor_.MeasurementCovarianceMatrix();
+    }
+
+
   private:
     MeasurementMatrix measurement_matrix_;
   };
-
-  template<int state_dims>
-  LidarMeasurementModel<state_dims>::LidarMeasurementModel()
-  {
-    measurement_matrix_.setIdentity();
-  }
 
 }
 

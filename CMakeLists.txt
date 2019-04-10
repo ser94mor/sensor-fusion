@@ -30,6 +30,7 @@ add_executable( sensor_fusion_test
         test/sensors_test.cpp ${sensors_SRC}
         test/process_models_test.cpp src/process_models/CVProcessModel.cpp
         test/measurement_models_test.cpp src/measurement_models/LidarMeasurementModel.cpp
+        test/filters_test.cpp src/filters/KalmanFilter.hpp
         test/test.cpp
 )
 target_link_libraries(sensor_fusion_test Catch)

@@ -15,21 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_BAYESFILTER_HPP
-#define SENSOR_FUSION_BAYESFILTER_HPP
+#ifndef SENSOR_FUSION_EXTENDEDKALMANFILTER_HPP
+#define SENSOR_FUSION_EXTENDEDKALMANFILTER_HPP
 
 
-#include "primitives.hpp"
+#include "KalmanFilter.hpp"
 
 
-class BayesFilter {
+namespace ser94mor::sensor_fusion
+{
 
-public:
-  virtual GaussianBelief Predict(const GaussianBelief& state) = 0;
+  template <class Belief, class Measurement>
+  class ExtendedKalmanFilter : public KalmanFilter<Belief, Measurement>
+  {
+  public:
+    Belief Predict(const Belief& state, std::time_t dt) override
+    {
+      std::cout << "EXTENDED KALMAN FILTER" << std::endl;
+      return KalmanFilter<Belief, Measurement>::Predict(state, dt);
+    }
 
-  virtual GaussianBelief Update(const GaussianBelief& state, const Measurement& measurement) = 0;
+    Belief Update(const Belief& state, const Measurement& measurement) override
+    {
+      std::cout << "EXTENDED KALMAN FILTER" << std::endl;
+      return state;
+    }
+  };
 
-};
+}
 
 
-#endif //SENSOR_FUSION_BAYESFILTER_HPP
+#endif //SENSOR_FUSION_EXTENDEDKALMANFILTER_HPP

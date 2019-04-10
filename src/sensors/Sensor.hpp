@@ -33,14 +33,6 @@ namespace  ser94mor::sensor_fusion
   class Sensor
   {
   public:
-    //const GaussianMeasurement Data(std::time_t timestamp_sec, const Eigen::Matrix<double, measurement_dims, 1>& z) const
-    //{
-    //  return {
-    //      .t = timestamp_sec,
-    //      .z = z,
-    //      .Q = measurement_covariance_matrix_,
-    //  };
-    //}
 
     const CMeasurementCovarianceMatrix& MeasurementCovarianceMatrix() const
     {

@@ -16,7 +16,7 @@
  */
 
 #include "Fusion.hpp"
-#include "../filters/ExtendedKalmanFilter.h"
+#include "../filters/ExtendedKalmanFilter.hpp"
 #include "../filters/UnscentedKalmanFilter.h"
 #include "models/ConstantTurnRateAndVelocityModel.h"
 #include "models/ConstantVelocityModel.hpp"
