@@ -25,9 +25,7 @@ namespace ser94mor::sensor_fusion
 {
 
   /**
-   * A concrete representation of "belief" concept from Bayesian filtering for Gaussian filters.
-   *
-   * For Gaussian case, the belief consists of the mean and covariance matrix.
+   * A representation of "belief" concept from Bayesian filtering;
    */
   template<class StateVector, class StateCovarianceMatrix>
   struct Belief

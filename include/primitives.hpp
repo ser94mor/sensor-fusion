@@ -18,7 +18,7 @@
 #ifndef SENSOR_FUSION_PRIMITIVES_HPP
 #define SENSOR_FUSION_PRIMITIVES_HPP
 
-#include "../src/primitives/Belief.hpp"
+#include "../src/beliefs/Belief.hpp"
 #include "../src/measurements/Measurement.hpp"
 
 #endif //SENSOR_FUSION_PRIMITIVES_HPP

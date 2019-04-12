@@ -21,6 +21,7 @@
 
 #include <json.hpp>
 #include <tuple>
+#include <Eigen/Dense>
 
 namespace ser94mor::sensor_fusion
 {
@@ -34,7 +35,9 @@ namespace ser94mor::sensor_fusion
     /**
      * Constructor.
      */
-    Fusion(std::initializer_list<const char*> json_configs);
+    template <typename Derived>
+    Fusion(const Eigen::MatrixBase<Derived>& individual_noise_processes_covariance_matrix,
+           measurement_covariance_matrix);
 
     /**
     * Run the whole flow of the Kalman Filter from here.
@@ -42,6 +45,9 @@ namespace ser94mor::sensor_fusion
     [[noreturn]] void Start();
 
   private:
+
+    template <class Sensor_type>
+    void ProcessMeasurement(const Sensor_type& sensor);
 
     // flag indicating whether the first measurement processed
     bool initialized_;
@@ -73,6 +79,16 @@ namespace ser94mor::sensor_fusion
 
   template<class ProcessModel, class Filter, class... Sensor>
   void Fusion<ProcessModel, Filter, Sensor...>::Start()
+  {
+    for (;;)
+    {
+      std::apply(this->ProcessMeasurement, sensors_);
+    }
+  }
+
+  template<class ProcessModel, class Filter, class... Sensor>
+  template<class Sensor_type>
+  void Fusion<ProcessModel, Filter, Sensor...>::ProcessMeasurement(const Sensor_type& sensor)
   {
 
   }

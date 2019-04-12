@@ -19,29 +19,27 @@
 
 #include <iostream>
 
-namespace ser94mor::sensor_fusion
+namespace ser94mor::sensor_fusion::CV
 {
 
-  const char kCVProcessModelName[]{"CV"};
+  const char kProcessModelName[]{"CV"};
 
-  CVProcessModel::CVProcessModel(double cov_ax_ax, double cov_ay_ay, double cov_ax_ay)
+  ProcessModel::ProcessModel() : state_transition_matrix_prototype_{StateTransitionMatrix::Identity()}
   {
-    state_transition_matrix_prototype_.setIdentity();
-    individual_noise_processes_covariance_matrix_ << cov_ax_ax, cov_ax_ay,
-                                                     cov_ax_ay, cov_ay_ay;
+
   }
 
-  CVStateTransitionMatrix CVProcessModel::A(std::time_t dt) const
+  StateTransitionMatrix ProcessModel::A(std::time_t dt) const
   {
-    CVStateTransitionMatrix state_transition_matrix{state_transition_matrix_prototype_};
+    StateTransitionMatrix state_transition_matrix{state_transition_matrix_prototype_};
     state_transition_matrix(0, 2) = dt;
     state_transition_matrix(1, 3) = dt;
     return state_transition_matrix;
   }
 
-  CVProcessCovarianceMatrix CVProcessModel::R(std::time_t dt) const
+  ProcessCovarianceMatrix ProcessModel::R(std::time_t dt) const
   {
-    Eigen::Matrix<double, CVProcessModel::StateDims(), 2> Gt;
+    Eigen::Matrix<double, ProcessModel::StateDims(), 2> Gt;
     double dt_2_2 = dt * dt / 2.0;
     Gt << dt_2_2,    0.0,
              0.0, dt_2_2,
@@ -50,9 +48,9 @@ namespace ser94mor::sensor_fusion
     return Gt * individual_noise_processes_covariance_matrix_ * Gt.transpose();
   }
 
-  CVControlTransitionMatrix CVProcessModel::B(std::time_t dt) const
+  ControlTransitionMatrix ProcessModel::B(std::time_t dt) const
   {
-    return CVControlTransitionMatrix().setZero();
+    return ControlTransitionMatrix().setZero();
   }
 
 }

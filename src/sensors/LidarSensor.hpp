@@ -21,6 +21,7 @@
 
 #include "definitions.hpp"
 #include "measurements.hpp"
+#include "measurement_models.hpp"
 #include "Sensor.hpp"
 
 

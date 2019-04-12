@@ -19,6 +19,5 @@
 #define SENSOR_FUSION_PROCESS_MODELS_HPP
 
 #include "../src/process_models/CVProcessModel.hpp"
-//#include "../src/process_models/ConstantTurnRateAndVelocityModel.hpp"
 
 #endif //SENSOR_FUSION_PROCESS_MODELS_HPP

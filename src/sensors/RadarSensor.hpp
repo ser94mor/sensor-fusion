@@ -15,19 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_RADAR_HPP
+#ifndef SENSOR_FUSION_RADARSENSOR_HPP
 #define SENSOR_FUSION_RADARSENSOR_HPP
 
 
 #include "definitions.hpp"
 #include "measurements.hpp"
+#include "measurement_models.hpp"
 #include "Sensor.hpp"
 
 
 namespace ser94mor::sensor_fusion::Radar
 {
-  SENSOR_DEFINITION();
+
 }
 
 
-#endif //SENSOR_FUSION_RADAR_HPP
+#endif //SENSOR_FUSION_RADARSENSOR_HPP

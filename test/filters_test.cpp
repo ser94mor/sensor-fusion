@@ -29,20 +29,24 @@ using namespace ser94mor::sensor_fusion;
 
 TEST_CASE("KalmanFilter::Predict", "[filters]")
 {
-  CVProcessModel cv_pm{9.0, 9.0, 0.0};
+  CV::ProcessModel cv_pm;
+  IndividualNoiseProcessesCovarianceMatrix mtx;
+  mtx << 9.0, 0.0,
+         0.0, 9.0;
+  cv_pm.SetIndividualNoiseProcessCovarianceMatrix(mtx);
 
   Lidar::MeasurementCovarianceMatrix lidar_mtx;
   lidar_mtx << 0.0225,    0.0,
                   0.0, 0.0225;
 
-  Lidar::MeasurementModel<CVStateVector> l_mm;
+  Lidar::MeasurementModel<CV::StateVector> l_mm;
   l_mm.SetMeasurementCovarianceMatrix(lidar_mtx);
 
-  KalmanFilter<CVProcessModel, Lidar::MeasurementModel<CVStateVector>> kf{cv_pm, l_mm};
+  KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::StateVector>> kf{cv_pm, l_mm};
 
-  CVProcessModel::Belief_type bel;
+  CV::ProcessModel::Belief_type bel;
   Lidar::MeasurementVector v;
-  Lidar::MeasurementModel<CVStateVector>::Measurement_type meas{
+  Lidar::MeasurementModel<CV::StateVector>::Measurement_type meas{
     .timestamp = 1,
     .measurement_vector = v,
   };

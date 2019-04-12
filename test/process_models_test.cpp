@@ -26,9 +26,13 @@ using namespace ser94mor::sensor_fusion;
 using namespace Eigen;
 
 
-TEST_CASE("CVProcessModel::A", "[process_models]")
+TEST_CASE("CV::ProcessModel::A", "[process_models]")
 {
-  CVProcessModel cv_pm{9.0, 9.0, 0.0};
+  CV::ProcessModel cv_pm;
+  IndividualNoiseProcessesCovarianceMatrix mtx;
+  mtx << 9.0, 0.0,
+         0.0, 9.0;
+  cv_pm.SetIndividualNoiseProcessCovarianceMatrix(mtx);
 
   Matrix4d A;
   A << 1, 0, 2, 0,
@@ -42,7 +46,11 @@ TEST_CASE("CVProcessModel::A", "[process_models]")
 
 TEST_CASE("CVProcessModel::B", "[process_models]")
 {
-  CVProcessModel cv_pm{9.0, 9.0, 0.0};
+  CV::ProcessModel cv_pm;
+  IndividualNoiseProcessesCovarianceMatrix mtx;
+  mtx << 9.0, 0.0,
+         0.0, 9.0;
+  cv_pm.SetIndividualNoiseProcessCovarianceMatrix(mtx);
 
   Matrix4d B{Matrix4d::Zero()};
 
@@ -52,14 +60,24 @@ TEST_CASE("CVProcessModel::B", "[process_models]")
 
 TEST_CASE("CVProcessModel::R", "[process_models]")
 {
-  CVProcessModel cv_pm1{9.0, 9.0, 0.0};
+  CV::ProcessModel cv_pm1;
+  IndividualNoiseProcessesCovarianceMatrix mtx1;
+  mtx1 << 9.0, 0.0,
+          0.0, 9.0;
+  cv_pm1.SetIndividualNoiseProcessCovarianceMatrix(mtx1);
+
   Matrix4d R1;
   R1 << 2.25,  0.0, 4.5, 0.0,
         0.0, 2.25, 0.0, 4.5,
         4.5,  0.0, 9.0, 0.0,
         0.0,  4.5, 0.0, 9.0;
 
-  CVProcessModel cv_pm2{3.0, 5.0, 7.0};
+  CV::ProcessModel cv_pm2;
+  IndividualNoiseProcessesCovarianceMatrix mtx2;
+  mtx2 << 3.0, 7.0,
+          7.0, 5.0;
+  cv_pm2.SetIndividualNoiseProcessCovarianceMatrix(mtx2);
+
   Matrix4d R2;
   R2 << 12.0, 28.0, 12.0, 28.0,
         28.0, 20.0, 28.0, 20.0,

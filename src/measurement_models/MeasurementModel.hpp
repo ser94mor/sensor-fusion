@@ -25,8 +25,7 @@
 namespace ser94mor::sensor_fusion
 {
 
-  template<class MeasurementVector, class MeasurementCovarianceMatrix,
-           class StateVector, class Sensor, const char* name>
+  template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector, const char* name>
   class MeasurementModel
   {
   public:
@@ -58,9 +57,9 @@ namespace ser94mor::sensor_fusion
     MeasurementCovarianceMatrix measurement_covariance_matrix_;
   };
 
-  template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector, class Sensor, const char* name>
+  template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector, const char* name>
   void MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-                        StateVector, Sensor, name>::SetMeasurementCovarianceMatrix(
+                        StateVector, name>::SetMeasurementCovarianceMatrix(
       const MeasurementCovarianceMatrix& mtx)
   {
     measurement_covariance_matrix_ = mtx;

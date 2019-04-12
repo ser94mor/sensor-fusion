@@ -34,27 +34,13 @@ namespace ser94mor::sensor_fusion
   const char kProcessModelType[]{"PROCESS_MODEL"};
   const char kSensorType[]{"SENSOR"};
   const char kMeasurementModelType[]{"MEASUREMENT_MODEL"};
+  using IndividualNoiseProcessesCovarianceMatrix = Eigen::Matrix<double, 2, 2>;
+
 
   /////////////
   // sensors //
   /////////////
   const int kMaxSensors = 2;
-
-  /////////////
-  //  states //
-  /////////////
-  //const int kMaxStateDims = 5;
-  //using StateVector = Eigen::Matrix<double, Eigen::Dynamic, 1, 0, kMaxStateDims, 1>;
-  //using StateCovarianceMatrix = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, kMaxStateDims, kMaxStateDims>;
-
-
-  //////////////////
-  // measurements //
-  //////////////////
-  //const int kMaxMeasurementDims = 3;
-  //using MeasurementVector = Eigen::Matrix<double, Eigen::Dynamic, 1, 0, kMaxMeasurementDims, 1>;
-  //using CMeasurementCovarianceMatrix =
-  //    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, kMaxMeasurementDims, kMaxMeasurementDims>;
 
 
   //////////////
@@ -65,29 +51,22 @@ namespace ser94mor::sensor_fusion
   using ControlMatrix = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, kMaxControlDims, kMaxControlDims>;
 
 
-  //////////////////////
-  // CV PROCESS MODEL //
-  //////////////////////
-  extern const char kCVProcessModelName[];
-  const int kCVStateVectorDims    = 4;
-  const int kCVControlVectorDims  = 4;
-  using CVStateVector             = Eigen::Matrix<double, kCVStateVectorDims, 1>;
-  using CVStateCovarianceMatrix   = Eigen::Matrix<double, kCVStateVectorDims, kCVStateVectorDims>;
-  using CVStateTransitionMatrix   = Eigen::Matrix<double, kCVStateVectorDims, kCVStateVectorDims>;
-  using CVControlVector           = Eigen::Matrix<double, kCVControlVectorDims, 1>;
-  using CVControlTransitionMatrix = Eigen::Matrix<double, kCVStateVectorDims, kCVControlVectorDims>;
-  using CVProcessCovarianceMatrix = Eigen::Matrix<double, kCVStateVectorDims, kCVStateVectorDims>;
+  ////////////////////
+  // PROCESS MODELS //
+  ////////////////////
 
-
-  /////////////////////////////
-  // RADAR MEASUREMENT MODEL //
-  /////////////////////////////
-  extern const char kRadarSensorName[];
-  extern const char kRadarMeasurementModelName[];
-  const int kRadarMeasurementVectorDims = 3;
-  using RadarMeasurementVector = Eigen::Matrix<double, kRadarMeasurementVectorDims, 1>;
-  using RadarMeasurementCovarianceMatrix =
-      Eigen::Matrix<double, kRadarMeasurementVectorDims, kRadarMeasurementVectorDims>;
+  namespace CV
+  {
+    extern const char kProcessModelName[];
+    const int kStateVectorDims    = 4;
+    const int kControlVectorDims  = 4;
+    using StateVector             = Eigen::Matrix<double, kStateVectorDims, 1>;
+    using StateCovarianceMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
+    using StateTransitionMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
+    using ControlVector           = Eigen::Matrix<double, kControlVectorDims, 1>;
+    using ControlTransitionMatrix = Eigen::Matrix<double, kStateVectorDims, kControlVectorDims>;
+    using ProcessCovarianceMatrix = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
+  }
 
 
   ////////////////////////

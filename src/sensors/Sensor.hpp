@@ -25,7 +25,12 @@
 
 
 #define SENSOR_DEFINITION() \
-  class Sensor : public ser94mor::sensor_fusion::Sensor<Measurement, kSensorName> { };
+  class Sensor : public ser94mor::sensor_fusion::Sensor<Measurement, kSensorName> \
+  { \
+  public: \
+    template <class StateVector> \
+    using MeasurementModel_type = MeasurementModel<StateVector>; \
+  };
 
 
 namespace  ser94mor::sensor_fusion
