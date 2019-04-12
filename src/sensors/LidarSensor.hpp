@@ -19,25 +19,15 @@
 #define SENSOR_FUSION_LIDARSENSOR_HPP
 
 
+#include "definitions.hpp"
+#include "measurements.hpp"
 #include "Sensor.hpp"
-#include "SensorFactory.hpp"
 
 
-namespace ser94mor::sensor_fusion
+namespace ser94mor::sensor_fusion::Lidar
 {
 
-  class LidarSensor : public Sensor<kLidarMeasurementVectorDims, kLidarSensorName, LidarMeasurementCovarianceMatrix>
-  {
-    template <class>
-    friend class SensorFactory;
-  public:
-    static LidarSensor FromJson(const char* json_str);
-
-    static LidarSensor FromParams(LidarMeasurementCovarianceMatrix& mtx)
-    {
-      return SensorFactory<LidarSensor>::FromParams(mtx);
-    }
-  };
+  SENSOR_DEFINITION();
 
 }
 

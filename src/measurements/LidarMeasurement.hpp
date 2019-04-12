@@ -15,10 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_PRIMITIVES_HPP
-#define SENSOR_FUSION_PRIMITIVES_HPP
+#ifndef SENSOR_FUSION_LIDARMEASUREMENT_HPP
+#define SENSOR_FUSION_LIDARMEASUREMENT_HPP
 
-#include "../src/primitives/Belief.hpp"
-#include "../src/measurements/Measurement.hpp"
 
-#endif //SENSOR_FUSION_PRIMITIVES_HPP
+#include "definitions.hpp"
+#include "Measurement.hpp"
+
+
+namespace ser94mor::sensor_fusion::Lidar
+{
+  MEASUREMENT_DEFINITION();
+}
+
+#endif //SENSOR_FUSION_LIDARMEASUREMENT_HPP

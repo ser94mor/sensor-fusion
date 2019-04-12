@@ -1,0 +1,10 @@
+{
+  "type": "MEASUREMENT_MODEL",
+  "name": "RADAR",
+  "cov_rho_rho": 0.09,
+  "cov_phi_phi": 0.0009,
+  "cov_rho_dot_rho_dot": 0.09,
+  "cov_rho_phi": 0.0,
+  "cov_rho_rho_dot": 0.0,
+  "cov_phi_rho_dot": 0.0
+}

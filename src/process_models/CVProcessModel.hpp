@@ -38,6 +38,7 @@ namespace ser94mor::sensor_fusion
     CVControlTransitionMatrix B(std::time_t dt) const;
     CVProcessCovarianceMatrix R(std::time_t dt) const;
 
+  private:
     CVStateTransitionMatrix state_transition_matrix_prototype_;
     Eigen::Matrix<double, 2, 2> individual_noise_processes_covariance_matrix_;
   };

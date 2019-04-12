@@ -18,9 +18,9 @@
 #include "LidarMeasurementModel.hpp"
 
 
-namespace ser94mor::sensor_fusion
+namespace ser94mor::sensor_fusion::Lidar
 {
 
-  const char kLidarMeasurementModelName[]{"LIDAR"};
+  const char kMeasurementModelName[]{"LIDAR"};
 
 }

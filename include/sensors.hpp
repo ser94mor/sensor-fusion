@@ -19,7 +19,6 @@
 #define SENSOR_FUSION_SENSORS_HPP
 
 
-#include "../src/sensors/RadarSensor.hpp"
 #include "../src/sensors/LidarSensor.hpp"
 
 

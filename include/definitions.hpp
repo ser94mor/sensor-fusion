@@ -90,15 +90,26 @@ namespace ser94mor::sensor_fusion
       Eigen::Matrix<double, kRadarMeasurementVectorDims, kRadarMeasurementVectorDims>;
 
 
-  /////////////////////////////
-  // LIDAR MEASUREMENT MODEL //
-  /////////////////////////////
-  extern const char kLidarSensorName[];
-  extern const char kLidarMeasurementModelName[];
-  const int kLidarMeasurementVectorDims = 2;
-  using LidarMeasurementVector = Eigen::Matrix<double, kLidarMeasurementVectorDims, 1>;
-  using LidarMeasurementCovarianceMatrix =
-      Eigen::Matrix<double, kLidarMeasurementVectorDims, kLidarMeasurementVectorDims>;
+  ////////////////////////
+  // MEASUREMENT MODELS //
+  ////////////////////////
+
+#define MEASUREMENT_MODEL_DEFINITIONS(measurement_vector_dims) \
+  extern const char kSensorName[]; \
+  const int kMeasurementVectorDims = 2; \
+  extern const char kMeasurementModelName[]; \
+  using MeasurementVector = Eigen::Matrix<double, kMeasurementVectorDims, 1>; \
+  using MeasurementCovarianceMatrix = Eigen::Matrix<double, kMeasurementVectorDims, kMeasurementVectorDims>;
+
+  namespace Lidar
+  {
+    MEASUREMENT_MODEL_DEFINITIONS(2);
+  }
+
+  namespace Radar
+  {
+    MEASUREMENT_MODEL_DEFINITIONS(3);
+  }
 
 }
 

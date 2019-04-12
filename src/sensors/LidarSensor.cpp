@@ -17,17 +17,11 @@
 
 
 #include "LidarSensor.hpp"
-#include "SensorFactory.hpp"
 
 
-namespace ser94mor::sensor_fusion
+namespace ser94mor::sensor_fusion::Lidar
 {
 
-  const char kLidarSensorName[]{"LIDAR"};
-
-  LidarSensor LidarSensor::FromJson(const char* json_str)
-  {
-    return SensorFactory<LidarSensor>::FromJson(json_str);
-  }
+  const char kSensorName[]{"LIDAR"};
 
 }

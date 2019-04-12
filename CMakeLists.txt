@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
 project(sensor_fusion)
 
-set(CMAKE_CXX_STANDARD 17)
+add_definitions(-std=c++17)
+
+set(CXX_FLAGS "-Wall")
+set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
 
 include_directories(third_parties/eigen-3.3.7/)
 include_directories(third_parties/nlohmann-3.6.1)
@@ -14,6 +17,7 @@ file(GLOB measurement_models_SRC src/measurement_models/*)
 file(GLOB filters_SRC src/filters/*)
 file(GLOB primitives_SRC src/primitives/*)
 file(GLOB fusion_SRC src/fusion/*)
+file(GLOB measurements_SRC src/measurements/*)
 
 add_executable(sensor_fusion
         ${sensors_SRC}
@@ -29,7 +33,7 @@ add_library(Catch INTERFACE)
 add_executable( sensor_fusion_test
         test/sensors_test.cpp ${sensors_SRC}
         test/process_models_test.cpp src/process_models/CVProcessModel.cpp
-        test/measurement_models_test.cpp src/measurement_models/LidarMeasurementModel.cpp
+        test/measurement_models_test.cpp ${measurements_SRC}
         test/filters_test.cpp src/filters/KalmanFilter.hpp
         test/test.cpp
 )

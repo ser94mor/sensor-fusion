@@ -20,7 +20,6 @@
 
 
 #include "../src/measurement_models/LidarMeasurementModel.hpp"
-//#include "../src/measurement_models/RadarMeasurementModel.hpp"
 
 
 #endif //SENSOR_FUSION_MEASUREMENT_MODELS_HPP

@@ -15,18 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 #include "RadarSensor.hpp"
-#include "SensorFactory.hpp"
 
 
-namespace ser94mor::sensor_fusion
+namespace ser94mor::sensor_fusion::Radar
 {
 
-  const char kRadarSensorName[]{"RADAR"};
-
-  RadarSensor RadarSensor::FromJson(const char* json_str)
-  {
-    return SensorFactory<RadarSensor>::FromJson(json_str);
-  }
+  const char kSensorName[]{"RADAR"};
 
 }

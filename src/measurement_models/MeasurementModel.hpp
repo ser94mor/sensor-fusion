@@ -52,14 +52,19 @@ namespace ser94mor::sensor_fusion
       return StateVector::SizeAtCompileTime;
     }
 
-    explicit MeasurementModel(const Sensor& sensor) : sensor_{sensor}
-    {
-
-    }
+    void SetMeasurementCovarianceMatrix(const MeasurementCovarianceMatrix& mtx);
 
   protected:
-    const Sensor& sensor_;
+    MeasurementCovarianceMatrix measurement_covariance_matrix_;
   };
+
+  template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector, class Sensor, const char* name>
+  void MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
+                        StateVector, Sensor, name>::SetMeasurementCovarianceMatrix(
+      const MeasurementCovarianceMatrix& mtx)
+  {
+    measurement_covariance_matrix_ = mtx;
+  }
 
 }
 

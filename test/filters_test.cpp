@@ -31,22 +31,20 @@ TEST_CASE("KalmanFilter::Predict", "[filters]")
 {
   CVProcessModel cv_pm{9.0, 9.0, 0.0};
 
-  Eigen::Matrix<double, LidarSensor::Dims(), LidarSensor::Dims()> lidar_mtx;
+  Lidar::MeasurementCovarianceMatrix lidar_mtx;
   lidar_mtx << 0.0225,    0.0,
                   0.0, 0.0225;
-  LidarSensor lidar;
-  lidar.SetMeasurementCovarianceMatrix(lidar_mtx);
-  LidarMeasurementModel<CVStateVector> l_mm{lidar};
 
-  KalmanFilter<CVProcessModel, LidarMeasurementModel<CVStateVector>> kf{cv_pm, l_mm};
+  Lidar::MeasurementModel<CVStateVector> l_mm;
+  l_mm.SetMeasurementCovarianceMatrix(lidar_mtx);
+
+  KalmanFilter<CVProcessModel, Lidar::MeasurementModel<CVStateVector>> kf{cv_pm, l_mm};
 
   CVProcessModel::Belief_type bel;
-  LidarMeasurementVector v;
-  LidarMeasurementCovarianceMatrix m;
-  LidarMeasurementModel<CVStateVector>::Measurement_type meas{
+  Lidar::MeasurementVector v;
+  Lidar::MeasurementModel<CVStateVector>::Measurement_type meas{
     .timestamp = 1,
     .measurement_vector = v,
-    .measurement_covariance_matrix = m,
   };
   auto foo = kf.Predict(bel, 1);
 

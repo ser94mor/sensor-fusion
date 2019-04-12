@@ -55,7 +55,23 @@ namespace ser94mor::sensor_fusion
     {
       return control_dims;
     }
+
+    template <typename Derived>
+    void SetIndividualNoiseProcessCovarianceMatrix(const Eigen::MatrixBase<Derived>& mtx);
+
+  protected:
+    Eigen::Matrix<double, 2, 2> individual_noise_processes_covariance_matrix_;
   };
+
+  template<int state_dims, int control_dims, const char* name, class StateVector, class StateCovarianceMatrix, class ControlVector>
+  template<typename Derived>
+  void
+  ProcessModel<state_dims, control_dims, name,
+               StateVector, StateCovarianceMatrix, ControlVector>::SetIndividualNoiseProcessCovarianceMatrix(
+      const Eigen::MatrixBase<Derived>& mtx)
+  {
+    individual_noise_processes_covariance_matrix_ = mtx;
+  }
 
 }
 

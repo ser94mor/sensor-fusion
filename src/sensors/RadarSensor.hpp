@@ -15,33 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_RADARSENSOR_HPP
+#ifndef SENSOR_FUSION_RADAR_HPP
 #define SENSOR_FUSION_RADARSENSOR_HPP
 
 
 #include "definitions.hpp"
+#include "measurements.hpp"
 #include "Sensor.hpp"
-#include "SensorFactory.hpp"
-
-#include <Eigen/Dense>
 
 
-namespace ser94mor::sensor_fusion
+namespace ser94mor::sensor_fusion::Radar
 {
-
-  class RadarSensor : public Sensor<kRadarMeasurementVectorDims, kRadarSensorName, RadarMeasurementCovarianceMatrix>
-  {
-    template <class>
-    friend class SensorFactory;
-  public:
-    static RadarSensor FromJson(const char* json_str);
-
-    static RadarSensor FromParams(const RadarMeasurementCovarianceMatrix& mtx)
-    {
-      return SensorFactory<RadarSensor>::FromParams(mtx);
-    }
-  };
-
+  SENSOR_DEFINITION();
 }
 
-#endif //SENSOR_FUSION_RADARSENSOR_HPP
+
+#endif //SENSOR_FUSION_RADAR_HPP

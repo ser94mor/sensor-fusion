@@ -25,36 +25,27 @@
 using namespace ser94mor::sensor_fusion;
 
 
-TEST_CASE("LidarMeasurementModel::C", "[measurement_model]")
+TEST_CASE("Lidar::MeasurementModel::C", "[measurement_model]")
 {
-  Eigen::Matrix<double, LidarSensor::Dims(), LidarSensor::Dims()> lidar_mtx;
-  lidar_mtx << 0.0225,    0.0,
-                  0.0, 0.0225;
+  Lidar::MeasurementModel<CVStateVector> lidar_mm;
 
-  LidarSensor lidar;
-  lidar.SetMeasurementCovarianceMatrix(lidar_mtx);
-  LidarMeasurementModel<CVStateVector> lidar_mm{lidar};
-
-  Eigen::Matrix<double, LidarMeasurementModel<CVStateVector>::MeasurementDims(),
-                        LidarMeasurementModel<CVStateVector>::StateDims()>
-  meas_mtx;
+  Lidar::MeasurementModel<CVStateVector>::MeasurementMatrix meas_mtx;
   meas_mtx << 1.0, 0.0, 0.0, 0.0,
               0.0, 1.0, 0.0, 0.0;
 
-  auto Ct = lidar_mm.C(555);
+  const auto& Ct = lidar_mm.C(555);
   REQUIRE(Ct.isApprox(meas_mtx));
 }
 
 
-TEST_CASE("LidarMeasurementModel::Q", "[measurement_model]")
+TEST_CASE("Lidar::MeasurementModel::Q", "[measurement_model]")
 {
-  Eigen::Matrix<double, LidarSensor::Dims(), LidarSensor::Dims()> lidar_mtx;
+  Lidar::MeasurementCovarianceMatrix lidar_mtx;
   lidar_mtx << 0.0225,    0.0,
                   0.0, 0.0225;
 
-  LidarSensor lidar;
-  lidar.SetMeasurementCovarianceMatrix(lidar_mtx);
-  LidarMeasurementModel<CVStateVector> lidar_mm{lidar};
+  Lidar::MeasurementModel<CVStateVector> lidar_mm;
+  lidar_mm.SetMeasurementCovarianceMatrix(lidar_mtx);
 
   REQUIRE(lidar_mm.Q(222).isApprox(lidar_mtx));
 }

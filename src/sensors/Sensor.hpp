@@ -20,25 +20,21 @@
 
 
 #include "definitions.hpp"
-#include "SensorFactory.hpp"
-//#include "primitives.hpp"
 
-#include <ctime>
+#include <optional>
+
+
+#define SENSOR_DEFINITION() \
+  class Sensor : public ser94mor::sensor_fusion::Sensor<Measurement, kSensorName> { };
 
 
 namespace  ser94mor::sensor_fusion
 {
 
-  template<int measurement_dims, const char* name, class CMeasurementCovarianceMatrix>
+  template<class Measurement, const char* name>
   class Sensor
   {
   public:
-
-    const CMeasurementCovarianceMatrix& MeasurementCovarianceMatrix() const
-    {
-      return measurement_covariance_matrix_;
-    }
-
     constexpr static const char* Type()
     {
       return kSensorType;
@@ -49,22 +45,24 @@ namespace  ser94mor::sensor_fusion
       return name;
     }
 
-    constexpr static int Dims()
-    {
-      return measurement_dims;
-    }
+    std::optional<Measurement> GetMeasurementIfExists() const;
 
-    void SetMeasurementCovarianceMatrix(const CMeasurementCovarianceMatrix& mtx);
+    void SetMeasurement(Measurement measurement);
+
   private:
-
-    CMeasurementCovarianceMatrix measurement_covariance_matrix_;
+    std::optional<Measurement> measurement_;
   };
 
-  template<int measurement_dims, const char* name, class CMeasurementCovarianceMatrix>
-  void Sensor<measurement_dims, name, CMeasurementCovarianceMatrix>::SetMeasurementCovarianceMatrix(
-      const CMeasurementCovarianceMatrix& mtx)
+  template<class Measurement, const char* name>
+  std::optional<Measurement> Sensor<Measurement, name>::GetMeasurementIfExists() const
   {
-    measurement_covariance_matrix_ = mtx;
+    return std::nullopt;
+  }
+
+  template<class Measurement, const char* name>
+  void Sensor<Measurement, name>::SetMeasurement(const Measurement measurement)
+  {
+    this->measurement_ = std::make_optional(measurement);
   }
 
 }

@@ -15,12 +15,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "RadarMeasurementModel.hpp"
+#ifndef SENSOR_FUSION_MEASUREMENT_HPP
+#define SENSOR_FUSION_MEASUREMENT_HPP
+
+
+#include <ctime>
+
+
+#define MEASUREMENT_DEFINITION() \
+  struct Measurement : public ser94mor::sensor_fusion::Measurement<MeasurementVector, MeasurementCovarianceMatrix> { };
 
 
 namespace ser94mor::sensor_fusion
 {
 
-  const char kRadarMeasurementModelName[]{"RADAR"};
+  template <class MeasurementVector, class MeasurementCovarianceMatrix>
+  struct Measurement
+  {
+    std::time_t t() const
+    {
+      return timestamp;
+    }
+
+    const MeasurementVector& z() const
+    {
+      return measurement_vector;
+    }
+
+    const std::time_t timestamp;
+    const MeasurementVector measurement_vector;
+  };
 
 }
+
+
+#endif //SENSOR_FUSION_MEASUREMENT_HPP
