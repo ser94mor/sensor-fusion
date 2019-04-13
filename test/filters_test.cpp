@@ -42,15 +42,22 @@ TEST_CASE("KalmanFilter::Predict", "[filters]")
   Lidar::MeasurementModel<CV::StateVector> l_mm;
   l_mm.SetMeasurementCovarianceMatrix(lidar_mtx);
 
-  KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::StateVector>> kf{cv_pm, l_mm};
+  using KF = KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel::StateVector_type>>;
+
+  //ExtendedKalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::StateVector>> ekf;
+  //ekf.SetProcessModel(&cv_pm);
+  //ekf.SetMeasurementModels(&l_mm);
+
 
   CV::ProcessModel::Belief_type bel;
   Lidar::MeasurementVector v;
   Lidar::MeasurementModel<CV::StateVector>::Measurement_type meas{
     .timestamp = 1,
     .measurement_vector = v,
+    .source_name = "LIDAR",
   };
-  auto foo = kf.Predict(bel, 1);
+  auto foo = KF::Predict(bel, 1, cv_pm);
+  auto bar = KF::Update(bel, meas, 55, l_mm);
 
   std::cout << foo.Sigma() << std::endl;
 }

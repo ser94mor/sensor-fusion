@@ -25,11 +25,13 @@
 namespace ser94mor::sensor_fusion
 {
 
-  template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector, const char* name>
+  template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector,
+           const char* name, bool is_linear>
   class MeasurementModel
   {
   public:
     using Measurement_type = Measurement<MeasurementVector, MeasurementCovarianceMatrix>;
+    using MeasurementCovarianceMatrix_type = MeasurementCovarianceMatrix;
 
     constexpr static const char* Type()
     {
@@ -51,15 +53,21 @@ namespace ser94mor::sensor_fusion
       return StateVector::SizeAtCompileTime;
     }
 
+    constexpr static bool IsLinear()
+    {
+      return is_linear;
+    }
+
     void SetMeasurementCovarianceMatrix(const MeasurementCovarianceMatrix& mtx);
 
   protected:
     MeasurementCovarianceMatrix measurement_covariance_matrix_;
   };
 
-  template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector, const char* name>
+  template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector,
+           const char* name, bool is_linear>
   void MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-                        StateVector, name>::SetMeasurementCovarianceMatrix(
+                        StateVector, name, is_linear>::SetMeasurementCovarianceMatrix(
       const MeasurementCovarianceMatrix& mtx)
   {
     measurement_covariance_matrix_ = mtx;

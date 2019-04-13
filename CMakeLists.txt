@@ -32,9 +32,10 @@ add_executable(sensor_fusion
 add_library(Catch INTERFACE)
 add_executable( sensor_fusion_test
         test/sensors_test.cpp ${sensors_SRC}
-        test/process_models_test.cpp src/process_models/CVProcessModel.cpp
-        test/measurement_models_test.cpp ${measurements_SRC}
-        test/filters_test.cpp src/filters/KalmanFilter.hpp
+        test/process_models_test.cpp ${process_models_SRC}
+        test/measurement_models_test.cpp ${measurement_models_SRC}
+        test/filters_test.cpp ${filters_SRC}
+        test/fusion_test.cpp ${fusion_SRC}
         test/test.cpp
 )
 target_link_libraries(sensor_fusion_test Catch)

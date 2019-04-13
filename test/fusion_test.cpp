@@ -15,15 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_UNSCENTEDKALMANFILTER_H
-#define SENSOR_FUSION_UNSCENTEDKALMANFILTER_H
+
+#include "process_models.hpp"
+#include "measurement_models.hpp"
+#include "sensors.hpp"
+#include "filters.hpp"
+#include "../src/fusion/Fusion.hpp"
+
+#include <catch.hpp>
+//#include "fusion.hpp"
+
+using namespace ser94mor::sensor_fusion;
 
 
-#include "KalmanFilter.hpp"
+TEST_CASE("Fusion::Test", "[fusion]")
+{
+  IndividualNoiseProcessesCovarianceMatrix p_mtx;
+  p_mtx << 9.0, 0.0,
+           0.0, 9.0;
 
-class UnscentedKalmanFilter : public KalmanFilter {
+  Lidar::MeasurementCovarianceMatrix m_mtx;
+  m_mtx << 0.0225,    0.0,
+              0.0, 0.0225;
+  auto tup{std::make_tuple(m_mtx)};
 
-};
-
-
-#endif //SENSOR_FUSION_UNSCENTEDKALMANFILTER_H
+  Fusion<KalmanFilter, CV::ProcessModel, Lidar::MeasurementModel> fusion{p_mtx, m_mtx};
+  fusion.Start();
+}

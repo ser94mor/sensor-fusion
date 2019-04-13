@@ -26,6 +26,9 @@
 #include <iostream>
 #include <Eigen/Dense>
 
+#include "fusion.hpp"
+#include "../fusion/Fusion.hpp"
+
 
 using json = nlohmann::json;
 

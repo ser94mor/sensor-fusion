@@ -28,12 +28,13 @@
 namespace ser94mor::sensor_fusion
 {
 
-  template <class StateVector, class StateCovarianceMatrix, class ControlVector, const char* name>
+  template <class StateVector, class StateCovarianceMatrix, class ControlVector, const char* name, bool is_linear>
   class ProcessModel
   {
   public:
 
     using Belief_type = Belief<StateVector, StateCovarianceMatrix>;
+    using StateVector_type = StateVector;
 
     constexpr static const char* Type()
     {
@@ -55,6 +56,11 @@ namespace ser94mor::sensor_fusion
       return ControlVector::SizeAtCompileTime;
     }
 
+    constexpr static bool IsLinear()
+    {
+      return is_linear;
+    }
+
     template <typename Derived>
     void SetIndividualNoiseProcessCovarianceMatrix(const Eigen::MatrixBase<Derived>& mtx);
 
@@ -62,10 +68,10 @@ namespace ser94mor::sensor_fusion
     IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix_;
   };
 
-  template<class StateVector, class StateCovarianceMatrix, class ControlVector, const char* name>
+  template<class StateVector, class StateCovarianceMatrix, class ControlVector, const char* name, bool is_linear>
   template<typename Derived>
-  void ProcessModel<StateVector, StateCovarianceMatrix, ControlVector, name>::SetIndividualNoiseProcessCovarianceMatrix(
-      const Eigen::MatrixBase<Derived>& mtx)
+  void ProcessModel<StateVector, StateCovarianceMatrix, ControlVector, name, is_linear>::
+      SetIndividualNoiseProcessCovarianceMatrix(const Eigen::MatrixBase<Derived>& mtx)
   {
     individual_noise_processes_covariance_matrix_ = mtx;
   }

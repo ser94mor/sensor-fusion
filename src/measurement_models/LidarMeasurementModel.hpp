@@ -20,6 +20,7 @@
 
 
 #include "definitions.hpp"
+#include "sensors.hpp"
 #include "MeasurementModel.hpp"
 
 #include <ctime>
@@ -31,11 +32,13 @@ namespace ser94mor::sensor_fusion::Lidar
   template <class StateVector>
   class MeasurementModel :
       public ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-                                                       StateVector, Lidar::kMeasurementModelName>
+                                                       StateVector, kMeasurementModelName, kIsLinear>
   {
   public:
     using MeasurementMatrix =
         Eigen::Matrix<double, MeasurementModel::MeasurementDims(), MeasurementModel::StateDims()>;
+    using Sensor_type = Sensor;
+    using MeasurementCovarianceMatrix_type = MeasurementCovarianceMatrix;
 
     MeasurementModel() : measurement_matrix_{MeasurementMatrix::Identity()}
     {

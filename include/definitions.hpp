@@ -58,8 +58,23 @@ namespace ser94mor::sensor_fusion
   namespace CV
   {
     extern const char kProcessModelName[];
-    const int kStateVectorDims    = 4;
-    const int kControlVectorDims  = 4;
+    const int kStateVectorDims{4};
+    const int kControlVectorDims{4};
+    const bool kIsLinear{true};
+    using StateVector             = Eigen::Matrix<double, kStateVectorDims, 1>;
+    using StateCovarianceMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
+    using StateTransitionMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
+    using ControlVector           = Eigen::Matrix<double, kControlVectorDims, 1>;
+    using ControlTransitionMatrix = Eigen::Matrix<double, kStateVectorDims, kControlVectorDims>;
+    using ProcessCovarianceMatrix = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
+  }
+
+  namespace CTRV
+  {
+    extern const char kProcessModelName[];
+    const int kStateVectorDims{5};
+    const int kControlVectorDims{5};
+    const bool kIsLinear{false};
     using StateVector             = Eigen::Matrix<double, kStateVectorDims, 1>;
     using StateCovarianceMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
     using StateTransitionMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
@@ -73,21 +88,22 @@ namespace ser94mor::sensor_fusion
   // MEASUREMENT MODELS //
   ////////////////////////
 
-#define MEASUREMENT_MODEL_DEFINITIONS(measurement_vector_dims) \
+#define MEASUREMENT_MODEL_DEFINITIONS(measurement_vector_dims, is_linear) \
   extern const char kSensorName[]; \
   const int kMeasurementVectorDims = 2; \
+  const bool kIsLinear{is_linear}; \
   extern const char kMeasurementModelName[]; \
   using MeasurementVector = Eigen::Matrix<double, kMeasurementVectorDims, 1>; \
   using MeasurementCovarianceMatrix = Eigen::Matrix<double, kMeasurementVectorDims, kMeasurementVectorDims>;
 
   namespace Lidar
   {
-    MEASUREMENT_MODEL_DEFINITIONS(2);
+    MEASUREMENT_MODEL_DEFINITIONS(2, true);
   }
 
   namespace Radar
   {
-    MEASUREMENT_MODEL_DEFINITIONS(3);
+    MEASUREMENT_MODEL_DEFINITIONS(3, false);
   }
 
 }

@@ -29,7 +29,8 @@ namespace ser94mor::sensor_fusion::CV
 {
 
   class ProcessModel :
-      public ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector, kProcessModelName>
+      public ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector,
+                                                   kProcessModelName, kIsLinear>
   {
   public:
     ProcessModel();
