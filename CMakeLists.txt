@@ -36,8 +36,8 @@ add_executable( sensor_fusion_test
         test/measurement_models_test.cpp ${measurement_models_SRC}
         test/filters_test.cpp ${filters_SRC}
         test/fusion_test.cpp ${fusion_SRC}
-        test/test.cpp
-)
+        test/beliefs_test.cpp
+        test/test.cpp)
 target_link_libraries(sensor_fusion_test Catch)
 
 enable_testing()

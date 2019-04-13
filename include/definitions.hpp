@@ -18,7 +18,9 @@
 #ifndef SENSOR_FUSION_DEFINITIONS_HPP
 #define SENSOR_FUSION_DEFINITIONS_HPP
 
+
 #include <Eigen/Dense>
+
 
 namespace ser94mor::sensor_fusion
 {

@@ -45,24 +45,24 @@ namespace  ser94mor::sensor_fusion
       return name;
     }
 
-    std::optional<Measurement> GetMeasurementIfExists() const;
+    Measurement* GetMeasurementIfExists() const;
 
     void SetMeasurement(Measurement measurement);
 
   private:
-    std::optional<Measurement> measurement_;
+    Measurement measurement_;
   };
 
   template<class Measurement, const char* name>
-  std::optional<Measurement> Sensor<Measurement, name>::GetMeasurementIfExists() const
+  Measurement* Sensor<Measurement, name>::GetMeasurementIfExists() const
   {
-    return std::nullopt;
+    return nullptr;
   }
 
   template<class Measurement, const char* name>
   void Sensor<Measurement, name>::SetMeasurement(const Measurement measurement)
   {
-    this->measurement_ = std::make_optional(measurement);
+    this->measurement_ = measurement;
   }
 
 }

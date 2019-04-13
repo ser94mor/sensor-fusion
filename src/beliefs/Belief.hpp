@@ -49,8 +49,10 @@ namespace ser94mor::sensor_fusion
       return state_covariance_matrix;
     }
 
-    const StateVector state_vector;
-    const StateCovarianceMatrix state_covariance_matrix;
+    Belief& operator=(const Belief& belief)  = default;
+
+    StateVector state_vector;
+    StateCovarianceMatrix state_covariance_matrix;
   };
 
 }

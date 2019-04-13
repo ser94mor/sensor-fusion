@@ -37,8 +37,12 @@ TEST_CASE("Fusion::Test", "[fusion]")
   Lidar::MeasurementCovarianceMatrix m_mtx;
   m_mtx << 0.0225,    0.0,
               0.0, 0.0225;
-  auto tup{std::make_tuple(m_mtx)};
 
-  Fusion<KalmanFilter, CV::ProcessModel, Lidar::MeasurementModel> fusion{p_mtx, m_mtx};
-  fusion.Start();
+  Lidar::MeasurementCovarianceMatrix lidar_mtx2;
+  lidar_mtx2 << 0.1, 0.0,
+                0.0, 0.1;
+
+  Fusion<KalmanFilter, CV::ProcessModel, Lidar::MeasurementModel, Lidar::MeasurementModel> fusion{p_mtx, m_mtx, lidar_mtx2};
+  //fusion.Start();
+  //Lidar::Sensor sensor{fusion.GetSensor<Lidar::Sensor>()};
 }

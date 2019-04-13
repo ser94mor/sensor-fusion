@@ -47,7 +47,7 @@ namespace ser94mor::sensor_fusion
       return source_name;
     }
 
-    const std::time_t timestamp;
+    std::time_t timestamp;
     const MeasurementVector measurement_vector;
     const char* source_name;
   };

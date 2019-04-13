@@ -49,7 +49,7 @@ TEST_CASE("KalmanFilter::Predict", "[filters]")
   //ekf.SetMeasurementModels(&l_mm);
 
 
-  CV::ProcessModel::Belief_type bel;
+  CV::ProcessModel::Belief_type bel{{}, {}};
   Lidar::MeasurementVector v;
   Lidar::MeasurementModel<CV::StateVector>::Measurement_type meas{
     .timestamp = 1,

@@ -19,6 +19,7 @@
 #define SENSOR_FUSION_FUSION_HPP
 
 #include "definitions.hpp"
+#include "measurements.hpp"
 
 #include <cstddef>
 #include <iostream>
@@ -39,6 +40,8 @@ namespace ser94mor::sensor_fusion
   public:
     /**
      * Constructor.
+     * @param individual_noise_processes_covariance_matrix
+     * @param measurement_covariance_matrices
      */
     Fusion(IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix,
            typename MeasurementModel<typename ProcessModel::StateVector_type>::MeasurementCovarianceMatrix_type...
@@ -49,14 +52,47 @@ namespace ser94mor::sensor_fusion
     */
     void Start();
 
-  private:
+    template <class Tuple, class F>
+    constexpr F for_each(Tuple&& t, F&& f)
+    {
+      return for_each_impl(std::forward<Tuple>(t), std::forward<F>(f),
+                           std::make_index_sequence<std::tuple_size<std::remove_reference_t<Tuple>>::value>{});
+    }
 
+    template <class Tuple, class F, std::size_t... I>
+    constexpr F for_each_impl(Tuple&& t, F&& f, std::index_sequence<I...>)
+    {
+      return (void)std::initializer_list<int>{(std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))),0)...}, f;
+    }
+
+    template <class Sensor_t>
+    constexpr Sensor_t* GetSensor()
+    {
+      auto pred = [](auto& name) { return std::string(Sensor_t::Name()) == name; };
+      size_t index = std::tuple_size<std::remove_reference_t<decltype(measurement_model_sensor_map_)>>::value;
+      size_t currentIndex = 0;
+      bool found = false;
+      for_each(measurement_model_sensor_map_, [&](auto& value)
+      {
+        if (!found && pred(value.second.Name()))
+        {
+          index = currentIndex;
+          found = true;
+        }
+        ++currentIndex;
+      });
+      std::cout << index << std::endl;
+      return std::get<index>(measurement_model_sensor_map_).second;
+    }
+
+
+  private:
     template <class TupleOfMeasurementConvarianceMatrices, std::size_t... Is>
     void InitializeMeasurementCovarianceMatrices(
         const TupleOfMeasurementConvarianceMatrices& tup, std::index_sequence<Is...>);
 
     template <class MeasurementModel_Sensor_Pair>
-    void ProcessMeasurement(const MeasurementModel_Sensor_Pair& mm_s_pair);
+    void ProcessMeasurement(MeasurementModel_Sensor_Pair& mm_s_pair);
 
     // flag indicating whether the first measurement processed
     bool initialized_;
@@ -66,9 +102,6 @@ namespace ser94mor::sensor_fusion
 
     // timestamp of the previously processed measurement
     uint64_t previous_measurement_timestamp_;
-
-
-
 
     Belief belief_;
     ProcessModel process_model_;
@@ -96,11 +129,14 @@ namespace ser94mor::sensor_fusion
   template <template<class, class> class Filter, class ProcessModel, template<class> class... MeasurementModel>
   template <class MeasurementModel_Sensor_Pair>
   void Fusion<Filter, ProcessModel, MeasurementModel...>::
-      ProcessMeasurement(const MeasurementModel_Sensor_Pair& mm_s_pair)
+      ProcessMeasurement(MeasurementModel_Sensor_Pair& mm_s_pair)
   {
     std::cout << mm_s_pair.first.Type() << ' ' << mm_s_pair.first.Name() << '\n'
               << mm_s_pair.second.Type() << ' ' << mm_s_pair.second.Name()<< ::std::endl;
-    //if constexpr (std::string_view(.Name())
+    auto belief_prior = Filter<ProcessModel, decltype(mm_s_pair.first)>::Predict(belief_, 1, process_model_);
+
+    belief_ = Filter<ProcessModel, decltype(mm_s_pair.first)>::
+                Update(belief_prior, Lidar::Measurement{}, 1, mm_s_pair.first);
   }
 
   template <template<class, class> class Filter, class ProcessModel, template<class> class... MeasurementModel>
@@ -108,7 +144,7 @@ namespace ser94mor::sensor_fusion
       IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix,
       typename MeasurementModel<typename ProcessModel::StateVector_type>::MeasurementCovarianceMatrix_type...
         measurement_covariance_matrices) :
-    initialized_{false}, processed_measurements_counter_{0}, previous_measurement_timestamp_{0}
+    initialized_{false}, processed_measurements_counter_{0}, previous_measurement_timestamp_{0}, belief_{{}, {}}
   {
 
     process_model_.SetIndividualNoiseProcessCovarianceMatrix(individual_noise_processes_covariance_matrix);
@@ -116,7 +152,6 @@ namespace ser94mor::sensor_fusion
     InitializeMeasurementCovarianceMatrices(
         std::forward_as_tuple(measurement_covariance_matrices...),
         std::index_sequence_for<MeasurementModel<typename ProcessModel::StateVector_type>...>{});
-
   }
 
   template <template<class, class> class Filter, class ProcessModel, template<class> class... MeasurementModel>

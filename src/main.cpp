@@ -16,7 +16,12 @@
  */
 
 #include "fusion/Fusion.hpp"
+#include "filters.hpp"
+#include "process_models.hpp"
 
+#include <Eigen/Dense>
+#include <json.hpp>
+#include <uWS/uWS.h>
 #include <syslog.h>
 #include <iostream>
 #include <sstream>
@@ -26,105 +31,258 @@
 #include <boost/program_options.hpp>
 
 
-using namespace boost::program_options;
 
-const char *filter_to_str(filter_t filter) {
-    switch (filter) {
-        case EKF: return "EKF";
-        case UKF: return "UKF";
-        default: throw std::invalid_argument("filter");
-    }
+using namespace ser94mor::sensor_fusion;
+
+using KF_CV_LIDAR_Fusion = Fusion<KalmanFilter, CV::ProcessModel, Lidar::MeasurementModel>;
+
+using namespace std;
+using namespace Eigen;
+
+// for convenience
+using json = nlohmann::json;
+
+class MeasurementPackage {
+public:
+  long long timestamp_;
+
+  enum SensorType{
+    LASER,
+    RADAR
+  } sensor_type_;
+
+  Eigen::VectorXd raw_measurements_;
+};
+
+VectorXd CalculateRMSE(const vector<VectorXd> &estimations,
+                              const vector<VectorXd> &ground_truth) {
+  VectorXd rmse(4);
+  rmse << 0,0,0,0;
+
+  // check the validity of the following inputs:
+  //  * the estimation vector size should not be zero
+  //  * the estimation vector size should equal ground truth vector size
+  if(estimations.size() != ground_truth.size()
+     || estimations.size() == 0){
+    cout << "Invalid estimation or ground_truth data" << endl;
+    return rmse;
+  }
+
+  //accumulate squared residuals
+  for(unsigned int i=0; i < estimations.size(); ++i){
+
+    VectorXd residual = estimations[i] - ground_truth[i];
+
+    //coefficient-wise multiplication
+    residual = residual.array()*residual.array();
+    rmse += residual;
+  }
+
+  //calculate the mean
+  rmse = rmse/estimations.size();
+
+  //calculate the squared root
+  rmse = rmse.array().sqrt();
+
+  //return the result
+  return rmse;
 }
 
-const char *motion_model_to_str(motion_model_t motion_model) {
-    switch (motion_model) {
-        case CTRV: return "CTRV";
-        case CV: return "CV";
-        default: throw std::invalid_argument("motion_model");
-    }
+// Checks if the SocketIO event has JSON data.
+// If there is data the JSON object in string format will be returned,
+// else the empty string "" will be returned.
+std::string hasData(const std::string &s) {
+  auto found_null = s.find("null");
+  auto b1 = s.find_first_of('[');
+  auto b2 = s.find_first_of(']');
+  if (found_null != std::string::npos) {
+    return "";
+  }
+  else if (b1 != std::string::npos && b2 != std::string::npos) {
+    return s.substr(b1, b2 - b1 + 1);
+  }
+  return "";
 }
 
-std::string sensor_types_to_str(int sensor_types) {
-    std::ostringstream oss;
-    if (sensor_types | RADAR) {
-        oss << " RADAR ";
-    }
 
-    if (sensor_types | LIDAR) {
-        oss << " LIDAR ";
-    }
+int main(int argc, char *argv[])
+{
+  openlog(argv[0], LOG_PID, LOG_USER);
 
-    std::string str = oss.str();
+  IndividualNoiseProcessesCovarianceMatrix p_mtx;
+  p_mtx << 9.0, 0.0,
+           0.0, 9.0;
 
-    if (str.empty()) {
-        throw std::invalid_argument("sensor_types");
-    }
+  Lidar::MeasurementCovarianceMatrix m_mtx;
+  m_mtx << 0.0225,    0.0,
+              0.0, 0.0225;
 
-    return str;
-}
+  KF_CV_LIDAR_Fusion fusion{p_mtx, m_mtx};
 
-void parse_args(int argc, char *argv[],
-                motion_model_t *motion_model, filter_t *filter, int *sensor_types) {
-    options_description desc("Options");
-    desc.add_options()
-            ("model,m",   value<std::string>()->required(), "motion model (either CTRV, or CV)")
-            ("filter,f",  value<std::string>()->required(), "filter (either EKF, or UKF)")
-            ("sensors,s", value< std::vector<std::string> >()->required()->multitoken(),
-                          "sensor types to process (RADAR or LIDAR)")
-            ("help,h", "print this message")
-            ;
-    variables_map vm;
-    store(parse_command_line(argc, argv, desc), vm);
-    notify(vm);
 
-    // set filter type
-    if (vm["filter"].as<std::string>() == "EKF") {
-        *filter = EKF;
-    } else if (vm["filter"].as<std::string>() == "UKF") {
-        *filter = UKF;
-    } else {
-        throw validation_error(validation_error::invalid_option_value, "filter", "filter");
-    }
 
-    // set motion model type
-    if (vm["model"].as<std::string>() == "CTRV") {
-        *motion_model = CTRV;
-    } else if (vm["model"].as<std::string>() == "CV") {
-        *motion_model = CV;
-    } else {
-        throw validation_error(validation_error::invalid_option_value, "model", "model");
-    }
 
-    auto const &sts = vm["sensors"].as< std::vector<std::string> >();
-    *sensor_types = 0;
-    for (const std::string &sensor : sts) {
-        if (sensor == "LIDAR") {
-            *sensor_types |= LIDAR;
-        } else if (sensor == "RADAR") {
-            *sensor_types |= RADAR;
-        } else {
-            throw validation_error(validation_error::invalid_option_value, "sensors", "sensors");
+
+  uWS::Hub h;
+
+
+  vector<VectorXd> estimations;
+  vector<VectorXd> ground_truth;
+
+
+  h.onMessage([&fusion,&estimations,&ground_truth](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+    // "42" at the start of the message means there's a websocket message event.
+    // The 4 signifies a websocket message
+    // The 2 signifies a websocket event
+
+    if (length > 2 && data[0] == '4' && data[1] == '2')
+    {
+
+      auto s = hasData(std::string(data));
+      if (!s.empty()) {
+
+        auto j = json::parse(s);
+
+        std::string event = j[0].get<std::string>();
+
+        if (event == "telemetry") {
+          // j[1] is the data JSON object
+
+          string sensor_measurment = j[1]["sensor_measurement"];
+
+          MeasurementPackage meas_package;
+          istringstream iss(sensor_measurment);
+          long long timestamp;
+
+          // reads first element from the current line
+          string sensor_type;
+          iss >> sensor_type;
+
+          if (sensor_type == "L") {
+            meas_package.sensor_type_ = MeasurementPackage::LASER;
+            meas_package.raw_measurements_ = VectorXd(2);
+            float px;
+            float py;
+            iss >> px;
+            iss >> py;
+            meas_package.raw_measurements_ << px, py;
+            iss >> timestamp;
+            meas_package.timestamp_ = timestamp;
+          } else if (sensor_type == "R") {
+
+            meas_package.sensor_type_ = MeasurementPackage::RADAR;
+            meas_package.raw_measurements_ = VectorXd(3);
+            float ro;
+            float theta;
+            float ro_dot;
+            iss >> ro;
+            iss >> theta;
+            iss >> ro_dot;
+            meas_package.raw_measurements_ << ro,theta, ro_dot;
+            iss >> timestamp;
+            meas_package.timestamp_ = timestamp;
+          }
+          float x_gt;
+          float y_gt;
+          float vx_gt;
+          float vy_gt;
+          iss >> x_gt;
+          iss >> y_gt;
+          iss >> vx_gt;
+          iss >> vy_gt;
+          VectorXd gt_values(4);
+          gt_values(0) = x_gt;
+          gt_values(1) = y_gt;
+          gt_values(2) = vx_gt;
+          gt_values(3) = vy_gt;
+          ground_truth.push_back(gt_values);
+
+          if (meas_package.sensor_type_ == MeasurementPackage::LASER)
+          {
+            fusion.
+          }
+
+          //Call ProcessMeasurment(meas_package) for Kalman filter
+          fusionEKF.ProcessMeasurement(meas_package);
+
+          //Push the current estimated x,y positon from the Kalman filter's state vector
+
+          VectorXd estimate(4);
+
+          double p_x = fusionEKF.ekf_.x_(0);
+          double p_y = fusionEKF.ekf_.x_(1);
+          double v1  = fusionEKF.ekf_.x_(2);
+          double v2 = fusionEKF.ekf_.x_(3);
+
+          estimate(0) = p_x;
+          estimate(1) = p_y;
+          estimate(2) = v1;
+          estimate(3) = v2;
+
+          estimations.push_back(estimate);
+
+          VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
+
+          json msgJson;
+          msgJson["estimate_x"] = p_x;
+          msgJson["estimate_y"] = p_y;
+          msgJson["rmse_x"] =  RMSE(0);
+          msgJson["rmse_y"] =  RMSE(1);
+          msgJson["rmse_vx"] = RMSE(2);
+          msgJson["rmse_vy"] = RMSE(3);
+          auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
+          // std::cout << msg << std::endl;
+          ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
+
         }
+      } else {
+
+        std::string msg = "42[\"manual\",{}]";
+        ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
+      }
     }
-}
 
-int main(int argc, char *argv[]) {
+  });
 
-    openlog(argv[0], LOG_PID, LOG_USER);
+  // We don't need this since we're not using HTTP but if it's removed the program
+  // doesn't compile :-(
+  h.onHttpRequest([](uWS::HttpResponse *res, uWS::HttpRequest req, char *data, size_t, size_t) {
+    const std::string s = "<h1>Hello world!</h1>";
+    if (req.getUrl().valueLength == 1)
+    {
+      res->end(s.data(), s.length());
+    }
+    else
+    {
+      // i guess this should be done more gracefully?
+      res->end(nullptr, 0);
+    }
+  });
 
-    motion_model_t motion_model;
-    filter_t filter;
-    int sensor_types;
-    parse_args(argc, argv, &motion_model, &filter, &sensor_types);
+  h.onConnection([&h](uWS::WebSocket<uWS::SERVER> ws, uWS::HttpRequest req) {
+    std::cout << "Connected!!!" << std::endl;
+  });
 
-    syslog(LOG_INFO,
-           "Filter: %s; Motion Model: %s; Sensor types: %s",
-           filter_to_str(filter),
-           motion_model_to_str(motion_model),
-           sensor_types_to_str(sensor_types).c_str());
+  h.onDisconnection([&h](uWS::WebSocket<uWS::SERVER> ws, int code, char *message, size_t length) {
+    ws.close();
+    std::cout << "Disconnected" << std::endl;
+  });
 
-    SensorFusion sensor_fusion(filter, motion_model, sensor_types);
+  int port = 4567;
+  if (h.listen(port))
+  {
+    std::cout << "Listening to port " << port << std::endl;
+  }
+  else
+  {
+    std::cerr << "Failed to listen to port" << std::endl;
+    return -1;
+  }
+  h.run();
 
-    closelog();
-    return 0;
+
+
+
+  closelog();
+  return EXIT_SUCCESS;
 }
