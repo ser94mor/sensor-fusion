@@ -43,6 +43,6 @@ TEST_CASE("Fusion::Test", "[fusion]")
                 0.0, 0.1;
 
   Fusion<KalmanFilter, CV::ProcessModel, Lidar::MeasurementModel, Lidar::MeasurementModel> fusion{p_mtx, m_mtx, lidar_mtx2};
-  //fusion.Start();
+  fusion.Start();
   //Lidar::Sensor sensor{fusion.GetSensor<Lidar::Sensor>()};
 }

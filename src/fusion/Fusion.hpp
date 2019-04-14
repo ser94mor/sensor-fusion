@@ -52,19 +52,6 @@ namespace ser94mor::sensor_fusion
     */
     void Start();
 
-    template <class Tuple, class F>
-    constexpr F for_each(Tuple&& t, F&& f)
-    {
-      return for_each_impl(std::forward<Tuple>(t), std::forward<F>(f),
-                           std::make_index_sequence<std::tuple_size<std::remove_reference_t<Tuple>>::value>{});
-    }
-
-    template <class Tuple, class F, std::size_t... I>
-    constexpr F for_each_impl(Tuple&& t, F&& f, std::index_sequence<I...>)
-    {
-      return (void)std::initializer_list<int>{(std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))),0)...}, f;
-    }
-
     template <class Sensor_t>
     constexpr Sensor_t* GetSensor()
     {
@@ -119,7 +106,7 @@ namespace ser94mor::sensor_fusion
       std::apply(
           [this](auto... mm_s_pair)
           {
-            (this->ProcessMeasurement(mm_s_pair), ...);
+            (void)std::initializer_list<int>{(this->ProcessMeasurement(mm_s_pair), void(), 0)...};
           },
           measurement_model_sensor_map_);
       break;
@@ -159,7 +146,15 @@ namespace ser94mor::sensor_fusion
   void Fusion<Filter, ProcessModel, MeasurementModel...>::InitializeMeasurementCovarianceMatrices(
       const Tuple_Of_MeasurementConvarianceMatrix& tup, std::index_sequence<Is...>)
   {
-    ((std::get<Is>(measurement_model_sensor_map_).first.SetMeasurementCovarianceMatrix(std::get<Is>(tup))), ...);
+    // For C++17:
+    // ((std::get<Is>(measurement_model_sensor_map_).first.SetMeasurementCovarianceMatrix(std::get<Is>(tup))), ...);
+
+    // For C++14:
+    (void)std::initializer_list<int>
+    {
+      (std::get<Is>(measurement_model_sensor_map_).first.SetMeasurementCovarianceMatrix(std::get<Is>(tup)),
+       void(), 0)...
+    };
   }
 
 }

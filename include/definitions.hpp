@@ -19,76 +19,79 @@
 #define SENSOR_FUSION_DEFINITIONS_HPP
 
 
+#include <tuple>
+#include <utility>
 #include <Eigen/Dense>
 
-
-namespace ser94mor::sensor_fusion
+namespace ser94mor
 {
-
-  const std::array<const std::pair<const char*, const std::array<const char*, 2>>, 2> kEntityKinds{
-      std::make_pair<const char*, const std::array<const char*, 2>>("PROCESS_MODEL", {"CV",    "CTRV" }),
-      std::make_pair<const char*, const std::array<const char*, 2>>("SENSOR",        {"RADAR", "LIDAR"}),
-  };
-
-  ////////////////////
-  // process models //
-  ////////////////////
-  const char kProcessModelType[]{"PROCESS_MODEL"};
-  const char kSensorType[]{"SENSOR"};
-  const char kMeasurementModelType[]{"MEASUREMENT_MODEL"};
-  using IndividualNoiseProcessesCovarianceMatrix = Eigen::Matrix<double, 2, 2>;
-
-
-  /////////////
-  // sensors //
-  /////////////
-  const int kMaxSensors = 2;
-
-
-  //////////////
-  // controls //
-  //////////////
-  const int kMaxControlDims = -1;
-  using ControlVector = Eigen::Matrix<double, Eigen::Dynamic, 1, 0, kMaxControlDims, 1>;
-  using ControlMatrix = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, kMaxControlDims, kMaxControlDims>;
-
-
-  ////////////////////
-  // PROCESS MODELS //
-  ////////////////////
-
-  namespace CV
+  namespace sensor_fusion
   {
-    extern const char kProcessModelName[];
-    const int kStateVectorDims{4};
-    const int kControlVectorDims{4};
-    const bool kIsLinear{true};
-    using StateVector             = Eigen::Matrix<double, kStateVectorDims, 1>;
-    using StateCovarianceMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
-    using StateTransitionMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
-    using ControlVector           = Eigen::Matrix<double, kControlVectorDims, 1>;
-    using ControlTransitionMatrix = Eigen::Matrix<double, kStateVectorDims, kControlVectorDims>;
-    using ProcessCovarianceMatrix = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
-  }
 
-  namespace CTRV
-  {
-    extern const char kProcessModelName[];
-    const int kStateVectorDims{5};
-    const int kControlVectorDims{5};
-    const bool kIsLinear{false};
-    using StateVector             = Eigen::Matrix<double, kStateVectorDims, 1>;
-    using StateCovarianceMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
-    using StateTransitionMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
-    using ControlVector           = Eigen::Matrix<double, kControlVectorDims, 1>;
-    using ControlTransitionMatrix = Eigen::Matrix<double, kStateVectorDims, kControlVectorDims>;
-    using ProcessCovarianceMatrix = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
-  }
+    const std::array<const std::pair<const char*, const std::array<const char*, 2>>, 2> kEntityKinds{
+        std::make_pair<const char*, const std::array<const char*, 2>>("PROCESS_MODEL", {"CV", "CTRV"}),
+        std::make_pair<const char*, const std::array<const char*, 2>>("SENSOR", {"RADAR", "LIDAR"}),
+    };
+
+    ////////////////////
+    // process models //
+    ////////////////////
+    const char kProcessModelType[]{"PROCESS_MODEL"};
+    const char kSensorType[]{"SENSOR"};
+    const char kMeasurementModelType[]{"MEASUREMENT_MODEL"};
+    using IndividualNoiseProcessesCovarianceMatrix = Eigen::Matrix<double, 2, 2>;
 
 
-  ////////////////////////
-  // MEASUREMENT MODELS //
-  ////////////////////////
+    /////////////
+    // sensors //
+    /////////////
+    const int kMaxSensors = 2;
+
+
+    //////////////
+    // controls //
+    //////////////
+    const int kMaxControlDims = -1;
+    using ControlVector = Eigen::Matrix<double, Eigen::Dynamic, 1, 0, kMaxControlDims, 1>;
+    using ControlMatrix = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, kMaxControlDims, kMaxControlDims>;
+
+
+    ////////////////////
+    // PROCESS MODELS //
+    ////////////////////
+
+    namespace CV
+    {
+      extern const char kProcessModelName[];
+      const int kStateVectorDims{4};
+      const int kControlVectorDims{4};
+      const bool kIsLinear{true};
+      using StateVector             = Eigen::Matrix<double, kStateVectorDims, 1>;
+      using StateCovarianceMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
+      using StateTransitionMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
+      using ControlVector           = Eigen::Matrix<double, kControlVectorDims, 1>;
+      using ControlTransitionMatrix = Eigen::Matrix<double, kStateVectorDims, kControlVectorDims>;
+      using ProcessCovarianceMatrix = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
+    }
+
+    namespace CTRV
+    {
+      extern const char kProcessModelName[];
+      const int kStateVectorDims{5};
+      const int kControlVectorDims{5};
+      const bool kIsLinear{false};
+      using StateVector             = Eigen::Matrix<double, kStateVectorDims, 1>;
+      using StateCovarianceMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
+      using StateTransitionMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
+      using ControlVector           = Eigen::Matrix<double, kControlVectorDims, 1>;
+      using ControlTransitionMatrix = Eigen::Matrix<double, kStateVectorDims, kControlVectorDims>;
+      using ProcessCovarianceMatrix = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
+    }
+
+
+    ////////////////////////
+    // MEASUREMENT MODELS //
+    ////////////////////////
 
 #define MEASUREMENT_MODEL_DEFINITIONS(measurement_vector_dims, is_linear) \
   extern const char kSensorName[]; \
@@ -98,16 +101,39 @@ namespace ser94mor::sensor_fusion
   using MeasurementVector = Eigen::Matrix<double, kMeasurementVectorDims, 1>; \
   using MeasurementCovarianceMatrix = Eigen::Matrix<double, kMeasurementVectorDims, kMeasurementVectorDims>;
 
-  namespace Lidar
-  {
-    MEASUREMENT_MODEL_DEFINITIONS(2, true);
-  }
+    namespace Lidar
+    {
+      MEASUREMENT_MODEL_DEFINITIONS(2, true);
+    }
 
-  namespace Radar
-  {
-    MEASUREMENT_MODEL_DEFINITIONS(3, false);
+    namespace Radar
+    {
+      MEASUREMENT_MODEL_DEFINITIONS(3, false);
+    }
   }
-
 }
+
+#if __cplusplus < 201703L
+namespace  std
+{
+
+  namespace detail {
+    template <class F, class Tuple, size_t... I>
+    constexpr decltype(auto) apply_impl(F&& f, Tuple&& t, std::index_sequence<I...>)
+    {
+      return (f(get<I>(t)...));
+    }
+  }  // namespace detail
+
+  template <class F, class Tuple>
+  constexpr decltype(auto) apply(F&& f, Tuple&& t)
+  {
+    return detail::apply_impl(
+        std::forward<F>(f), std::forward<Tuple>(t),
+        std::make_index_sequence<std::tuple_size<remove_reference_t<Tuple>>::value>{});
+  }
+}
+#endif
+
 
 #endif //SENSOR_FUSION_DEFINITIONS_HPP
