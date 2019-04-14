@@ -24,6 +24,7 @@
 #include <catch.hpp>
 #include <iostream>
 
+using namespace Eigen;
 using namespace ser94mor::sensor_fusion;
 
 
@@ -31,35 +32,52 @@ TEST_CASE("KalmanFilter::Predict", "[filters]")
 {
   CV::ProcessModel cv_pm;
   IndividualNoiseProcessesCovarianceMatrix mtx;
-  mtx << 9.0, 0.0,
-         0.0, 9.0;
+  mtx << 3.0, 7.0,
+         7.0, 5.0;
   cv_pm.SetIndividualNoiseProcessCovarianceMatrix(mtx);
 
-  Lidar::MeasurementCovarianceMatrix lidar_mtx;
-  lidar_mtx << 0.0225,    0.0,
-                  0.0, 0.0225;
-
-  Lidar::MeasurementModel<CV::StateVector> l_mm;
-  l_mm.SetMeasurementCovarianceMatrix(lidar_mtx);
+  Matrix4d R;
+  R << 12.0, 28.0, 12.0, 28.0,
+       28.0, 20.0, 28.0, 20.0,
+       12.0, 28.0, 12.0, 28.0,
+       28.0, 20.0, 28.0, 20.0;
 
   using KF = KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel::StateVector_type>>;
+  using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
 
-  //ExtendedKalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::StateVector>> ekf;
-  //ekf.SetProcessModel(&cv_pm);
-  //ekf.SetMeasurementModels(&l_mm);
+  Vector4d mu;
+  mu << 1., 2., 3., 4.;
 
-
-  CV::ProcessModel::Belief_type bel{{}, {}};
-  Lidar::MeasurementVector v;
-  Lidar::MeasurementModel<CV::StateVector>::Measurement_type meas{
-    .timestamp = 1,
-    .measurement_vector = v,
-    .source_name = "LIDAR",
+  Matrix4d Sigma;
+  Sigma << 1., 2., 3., 4.,
+           2., 5., 6., 7.,
+           3., 6., 8., 9.,
+           4., 7., 9., 10;
+  BEL belief
+  {
+    .state_vector = mu,
+    .state_covariance_matrix = Sigma,
   };
-  auto foo = KF::Predict(bel, 1, cv_pm);
-  auto bar = KF::Update(bel, meas, 55, l_mm);
 
-  std::cout << foo.Sigma() << std::endl;
+  std::time_t dt{2};
+
+  Vector4d mu_prior;
+  mu_prior << 7., 10., 3., 4.;
+
+  Matrix4d Sigma_prior;
+  Sigma_prior << 57., 86., 31., 50.,
+                 86., 93., 52., 47.,
+                 31., 52., 20., 37.,
+                 50., 47., 37., 30.;
+  BEL belief_prior_expected
+  {
+    .state_vector = mu_prior,
+    .state_covariance_matrix = Sigma_prior,
+  };
+
+  BEL belief_prior{KF::Predict(belief, dt, cv_pm)};
+
+  REQUIRE(belief_prior == belief_prior_expected);
 }
 
 

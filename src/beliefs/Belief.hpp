@@ -49,7 +49,11 @@ namespace ser94mor::sensor_fusion
       return state_covariance_matrix;
     }
 
-    Belief& operator=(const Belief& belief)  = default;
+    Belief& operator=(const Belief& belief) = default;
+    bool operator==(const Belief& belief) const
+    {
+      return state_vector.isApprox(belief.state_vector) && state_covariance_matrix.isApprox(state_covariance_matrix);
+    }
 
     StateVector state_vector;
     StateCovarianceMatrix state_covariance_matrix;
