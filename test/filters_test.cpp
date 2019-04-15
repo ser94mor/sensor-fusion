@@ -98,11 +98,19 @@ TEST_CASE("KalmanFilter::Update", "[filters]")
   z << 11, 8;
   Lidar::Measurement measurement{123, z, MeasurementModelKind::Lidar};
 
-  BEL belief_posterior{KF::Update(belief_prior, measurement, dt, lidar_mm)};
-
   CV::StateVector state_vector_expected;
   state_vector_expected << (6128./537.), (1499./179.), (3532./537.), (785./537.);
 
-  REQUIRE(belief_posterior.mu().isApprox(state_vector_expected));
+  CV::StateCovarianceMatrix state_covariance_matrix_expected;
+  state_covariance_matrix_expected << (2633./537.),  (1411./358.), (1696./537.),  (1747./1074.),
+                                      (1411./358.),  (1063./358.), (919./358.),   (413./358.),
+                                      (1696./537.),  (919./358.),  (3176./537.),  (7337./1074.),
+                                      (1747./1074.), (413./358.),  (7337./1074.), (9199./1074.);
 
+  BEL belief_posterior_expected{state_vector_expected, state_covariance_matrix_expected};
+
+
+  BEL belief_posterior{KF::Update(belief_prior, measurement, dt, lidar_mm)};
+
+  REQUIRE(belief_posterior == belief_posterior_expected);
 }

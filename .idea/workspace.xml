@@ -13,17 +13,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ecd128b6-541b-4105-a67a-e4de71c9b93e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/definitions.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/definitions.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/beliefs/Belief.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/beliefs/Belief.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fusion/Fusion.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/fusion/Fusion.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/measurement_models/LidarMeasurementModel.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/measurement_models/LidarMeasurementModel.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/measurement_models/LidarMeasurementModel.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/measurement_models/MeasurementModel.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/measurement_models/MeasurementModel.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/measurements/LidarMeasurement.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/measurements/LidarMeasurement.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/measurements/Measurement.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/measurements/Measurement.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/process_models/ProcessModel.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/process_models/ProcessModel.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/filters_test.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/test/filters_test.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
@@ -42,8 +31,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test/filters_test.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="396">
-              <caret line="103" column="56" lean-forward="true" selection-start-line="103" selection-start-column="56" selection-end-line="103" selection-end-column="56" />
+            <state relative-caret-position="450">
+              <caret line="114" column="57" selection-start-line="114" selection-start-column="57" selection-end-line="114" selection-end-column="57" />
               <folding>
                 <element signature="e#750#772#0" expanded="true" />
               </folding>
@@ -54,8 +43,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/filters/KalmanFilter.hpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="197">
-              <caret line="54" selection-start-line="54" selection-end-line="54" />
+            <state relative-caret-position="362">
+              <caret line="65" column="104" selection-start-line="65" selection-start-column="104" selection-end-line="65" selection-end-column="104" />
               <folding>
                 <element signature="e#801#817#0" expanded="true" />
                 <element signature="e#950#994#0" expanded="true" />
@@ -211,7 +200,6 @@
         <option value="$PROJECT_DIR$/include/fusion.hpp" />
         <option value="$PROJECT_DIR$/src/sensors/SensorFactory.hpp" />
         <option value="$PROJECT_DIR$/src/sensors/LidarSensor.hpp" />
-        <option value="$PROJECT_DIR$/src/filters/KalmanFilter.hpp" />
         <option value="$PROJECT_DIR$/src/process_models/CVProcessModel.hpp" />
         <option value="$PROJECT_DIR$/src/filters/KalmanFilter.cpp" />
         <option value="$PROJECT_DIR$/src/main.cpp" />
@@ -227,6 +215,7 @@
         <option value="$PROJECT_DIR$/src/beliefs/Belief.hpp" />
         <option value="$PROJECT_DIR$/src/fusion/Fusion.hpp" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/src/filters/KalmanFilter.hpp" />
         <option value="$PROJECT_DIR$/test/filters_test.cpp" />
       </list>
     </option>
@@ -398,23 +387,23 @@
       <workItem from="1555102754980" duration="10359000" />
       <workItem from="1555148140672" duration="36487000" />
       <workItem from="1555198007771" duration="2670000" />
-      <workItem from="1555242327229" duration="14437000" />
+      <workItem from="1555242327229" duration="16984000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="231374000" />
+    <option name="totallyTimeSpent" value="233921000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="47" y="-4" width="1633" height="1054" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25645873" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.22054191" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3261339" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.3347732" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.325054" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39848813" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -424,7 +413,7 @@
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="10" />
       <window_info anchor="bottom" id="CMake" order="11" weight="0.31906217" />
-      <window_info anchor="bottom" id="Messages" order="12" weight="0.3336933" />
+      <window_info anchor="bottom" id="Messages" order="12" weight="0.33261338" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -796,8 +785,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/filters/KalmanFilter.hpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="197">
-          <caret line="54" selection-start-line="54" selection-end-line="54" />
+        <state relative-caret-position="362">
+          <caret line="65" column="104" selection-start-line="65" selection-start-column="104" selection-end-line="65" selection-end-column="104" />
           <folding>
             <element signature="e#801#817#0" expanded="true" />
             <element signature="e#950#994#0" expanded="true" />
@@ -807,8 +796,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/test/filters_test.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="103" column="56" lean-forward="true" selection-start-line="103" selection-start-column="56" selection-end-line="103" selection-end-column="56" />
+        <state relative-caret-position="450">
+          <caret line="114" column="57" selection-start-line="114" selection-start-column="57" selection-end-line="114" selection-end-column="57" />
           <folding>
             <element signature="e#750#772#0" expanded="true" />
           </folding>
