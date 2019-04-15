@@ -23,26 +23,52 @@
 #include "../src/fusion/Fusion.hpp"
 
 #include <catch.hpp>
-//#include "fusion.hpp"
 
 using namespace ser94mor::sensor_fusion;
+using namespace Eigen;
 
 
-TEST_CASE("Fusion::Test", "[fusion]")
+TEST_CASE("Fusion::ProcessMeasurement", "[fusion]")
 {
+  using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
+
   IndividualNoiseProcessesCovarianceMatrix p_mtx;
-  p_mtx << 9.0, 0.0,
-           0.0, 9.0;
+  p_mtx << 3.0, 7.0,
+           7.0, 5.0;
 
   Lidar::MeasurementCovarianceMatrix m_mtx;
-  m_mtx << 0.0225,    0.0,
-              0.0, 0.0225;
+  m_mtx << 5., 4.,
+           4., 3.;
 
-  Lidar::MeasurementCovarianceMatrix lidar_mtx2;
-  lidar_mtx2 << 0.1, 0.0,
-                0.0, 0.1;
+  Vector4d mu;
+  mu << 1., 2., 3., 4.;
 
-  Fusion<KalmanFilter, CV::ProcessModel, Lidar::MeasurementModel, Lidar::MeasurementModel> fusion{p_mtx, m_mtx, lidar_mtx2};
-  fusion.Start();
-  //Lidar::Sensor sensor{fusion.GetSensor<Lidar::Sensor>()};
+  Matrix4d Sigma;
+  Sigma << 1., 2., 3., 4.,
+           2., 5., 6., 7.,
+           3., 6., 8., 9.,
+           4., 7., 9., 10;
+  BEL belief_initial{0, mu, Sigma};
+
+  CV::StateVector state_vector_expected;
+  state_vector_expected << (6128./537.), (1499./179.), (3532./537.), (785./537.);
+
+  CV::StateCovarianceMatrix state_covariance_matrix_expected;
+  state_covariance_matrix_expected << (2633./537.),  (1411./358.), (1696./537.),  (1747./1074.),
+      (1411./358.),  (1063./358.), (919./358.),   (413./358.),
+      (1696./537.),  (919./358.),  (3176./537.),  (7337./1074.),
+      (1747./1074.), (413./358.),  (7337./1074.), (9199./1074.);
+
+  BEL belief_posterior_expected{2, state_vector_expected, state_covariance_matrix_expected};
+
+  Fusion<KalmanFilter, CV::ProcessModel, Lidar::MeasurementModel>
+  fusion{p_mtx, m_mtx};
+  fusion.SetBelief(belief_initial);
+
+  Lidar::MeasurementVector meas_vect;
+  meas_vect << 11., 8.;
+  Lidar::Measurement measurement{2, meas_vect, MeasurementModelKind::Lidar};
+  auto belief{fusion.ProcessMeasurement(measurement)};
+
+  REQUIRE(belief == belief_posterior_expected);
 }

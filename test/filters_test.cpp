@@ -36,10 +36,10 @@ TEST_CASE("KalmanFilter::Predict", "[filters]")
   cv_pm.SetIndividualNoiseProcessCovarianceMatrix(mtx);
 
   Matrix4d R;
-  R << 12.0, 28.0, 12.0, 28.0,
-       28.0, 20.0, 28.0, 20.0,
-       12.0, 28.0, 12.0, 28.0,
-       28.0, 20.0, 28.0, 20.0;
+  R << 12., 28., 12., 28.,
+       28., 20., 28., 20.,
+       12., 28., 12., 28.,
+       28., 20., 28., 20.;
 
   using KF = KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel::StateVector_type>>;
   using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
@@ -52,7 +52,7 @@ TEST_CASE("KalmanFilter::Predict", "[filters]")
            2., 5., 6., 7.,
            3., 6., 8., 9.,
            4., 7., 9., 10;
-  BEL belief{mu, Sigma};
+  BEL belief{0, mu, Sigma};
 
   std::time_t dt{2};
 
@@ -64,7 +64,7 @@ TEST_CASE("KalmanFilter::Predict", "[filters]")
                  86., 93., 52., 47.,
                  31., 52., 20., 37.,
                  50., 47., 37., 30.;
-  BEL belief_prior_expected{mu_prior, Sigma_prior};
+  BEL belief_prior_expected{2, mu_prior, Sigma_prior};
 
   BEL belief_prior{KF::Predict(belief, dt, cv_pm)};
 
@@ -84,7 +84,7 @@ TEST_CASE("KalmanFilter::Update", "[filters]")
                  86., 93., 52., 47.,
                  31., 52., 20., 37.,
                  50., 47., 37., 30.;
-  BEL belief_prior{mu_prior, Sigma_prior};
+  BEL belief_prior{2, mu_prior, Sigma_prior};
 
   Lidar::MeasurementCovarianceMatrix lidar_mtx;
   lidar_mtx << 5., 4.,
@@ -96,7 +96,7 @@ TEST_CASE("KalmanFilter::Update", "[filters]")
 
   Lidar::MeasurementVector z;
   z << 11, 8;
-  Lidar::Measurement measurement{123, z, MeasurementModelKind::Lidar};
+  Lidar::Measurement measurement{2, z, MeasurementModelKind::Lidar};
 
   CV::StateVector state_vector_expected;
   state_vector_expected << (6128./537.), (1499./179.), (3532./537.), (785./537.);
@@ -107,7 +107,7 @@ TEST_CASE("KalmanFilter::Update", "[filters]")
                                       (1696./537.),  (919./358.),  (3176./537.),  (7337./1074.),
                                       (1747./1074.), (413./358.),  (7337./1074.), (9199./1074.);
 
-  BEL belief_posterior_expected{state_vector_expected, state_covariance_matrix_expected};
+  BEL belief_posterior_expected{2, state_vector_expected, state_covariance_matrix_expected};
 
 
   BEL belief_posterior{KF::Update(belief_prior, measurement, dt, lidar_mm)};

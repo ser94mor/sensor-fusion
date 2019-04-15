@@ -50,40 +50,19 @@ namespace ser94mor
              typename MeasurementModel<typename ProcessModel::StateVector_type>::MeasurementCovarianceMatrix_type...
              measurement_covariance_matrices);
 
-      /**
-      * Run the whole flow of the Kalman Filter from here.
-      */
-      void Start();
+      template <class Measurement>
+      Belief ProcessMeasurement(Measurement& measurement);
 
-      template<class Sensor_t>
-      constexpr Sensor_t* GetSensor()
-      {
-        auto pred = [](auto& name)
-        { return std::string(Sensor_t::Name()) == name; };
-        size_t index = std::tuple_size<std::remove_reference_t<decltype(measurement_model_sensor_map_)>>::value;
-        size_t currentIndex = 0;
-        bool found = false;
-        for_each(measurement_model_sensor_map_, [&](auto& value)
-        {
-          if (!found && pred(value.second.Name()))
-          {
-            index = currentIndex;
-            found = true;
-          }
-          ++currentIndex;
-        });
-        std::cout << index << std::endl;
-        return std::get<index>(measurement_model_sensor_map_).second;
-      }
-
+      void SetBelief(const Belief& belief);
+      const Belief& GetBelief() const;
 
     private:
       template<class TupleOfMeasurementConvarianceMatrices, std::size_t... Is>
       void InitializeMeasurementCovarianceMatrices(
           const TupleOfMeasurementConvarianceMatrices& tup, std::index_sequence<Is...>);
 
-      template<class MeasurementModel_Sensor_Pair>
-      void ProcessMeasurement(MeasurementModel_Sensor_Pair& mm_s_pair);
+      template<class Measurement_type, class MeasurementModel_type>
+      void ProcessMeasurement(Measurement_type& measurement, MeasurementModel_type& measurement_model);
 
       // flag indicating whether the first measurement processed
       bool initialized_;
@@ -96,51 +75,40 @@ namespace ser94mor
 
       Belief belief_;
       ProcessModel process_model_;
-      std::tuple<std::pair<MeasurementModel<typename ProcessModel::StateVector_type>,
-          typename MeasurementModel<typename ProcessModel::StateVector_type>::Sensor_type>...>
-          measurement_model_sensor_map_;
+      std::tuple<MeasurementModel<typename ProcessModel::StateVector_type>...> measurement_models_;
     };
-
 
     template<template<class, class> class Filter, class ProcessModel,
         template<class> class... MeasurementModel>
-    void Fusion<Filter, ProcessModel, MeasurementModel...>::Start()
+    template<class Measurement_type, class MeasurementModel_type>
+    void
+    Fusion<Filter, ProcessModel, MeasurementModel...>::
+    ProcessMeasurement(Measurement_type& measurement, MeasurementModel_type& measurement_model)
     {
-      for (;;)
+      // process measurement only in case measurement model matches measurement
+      if (measurement.MeasurementModelKind() == measurement_model.Kind())
       {
-        std::apply(
-            [this](auto... mm_s_pair)
-            {
-              (void) std::initializer_list<int>{(this->ProcessMeasurement(mm_s_pair), void(), 0)...};
-            },
-            measurement_model_sensor_map_);
-        break;
+        auto dt = measurement.t() - previous_measurement_timestamp_;
+
+        auto belief_prior{Filter<ProcessModel, MeasurementModel_type>::Predict(belief_, dt, process_model_)};
+        belief_ = Filter<ProcessModel, MeasurementModel_type>::Update(belief_prior, measurement, dt, measurement_model);
+
+        previous_measurement_timestamp_ = measurement.t();
       }
     }
 
     template<template<class, class> class Filter, class ProcessModel,
         template<class> class... MeasurementModel>
-    template<class MeasurementModel_Sensor_Pair>
-    void Fusion<Filter, ProcessModel, MeasurementModel...>::
-    ProcessMeasurement(MeasurementModel_Sensor_Pair& mm_s_pair)
-    {
-      std::cout << mm_s_pair.first.Type() << ' ' << mm_s_pair.first.Name() << '\n'
-                << mm_s_pair.second.Type() << ' ' << mm_s_pair.second.Name() << ::std::endl;
-      auto belief_prior = Filter<ProcessModel, decltype(mm_s_pair.first)>::Predict(belief_, 1, process_model_);
-
-      Lidar::Measurement m{4, Eigen::Vector2d{}, MeasurementModelKind::Lidar};
-      belief_ = Filter<ProcessModel, decltype(mm_s_pair.first)>::
-      Update(belief_prior, m, 1, mm_s_pair.first);
-    }
-
-    template<template<class, class> class Filter, class ProcessModel,
-        template<class> class... MeasurementModel>
-    Fusion<Filter, ProcessModel, MeasurementModel...>::Fusion(
-        IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix,
-        typename MeasurementModel<typename ProcessModel::StateVector_type>::MeasurementCovarianceMatrix_type...
-        measurement_covariance_matrices) :
-        initialized_{false}, processed_measurements_counter_{0}, previous_measurement_timestamp_{0},
-        belief_{typename ProcessModel::StateVector_type{}, typename ProcessModel::StateCovarianceMatrix_type{}}
+    Fusion<Filter, ProcessModel, MeasurementModel...>::
+      Fusion(IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix,
+             typename MeasurementModel<typename ProcessModel::StateVector_type>::MeasurementCovarianceMatrix_type...
+             measurement_covariance_matrices) :
+        initialized_{false},
+        processed_measurements_counter_{0},
+        previous_measurement_timestamp_{0},
+        belief_{0, {}, {}},
+        process_model_{},
+        measurement_models_{}
     {
 
       process_model_.SetIndividualNoiseProcessCovarianceMatrix(individual_noise_processes_covariance_matrix);
@@ -161,10 +129,38 @@ namespace ser94mor
 
       // For C++14:
       (void) std::initializer_list<int>
-          {
-              (std::get<Is>(measurement_model_sensor_map_).first.SetMeasurementCovarianceMatrix(std::get<Is>(tup)),
-                  void(), 0)...
-          };
+      {
+        (std::get<Is>(measurement_models_).SetMeasurementCovarianceMatrix(std::get<Is>(tup)), void(), 0)...
+      };
+    }
+
+    template<template<class, class> class Filter, class ProcessModel, template<class> class... MeasurementModel>
+    template<class Measurement>
+    typename Fusion<Filter, ProcessModel, MeasurementModel...>::Belief
+    Fusion<Filter, ProcessModel, MeasurementModel...>::ProcessMeasurement(Measurement& measurement)
+    {
+      apply(
+        [this, &measurement](auto... measurement_model)
+        {
+          (void) std::initializer_list<int>{(this->ProcessMeasurement(measurement, measurement_model), void(), 0)...};
+        },
+        measurement_models_
+      );
+
+      return belief_;
+    }
+
+    template<template<class, class> class Filter, class ProcessModel, template<class> class... MeasurementModel>
+    void Fusion<Filter, ProcessModel, MeasurementModel...>::SetBelief(const Belief& belief)
+    {
+      belief_ = belief;
+    }
+
+    template<template<class, class> class Filter, class ProcessModel, template<class> class... MeasurementModel>
+    const typename Fusion<Filter, ProcessModel, MeasurementModel...>::Belief&
+    Fusion<Filter, ProcessModel, MeasurementModel...>::GetBelief() const
+    {
+      return belief_;
     }
 
   }

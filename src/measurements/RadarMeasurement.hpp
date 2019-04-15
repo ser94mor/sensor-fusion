@@ -19,9 +19,15 @@
 #define SENSOR_FUSION_RADARMEASUREMENT_HPP
 
 
-namespace ser94mor::sensor_fusion::Radar
+namespace ser94mor
 {
-  MEASUREMENT_DEFINITION();
+  namespace sensor_fusion
+  {
+    namespace Radar
+    {
+      MEASUREMENT_DEFINITION();
+    }
+  }
 }
 
 

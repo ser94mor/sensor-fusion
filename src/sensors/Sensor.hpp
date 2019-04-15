@@ -28,43 +28,46 @@
   class Sensor : public ser94mor::sensor_fusion::Sensor<Measurement, kSensorName> { };
 
 
-namespace  ser94mor::sensor_fusion
+namespace  ser94mor
 {
-
-  template<class Measurement, const char* name>
-  class Sensor
+  namespace sensor_fusion
   {
-  public:
-    constexpr static const char* Type()
+
+    template<class Measurement, const char* name>
+    class Sensor
     {
-      return kSensorType;
+    public:
+      constexpr static const char* Type()
+      {
+        return kSensorType;
+      }
+
+      constexpr static const char* Name()
+      {
+        return name;
+      }
+
+      Measurement* GetMeasurementIfExists() const;
+
+      void SetMeasurement(Measurement measurement);
+
+    private:
+      Measurement measurement_;
+    };
+
+    template<class Measurement, const char* name>
+    Measurement* Sensor<Measurement, name>::GetMeasurementIfExists() const
+    {
+      return nullptr;
     }
 
-    constexpr static const char* Name()
+    template<class Measurement, const char* name>
+    void Sensor<Measurement, name>::SetMeasurement(const Measurement measurement)
     {
-      return name;
+      this->measurement_ = measurement;
     }
 
-    Measurement* GetMeasurementIfExists() const;
-
-    void SetMeasurement(Measurement measurement);
-
-  private:
-    Measurement measurement_;
-  };
-
-  template<class Measurement, const char* name>
-  Measurement* Sensor<Measurement, name>::GetMeasurementIfExists() const
-  {
-    return nullptr;
   }
-
-  template<class Measurement, const char* name>
-  void Sensor<Measurement, name>::SetMeasurement(const Measurement measurement)
-  {
-    this->measurement_ = measurement;
-  }
-
 }
 
 

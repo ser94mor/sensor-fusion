@@ -26,52 +26,57 @@
 #include <Eigen/Dense>
 
 
-namespace ser94mor::sensor_fusion
+namespace ser94mor
 {
-
-  template<class ProcessModel, class MeasurementModel>
-  class KalmanFilter
+  namespace  sensor_fusion
   {
-  protected:
-    using Belief = typename ProcessModel::Belief_type;
-    using Measurement = typename MeasurementModel::Measurement_type;
 
-  public:
-    static Belief Predict(const Belief& belief_posterior, std::time_t dt, const ProcessModel& process_model);
+    template<class ProcessModel, class MeasurementModel>
+    class KalmanFilter
+    {
+    protected:
+      using Belief = typename ProcessModel::Belief_type;
+      using Measurement = typename MeasurementModel::Measurement_type;
 
-    static Belief Update(const Belief& belief_prior, const Measurement& measurement,
-                         std::time_t dt, const MeasurementModel& measurement_model);
-  };
+    public:
+      static Belief Predict(const Belief& belief_posterior, std::time_t dt, const ProcessModel& process_model);
 
-  template<class ProcessModel, class MeasurementModel>
-  typename KalmanFilter<ProcessModel, MeasurementModel>::Belief
-  KalmanFilter<ProcessModel, MeasurementModel>::Predict(const Belief& belief_posterior, std::time_t dt,
-                                                        const ProcessModel& process_model)
-  {
-    auto At{process_model.A(dt)};
-    return {
-        .state_vector = At * belief_posterior.mu(),
-        .state_covariance_matrix = At * belief_posterior.Sigma() * At.transpose() + process_model.R(dt),
+      static Belief Update(const Belief& belief_prior, const Measurement& measurement,
+                           std::time_t dt, const MeasurementModel& measurement_model);
     };
+
+    template<class ProcessModel, class MeasurementModel>
+    typename KalmanFilter<ProcessModel, MeasurementModel>::Belief
+    KalmanFilter<ProcessModel, MeasurementModel>::Predict(const Belief& belief_posterior, std::time_t dt,
+                                                          const ProcessModel& process_model)
+    {
+      auto At{process_model.A(dt)};
+      return {
+          /* timestamp */               belief_posterior.t() + dt,
+          /* state vector */            At * belief_posterior.mu(),
+          /* state covariance matrix */ At * belief_posterior.Sigma() * At.transpose() + process_model.R(dt),
+      };
+    }
+
+    template<class ProcessModel, class MeasurementModel>
+    typename KalmanFilter<ProcessModel, MeasurementModel>::Belief
+    KalmanFilter<ProcessModel, MeasurementModel>::Update(const Belief& belief_prior, const Measurement& measurement,
+                                                         std::time_t dt, const MeasurementModel& measurement_model)
+    {
+      auto Ct{measurement_model.C(dt)};
+      auto mu{belief_prior.mu()};
+      auto Sigma{belief_prior.Sigma()};
+      auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + measurement_model.Q(dt)).inverse()};
+      auto I{Eigen::Matrix<double, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
+
+      return {
+          /* timestamp */               measurement.t(),
+          /* state vector */            mu + Kt * (measurement.z() - Ct * mu),
+          /* state covariance matrix */ (I - Kt * Ct) * Sigma,
+      };
+    }
+
   }
-
-  template<class ProcessModel, class MeasurementModel>
-  typename KalmanFilter<ProcessModel, MeasurementModel>::Belief
-  KalmanFilter<ProcessModel, MeasurementModel>::Update(const Belief& belief_prior, const Measurement& measurement,
-                                                       std::time_t dt, const MeasurementModel& measurement_model)
-  {
-    auto Ct{measurement_model.C(dt)};
-    auto mu{belief_prior.mu()};
-    auto Sigma{belief_prior.Sigma()};
-    auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + measurement_model.Q(dt)).inverse()};
-    auto I{Eigen::Matrix<double, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
-
-    return {
-        .state_vector = mu + Kt * (measurement.z() - Ct * mu),
-        .state_covariance_matrix = (I - Kt * Ct) * Sigma,
-    };
-  }
-
 }
 
 #endif //SENSOR_FUSION_KALMANFILTER_HPP

@@ -20,7 +20,6 @@
 
 
 #include <tuple>
-#include <utility>
 #include <Eigen/Dense>
 
 namespace ser94mor
@@ -124,30 +123,29 @@ namespace ser94mor
       }
     }
 
-  }
-}
 
-#if __cplusplus < 201703L
-namespace  std
-{
+    /////////////
+    // HELPERS //
+    /////////////
 
-  namespace detail {
-    template <class F, class Tuple, size_t... I>
-    constexpr decltype(auto) apply_impl(F&& f, Tuple&& t, std::index_sequence<I...>)
+    namespace detail {
+      template <class F, class Tuple, size_t... I>
+      constexpr decltype(auto) apply_impl(F&& f, Tuple&& t, std::index_sequence<I...>)
+      {
+        return (f(std::get<I>(t)...));
+      }
+    }  // namespace detail
+
+    template <class F, class Tuple>
+    constexpr decltype(auto) apply(F&& f, Tuple&& t)
     {
-      return (f(get<I>(t)...));
+      return detail::apply_impl(
+          std::forward<F>(f), std::forward<Tuple>(t),
+          std::make_index_sequence<std::tuple_size<std::remove_reference_t<Tuple>>::value>{});
     }
-  }  // namespace detail
 
-  template <class F, class Tuple>
-  constexpr decltype(auto) apply(F&& f, Tuple&& t)
-  {
-    return detail::apply_impl(
-        std::forward<F>(f), std::forward<Tuple>(t),
-        std::make_index_sequence<std::tuple_size<remove_reference_t<Tuple>>::value>{});
   }
 }
-#endif
 
 
 #endif //SENSOR_FUSION_DEFINITIONS_HPP

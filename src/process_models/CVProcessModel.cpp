@@ -40,7 +40,7 @@ namespace ser94mor::sensor_fusion::CV
   ProcessCovarianceMatrix ProcessModel::R(std::time_t dt) const
   {
     Eigen::Matrix<double, ProcessModel::StateDims(), 2> Gt;
-    double dt_2_2 = dt * dt / 2.0;
+    double dt_2_2 = dt * dt / 2.;
     Gt << dt_2_2,    0.0,
              0.0, dt_2_2,
               dt,    0.0,

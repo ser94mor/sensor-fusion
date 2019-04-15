@@ -24,11 +24,17 @@
 #include "Sensor.hpp"
 
 
-namespace ser94mor::sensor_fusion::Lidar
+namespace ser94mor
 {
+  namespace sensor_fusion
+  {
+    namespace Lidar
+    {
 
-  SENSOR_DEFINITION();
+      SENSOR_DEFINITION();
 
+    }
+  }
 }
 
 

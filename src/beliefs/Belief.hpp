@@ -18,7 +18,10 @@
 #ifndef SENSOR_FUSION_BELIEF_HPP
 #define SENSOR_FUSION_BELIEF_HPP
 
+
 #include "definitions.hpp"
+
+#include <ctime>
 
 
 namespace ser94mor
@@ -33,6 +36,11 @@ namespace ser94mor
     class Belief
     {
     public:
+      std::time_t t() const
+      {
+        return timestamp_;
+      }
+
       /**
        * State vector notation from the Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press.
        * @return state vector
@@ -52,20 +60,23 @@ namespace ser94mor
         return state_covariance_matrix_;
       }
 
-      Belief(const StateVector& state_vector, const StateCovarianceMatrix& state_covariance_matrix)
-          : state_vector_{state_vector}, state_covariance_matrix_{state_covariance_matrix}
+      Belief(std::time_t timestamp, const StateVector& state_vector,
+             const StateCovarianceMatrix& state_covariance_matrix)
+      : timestamp_{timestamp}, state_vector_{state_vector}, state_covariance_matrix_{state_covariance_matrix}
       {
 
       }
 
       Belief(const Belief& belief)
-          : state_vector_{belief.state_vector_}, state_covariance_matrix_{belief.state_covariance_matrix_}
+          : timestamp_{belief.timestamp_}, state_vector_{belief.state_vector_},
+            state_covariance_matrix_{belief.state_covariance_matrix_}
       {
 
       }
 
       Belief(Belief&& belief) noexcept
-          : state_vector_{std::move(belief.state_vector_)},
+          : timestamp_{belief.timestamp_},
+            state_vector_{std::move(belief.state_vector_)},
             state_covariance_matrix_{std::move(belief.state_covariance_matrix_)}
       {
 
@@ -73,6 +84,7 @@ namespace ser94mor
 
       Belief& operator=(const Belief& belief)
       {
+        timestamp_ = belief.timestamp_;
         state_vector_ = belief.state_vector_;
         state_covariance_matrix_ = belief.state_covariance_matrix_;
         return *this;
@@ -80,6 +92,7 @@ namespace ser94mor
 
       Belief& operator=(Belief&& belief) noexcept
       {
+        timestamp_ = belief.timestamp_;
         state_vector_ = std::move(belief.state_vector_);
         state_covariance_matrix_ = std::move(belief.state_covariance_matrix_);
         return *this;
@@ -87,11 +100,13 @@ namespace ser94mor
 
       bool operator==(const Belief& belief) const
       {
-        return state_vector_.isApprox(belief.state_vector_)
+        return timestamp_ == belief.timestamp_
+               && state_vector_.isApprox(belief.state_vector_)
                && state_covariance_matrix_.isApprox(belief.state_covariance_matrix_);
       }
 
     private:
+      std::time_t timestamp_;
       StateVector state_vector_;
       StateCovarianceMatrix state_covariance_matrix_;
     };
