@@ -33,6 +33,8 @@ add_executable(sensor_fusion
         src/main.cpp
 )
 
+target_link_libraries(sensor_fusion z ssl uv uWS)
+
 add_library(Catch INTERFACE)
 add_executable( sensor_fusion_test
         test/sensors_test.cpp ${sensors_SRC}

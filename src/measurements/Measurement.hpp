@@ -22,13 +22,13 @@
 #include <ctime>
 
 
-#define MEASUREMENT_DEFINITION() \
-  class Measurement : public ser94mor::sensor_fusion::Measurement<MeasurementVector, MeasurementCovarianceMatrix> \
+#define MEASUREMENT_DEFINITION(mmk) \
+  class Measurement : public ser94mor::sensor_fusion::Measurement<MeasurementVector, MeasurementCovarianceMatrix, mmk> \
   { \
   public: \
-    Measurement(std::time_t timestamp, const MeasurementVector& measurement_vector, enum MeasurementModelKind mmk) \
-    : ser94mor::sensor_fusion::Measurement<MeasurementVector, MeasurementCovarianceMatrix> \
-        {timestamp, measurement_vector, mmk} { } \
+    Measurement(std::time_t timestamp, const MeasurementVector& measurement_vector) \
+    : ser94mor::sensor_fusion::Measurement<MeasurementVector, MeasurementCovarianceMatrix, mmk> \
+        {timestamp, measurement_vector} { } \
   };
 
 
@@ -37,7 +37,7 @@ namespace ser94mor
   namespace sensor_fusion
   {
 
-    template<class MeasurementVector, class MeasurementCovarianceMatrix>
+    template<class MeasurementVector, class MeasurementCovarianceMatrix, MeasurementModelKind mmk>
     class Measurement
     {
     public:
@@ -51,13 +51,13 @@ namespace ser94mor
         return measurement_vector_;
       }
 
-      enum MeasurementModelKind MeasurementModelKind() const
+      constexpr enum MeasurementModelKind MeasurementModelKind() const
       {
-        return mmk_;
+        return mmk;
       }
 
-      Measurement(std::time_t timestamp, const MeasurementVector& measurement_vector, enum MeasurementModelKind mmk)
-      : timestamp_{timestamp}, measurement_vector_{measurement_vector}, mmk_{mmk}
+      Measurement(std::time_t timestamp, const MeasurementVector& measurement_vector)
+      : timestamp_{timestamp}, measurement_vector_{measurement_vector}
       {
 
       }
@@ -65,7 +65,6 @@ namespace ser94mor
     private:
       std::time_t timestamp_;
       MeasurementVector measurement_vector_;
-      enum MeasurementModelKind mmk_;
     };
 
   }

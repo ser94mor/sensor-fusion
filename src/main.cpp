@@ -42,6 +42,7 @@ using namespace Eigen;
 // for convenience
 using json = nlohmann::json;
 
+
 class MeasurementPackage {
 public:
   long long timestamp_;
@@ -197,39 +198,37 @@ int main(int argc, char *argv[])
           gt_values(3) = vy_gt;
           ground_truth.push_back(gt_values);
 
+          VectorXd estimate(4);
           if (meas_package.sensor_type_ == MeasurementPackage::LASER)
           {
-            fusion.
+            Lidar::Measurement measurement{meas_package.timestamp_, meas_package.raw_measurements_};
+            auto belief{fusion.ProcessMeasurement(measurement)};
+
+            CV::StateVectorView state_vector_view{belief.mu()};
+            estimate(0) = state_vector_view.px();
+            estimate(1) = state_vector_view.py();
+            estimate(2) = state_vector_view.vx();
+            estimate(3) = state_vector_view.vy();
+
+            estimations.push_back(estimate);
+
+
+          } else {
+            //throw std::runtime_error("measurement model is not yet implemented");
           }
 
-          //Call ProcessMeasurment(meas_package) for Kalman filter
-          fusionEKF.ProcessMeasurement(meas_package);
 
-          //Push the current estimated x,y positon from the Kalman filter's state vector
-
-          VectorXd estimate(4);
-
-          double p_x = fusionEKF.ekf_.x_(0);
-          double p_y = fusionEKF.ekf_.x_(1);
-          double v1  = fusionEKF.ekf_.x_(2);
-          double v2 = fusionEKF.ekf_.x_(3);
-
-          estimate(0) = p_x;
-          estimate(1) = p_y;
-          estimate(2) = v1;
-          estimate(3) = v2;
-
-          estimations.push_back(estimate);
-
-          VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
+          VectorXd RMSE = CalculateRMSE(estimations, ground_truth);
 
           json msgJson;
-          msgJson["estimate_x"] = p_x;
-          msgJson["estimate_y"] = p_y;
+          msgJson["estimate_x"] = estimate(0);
+          msgJson["estimate_y"] = estimate(1);
           msgJson["rmse_x"] =  RMSE(0);
           msgJson["rmse_y"] =  RMSE(1);
           msgJson["rmse_vx"] = RMSE(2);
           msgJson["rmse_vy"] = RMSE(3);
+
+
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
           // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);

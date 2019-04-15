@@ -22,59 +22,65 @@
 #include "definitions.hpp"
 
 
-namespace ser94mor::sensor_fusion::CV
+namespace ser94mor
 {
-
-  /**
-   * A wrapper around StateVector for CV process model (which is just an Eigen vector)
-   * that provides meaningful accessors to the StateVector components.
-   */
-  class StateVectorView
+  namespace sensor_fusion
   {
-  public:
-
-    explicit StateVectorView(const StateVector& state_vector) : state_vector_{state_vector}
+    namespace CV
     {
 
+      /**
+       * A wrapper around StateVector for CV process model (which is just an Eigen vector)
+       * that provides meaningful accessors to the StateVector components.
+       */
+      class StateVectorView
+      {
+      public:
+
+        explicit StateVectorView(const StateVector& state_vector) : state_vector_{state_vector}
+        {
+
+        }
+
+        /**
+         * @return X-axis coordinate
+         */
+        double px() const
+        {
+          return state_vector_(0);
+        }
+
+        /**
+         * @return Y-axis coordinate
+         */
+        double py() const
+        {
+          return state_vector_(1);
+        }
+
+        /**
+         * @return X-axis velocity
+         */
+        double vx() const
+        {
+          return state_vector_(2);
+        }
+
+        /**
+         * @return Y-axis velocity
+         */
+        double vy() const
+        {
+          return state_vector_(3);
+        }
+
+      private:
+        const StateVector& state_vector_;
+
+      };
+
     }
-
-    /**
-     * @return X-axis coordinate
-     */
-    double px() const
-    {
-      return state_vector_(0);
-    }
-
-    /**
-     * @return Y-axis coordinate
-     */
-    double py() const
-    {
-      return state_vector_(1);
-    }
-
-    /**
-     * @return X-axis velocity
-     */
-    double vx() const
-    {
-      return state_vector_(2);
-    }
-
-    /**
-     * @return Y-axis velocity
-     */
-    double vy() const
-    {
-      return state_vector_(3);
-    }
-
-  private:
-    const StateVector& state_vector_;
-
-  };
-
+  }
 }
 
 #endif //SENSOR_FUSION_CVSTATEVECTORVIEW_HPP

@@ -67,7 +67,7 @@ TEST_CASE("Fusion::ProcessMeasurement", "[fusion]")
 
   Lidar::MeasurementVector meas_vect;
   meas_vect << 11., 8.;
-  Lidar::Measurement measurement{2, meas_vect, MeasurementModelKind::Lidar};
+  Lidar::Measurement measurement{2, meas_vect};
   auto belief{fusion.ProcessMeasurement(measurement)};
 
   REQUIRE(belief == belief_posterior_expected);

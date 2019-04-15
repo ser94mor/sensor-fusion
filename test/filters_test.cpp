@@ -96,7 +96,7 @@ TEST_CASE("KalmanFilter::Update", "[filters]")
 
   Lidar::MeasurementVector z;
   z << 11, 8;
-  Lidar::Measurement measurement{2, z, MeasurementModelKind::Lidar};
+  Lidar::Measurement measurement{2, z};
 
   CV::StateVector state_vector_expected;
   state_vector_expected << (6128./537.), (1499./179.), (3532./537.), (785./537.);

@@ -32,7 +32,7 @@ namespace ser94mor
     class MeasurementModel
     {
     public:
-      using Measurement_type = Measurement<MeasurementVector, MeasurementCovarianceMatrix>;
+      using Measurement_type = Measurement<MeasurementVector, MeasurementCovarianceMatrix, mmk>;
       using MeasurementCovarianceMatrix_type = MeasurementCovarianceMatrix;
 
       constexpr static const char* Type()
