@@ -35,6 +35,7 @@ namespace ser94mor::sensor_fusion
 
     using Belief_type = Belief<StateVector, StateCovarianceMatrix>;
     using StateVector_type = StateVector;
+    using StateCovarianceMatrix_type = StateCovarianceMatrix;
 
     constexpr static const char* Type()
     {

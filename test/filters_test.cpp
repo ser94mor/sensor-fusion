@@ -16,7 +16,6 @@
  */
 
 
-//#include "primitives.hpp"
 #include "filters.hpp"
 #include "definitions.hpp"
 #include "process_models.hpp"
@@ -53,11 +52,7 @@ TEST_CASE("KalmanFilter::Predict", "[filters]")
            2., 5., 6., 7.,
            3., 6., 8., 9.,
            4., 7., 9., 10;
-  BEL belief
-  {
-    .state_vector = mu,
-    .state_covariance_matrix = Sigma,
-  };
+  BEL belief{mu, Sigma};
 
   std::time_t dt{2};
 
@@ -69,11 +64,7 @@ TEST_CASE("KalmanFilter::Predict", "[filters]")
                  86., 93., 52., 47.,
                  31., 52., 20., 37.,
                  50., 47., 37., 30.;
-  BEL belief_prior_expected
-  {
-    .state_vector = mu_prior,
-    .state_covariance_matrix = Sigma_prior,
-  };
+  BEL belief_prior_expected{mu_prior, Sigma_prior};
 
   BEL belief_prior{KF::Predict(belief, dt, cv_pm)};
 
@@ -83,5 +74,35 @@ TEST_CASE("KalmanFilter::Predict", "[filters]")
 
 TEST_CASE("KalmanFilter::Update", "[filters]")
 {
+  using KF = KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel::StateVector_type>>;
+  using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
+
+  Vector4d mu_prior;
+  mu_prior << 7., 10., 3., 4.;
+  Matrix4d Sigma_prior;
+  Sigma_prior << 57., 86., 31., 50.,
+                 86., 93., 52., 47.,
+                 31., 52., 20., 37.,
+                 50., 47., 37., 30.;
+  BEL belief_prior{mu_prior, Sigma_prior};
+
+  Lidar::MeasurementCovarianceMatrix lidar_mtx;
+  lidar_mtx << 5., 4.,
+               4., 3.;
+  Lidar::MeasurementModel<CV::StateVector> lidar_mm;
+  lidar_mm.SetMeasurementCovarianceMatrix(lidar_mtx);
+
+  std::time_t dt{2};
+
+  Lidar::MeasurementVector z;
+  z << 11, 8;
+  Lidar::Measurement measurement{123, z, MeasurementModelKind::Lidar};
+
+  BEL belief_posterior{KF::Update(belief_prior, measurement, dt, lidar_mm)};
+
+  CV::StateVector state_vector_expected;
+  state_vector_expected << (6128./537.), (1499./179.), (3532./537.), (785./537.);
+
+  REQUIRE(belief_posterior.mu().isApprox(state_vector_expected));
 
 }

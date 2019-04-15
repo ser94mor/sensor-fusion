@@ -1,10 +1,14 @@
 cmake_minimum_required(VERSION 3.5)
 project(sensor_fusion)
 
-add_definitions(-std=c++14)
+#add_definitions(-std=c++14)
+#
+#set(CXX_FLAGS "-Wall")
+#set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
 
-set(CXX_FLAGS "-Wall")
-set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
+set(CMAKE_CXX_STANDARD 14)
+set(CXX_EXTENSIONS OFF)
+set(CXX_STANDARD_REQUIRED ON)
 
 include_directories(third_parties/eigen-3.3.7/)
 include_directories(third_parties/nlohmann-3.6.1)
@@ -35,7 +39,7 @@ add_executable( sensor_fusion_test
         test/process_models_test.cpp ${process_models_SRC}
         test/measurement_models_test.cpp ${measurement_models_SRC}
         test/filters_test.cpp ${filters_SRC}
-        test/fusion_test.cpp ${fusion_SRC}
+#        test/fusion_test.cpp ${fusion_SRC}
         test/beliefs_test.cpp
         test/test.cpp)
 target_link_libraries(sensor_fusion_test Catch)

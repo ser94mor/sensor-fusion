@@ -22,55 +22,64 @@
 #include "definitions.hpp"
 #include "primitives.hpp"
 
-namespace ser94mor::sensor_fusion
+namespace ser94mor
 {
-
-  template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector,
-           const char* name, bool is_linear>
-  class MeasurementModel
+  namespace sensor_fusion
   {
-  public:
-    using Measurement_type = Measurement<MeasurementVector, MeasurementCovarianceMatrix>;
-    using MeasurementCovarianceMatrix_type = MeasurementCovarianceMatrix;
 
-    constexpr static const char* Type()
+    template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector,
+        MeasurementModelKind mmk, bool is_linear>
+    class MeasurementModel
     {
-      return kMeasurementModelType;
+    public:
+      using Measurement_type = Measurement<MeasurementVector, MeasurementCovarianceMatrix>;
+      using MeasurementCovarianceMatrix_type = MeasurementCovarianceMatrix;
+
+      constexpr static const char* Type()
+      {
+        return kMeasurementModelType;
+      }
+
+      constexpr MeasurementModelKind Kind()
+      {
+        return mmk;
+      }
+
+      constexpr static const char* Name()
+      {
+        return MeasurementModelNameByKind(mmk);
+      }
+
+      constexpr static int MeasurementDims()
+      {
+        return MeasurementVector::SizeAtCompileTime;
+      }
+
+      constexpr static int StateDims()
+      {
+        return StateVector::SizeAtCompileTime;
+      }
+
+      constexpr static bool IsLinear()
+      {
+        return is_linear;
+      }
+
+      void SetMeasurementCovarianceMatrix(const MeasurementCovarianceMatrix& mtx);
+
+    protected:
+      MeasurementCovarianceMatrix measurement_covariance_matrix_;
+    };
+
+    template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector,
+        MeasurementModelKind mmk, bool is_linear>
+    void MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
+        StateVector, mmk, is_linear>::SetMeasurementCovarianceMatrix(
+        const MeasurementCovarianceMatrix& mtx)
+    {
+      measurement_covariance_matrix_ = mtx;
     }
 
-    constexpr static const char* Name()
-    {
-      return name;
-    }
-
-    constexpr static int MeasurementDims()
-    {
-      return MeasurementVector::SizeAtCompileTime;
-    }
-
-    constexpr static int StateDims()
-    {
-      return StateVector::SizeAtCompileTime;
-    }
-
-    constexpr static bool IsLinear()
-    {
-      return is_linear;
-    }
-
-    void SetMeasurementCovarianceMatrix(const MeasurementCovarianceMatrix& mtx);
-
-  protected:
-    MeasurementCovarianceMatrix measurement_covariance_matrix_;
-  };
-
-  template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector,
-           const char* name, bool is_linear>
-  void MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-                        StateVector, name, is_linear>::SetMeasurementCovarianceMatrix(
-      const MeasurementCovarianceMatrix& mtx)
-  {
-    measurement_covariance_matrix_ = mtx;
   }
 
 }

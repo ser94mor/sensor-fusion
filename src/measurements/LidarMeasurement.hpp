@@ -23,9 +23,15 @@
 #include "Measurement.hpp"
 
 
-namespace ser94mor::sensor_fusion::Lidar
+namespace ser94mor
 {
-  MEASUREMENT_DEFINITION();
+  namespace sensor_fusion
+  {
+    namespace Lidar
+    {
+      MEASUREMENT_DEFINITION();
+    }
+  }
 }
 
 #endif //SENSOR_FUSION_LIDARMEASUREMENT_HPP

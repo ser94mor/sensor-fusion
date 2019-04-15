@@ -28,11 +28,6 @@ namespace ser94mor
   namespace sensor_fusion
   {
 
-    const std::array<const std::pair<const char*, const std::array<const char*, 2>>, 2> kEntityKinds{
-        std::make_pair<const char*, const std::array<const char*, 2>>("PROCESS_MODEL", {"CV", "CTRV"}),
-        std::make_pair<const char*, const std::array<const char*, 2>>("SENSOR", {"RADAR", "LIDAR"}),
-    };
-
     ////////////////////
     // process models //
     ////////////////////
@@ -97,7 +92,6 @@ namespace ser94mor
   extern const char kSensorName[]; \
   const int kMeasurementVectorDims = 2; \
   const bool kIsLinear{is_linear}; \
-  extern const char kMeasurementModelName[]; \
   using MeasurementVector = Eigen::Matrix<double, kMeasurementVectorDims, 1>; \
   using MeasurementCovarianceMatrix = Eigen::Matrix<double, kMeasurementVectorDims, kMeasurementVectorDims>;
 
@@ -110,6 +104,26 @@ namespace ser94mor
     {
       MEASUREMENT_MODEL_DEFINITIONS(3, false);
     }
+
+    enum class MeasurementModelKind
+    {
+      Lidar = 0,
+      Radar = 1,
+    };
+
+    constexpr const char* MeasurementModelNameByKind(MeasurementModelKind mm)
+    {
+      switch (mm)
+      {
+        case MeasurementModelKind::Lidar:
+          return "LIDAR";
+        case MeasurementModelKind::Radar:
+          return "RADAR";
+        default:
+          return "!!!___UNDEFINED_MEASUREMENT_MODEL__!!!";
+      }
+    }
+
   }
 }
 

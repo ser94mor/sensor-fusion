@@ -21,44 +21,82 @@
 #include "definitions.hpp"
 
 
-namespace ser94mor::sensor_fusion
+namespace ser94mor
 {
-
-  /**
-   * A representation of "belief" concept from Bayesian filtering;
-   */
-  template<class StateVector, class StateCovarianceMatrix>
-  struct Belief
+  namespace sensor_fusion
   {
-    /**
-     * State vector notation from the Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press.
-     * @return state vector
-     */
-    const StateVector& mu() const
-    {
-      return state_vector;
-    }
 
     /**
-     * State covariance matrix notation from the
-     * Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press.
-     * @return state covariance matrix
+     * A representation of "belief" concept from Bayesian filtering;
      */
-    const StateCovarianceMatrix& Sigma() const
+    template<class StateVector, class StateCovarianceMatrix>
+    class Belief
     {
-      return state_covariance_matrix;
-    }
+    public:
+      /**
+       * State vector notation from the Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press.
+       * @return state vector
+       */
+      const StateVector& mu() const
+      {
+        return state_vector_;
+      }
 
-    Belief& operator=(const Belief& belief) = default;
-    bool operator==(const Belief& belief) const
-    {
-      return state_vector.isApprox(belief.state_vector) && state_covariance_matrix.isApprox(state_covariance_matrix);
-    }
+      /**
+       * State covariance matrix notation from the
+       * Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press.
+       * @return state covariance matrix
+       */
+      const StateCovarianceMatrix& Sigma() const
+      {
+        return state_covariance_matrix_;
+      }
 
-    StateVector state_vector;
-    StateCovarianceMatrix state_covariance_matrix;
-  };
+      Belief(const StateVector& state_vector, const StateCovarianceMatrix& state_covariance_matrix)
+          : state_vector_{state_vector}, state_covariance_matrix_{state_covariance_matrix}
+      {
 
+      }
+
+      Belief(const Belief& belief)
+          : state_vector_{belief.state_vector_}, state_covariance_matrix_{belief.state_covariance_matrix_}
+      {
+
+      }
+
+      Belief(Belief&& belief) noexcept
+          : state_vector_{std::move(belief.state_vector_)},
+            state_covariance_matrix_{std::move(belief.state_covariance_matrix_)}
+      {
+
+      }
+
+      Belief& operator=(const Belief& belief)
+      {
+        state_vector_ = belief.state_vector_;
+        state_covariance_matrix_ = belief.state_covariance_matrix_;
+        return *this;
+      }
+
+      Belief& operator=(Belief&& belief) noexcept
+      {
+        state_vector_ = std::move(belief.state_vector_);
+        state_covariance_matrix_ = std::move(belief.state_covariance_matrix_);
+        return *this;
+      }
+
+      bool operator==(const Belief& belief) const
+      {
+        return state_vector_.isApprox(belief.state_vector_)
+               && state_covariance_matrix_.isApprox(belief.state_covariance_matrix_);
+      }
+
+    private:
+      StateVector state_vector_;
+      StateCovarianceMatrix state_covariance_matrix_;
+    };
+
+  }
 }
 
 #endif //SENSOR_FUSION_BELIEF_HPP
