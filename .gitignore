@@ -33,4 +33,5 @@
 
 # Other
 cmake-build-debug/
+.idea/workspace.xml
 
