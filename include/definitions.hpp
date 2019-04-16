@@ -92,7 +92,7 @@ namespace ser94mor
   const int kMeasurementVectorDims = 2; \
   const bool kIsLinear{is_linear}; \
   using MeasurementVector = Eigen::Matrix<double, kMeasurementVectorDims, 1>; \
-  using MeasurementCovarianceMatrix = Eigen::Matrix<double, kMeasurementVectorDims, kMeasurementVectorDims>;
+  using MeasurementCovarianceMatrix = Eigen::Matrix<double, kMeasurementVectorDims, kMeasurementVectorDims>
 
     namespace Lidar
     {

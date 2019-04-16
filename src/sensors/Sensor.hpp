@@ -21,11 +21,9 @@
 
 #include "definitions.hpp"
 
-#include <optional>
-
 
 #define SENSOR_DEFINITION() \
-  class Sensor : public ser94mor::sensor_fusion::Sensor<Measurement, kSensorName> { };
+  class Sensor : public ser94mor::sensor_fusion::Sensor<Measurement, kSensorName> { }
 
 
 namespace  ser94mor

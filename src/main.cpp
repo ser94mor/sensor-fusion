@@ -214,6 +214,7 @@ int main(int argc, char *argv[])
 
 
           } else {
+            //return;
             //throw std::runtime_error("measurement model is not yet implemented");
           }
 

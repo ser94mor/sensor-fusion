@@ -33,7 +33,7 @@ TEST_CASE("Lidar::MeasurementModel::C", "[measurement_model]")
   meas_mtx << 1.0, 0.0, 0.0, 0.0,
               0.0, 1.0, 0.0, 0.0;
 
-  const auto& Ct = lidar_mm.C(555);
+  const auto& Ct = lidar_mm.C();
   REQUIRE(Ct.isApprox(meas_mtx));
 }
 
@@ -47,5 +47,5 @@ TEST_CASE("Lidar::MeasurementModel::Q", "[measurement_model]")
   Lidar::MeasurementModel<CV::StateVector> lidar_mm;
   lidar_mm.SetMeasurementCovarianceMatrix(lidar_mtx);
 
-  REQUIRE(lidar_mm.Q(222).isApprox(lidar_mtx));
+  REQUIRE(lidar_mm.Q().isApprox(lidar_mtx));
 }

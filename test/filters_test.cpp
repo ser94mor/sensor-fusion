@@ -92,8 +92,6 @@ TEST_CASE("KalmanFilter::Update", "[filters]")
   Lidar::MeasurementModel<CV::StateVector> lidar_mm;
   lidar_mm.SetMeasurementCovarianceMatrix(lidar_mtx);
 
-  std::time_t dt{2};
-
   Lidar::MeasurementVector z;
   z << 11, 8;
   Lidar::Measurement measurement{2, z};
@@ -110,7 +108,7 @@ TEST_CASE("KalmanFilter::Update", "[filters]")
   BEL belief_posterior_expected{2, state_vector_expected, state_covariance_matrix_expected};
 
 
-  BEL belief_posterior{KF::Update(belief_prior, measurement, dt, lidar_mm)};
+  BEL belief_posterior{KF::Update(belief_prior, measurement, lidar_mm)};
 
   REQUIRE(belief_posterior == belief_posterior_expected);
 }

@@ -25,9 +25,15 @@
 #include "Sensor.hpp"
 
 
-namespace ser94mor::sensor_fusion::Radar
+namespace ser94mor
 {
-
+  namespace sensor_fusion
+  {
+    namespace Radar
+    {
+      SENSOR_DEFINITION();
+    }
+  }
 }
 
 

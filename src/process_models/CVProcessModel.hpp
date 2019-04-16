@@ -25,24 +25,32 @@
 #include <ctime>
 
 
-namespace ser94mor::sensor_fusion::CV
+namespace ser94mor
 {
-
-  class ProcessModel :
-      public ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector,
-                                                   kProcessModelName, kIsLinear>
+  namespace sensor_fusion
   {
-  public:
-    ProcessModel();
+    namespace CV
+    {
 
-    StateTransitionMatrix A(std::time_t dt) const;
-    ControlTransitionMatrix B(std::time_t dt) const;
-    ProcessCovarianceMatrix R(std::time_t dt) const;
+      class ProcessModel :
+          public ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector,
+              kProcessModelName, kIsLinear>
+      {
+      public:
+        ProcessModel();
 
-  private:
-    StateTransitionMatrix state_transition_matrix_prototype_;
-  };
+        StateTransitionMatrix A(std::time_t dt) const;
 
+        ControlTransitionMatrix B() const;
+
+        ProcessCovarianceMatrix R(std::time_t dt) const;
+
+      private:
+        StateTransitionMatrix state_transition_matrix_prototype_;
+      };
+
+    }
+  }
 }
 
 

@@ -25,7 +25,6 @@
 #include <iostream>
 #include <tuple>
 #include <utility>
-#include <string_view>
 #include <Eigen/Dense>
 
 
@@ -91,7 +90,7 @@ namespace ser94mor
         auto dt = measurement.t() - previous_measurement_timestamp_;
 
         auto belief_prior{Filter<ProcessModel, MeasurementModel_type>::Predict(belief_, dt, process_model_)};
-        belief_ = Filter<ProcessModel, MeasurementModel_type>::Update(belief_prior, measurement, dt, measurement_model);
+        belief_ = Filter<ProcessModel, MeasurementModel_type>::Update(belief_prior, measurement, measurement_model);
 
         previous_measurement_timestamp_ = measurement.t();
       }

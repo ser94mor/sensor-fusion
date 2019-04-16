@@ -19,9 +19,15 @@
 #include "RadarSensor.hpp"
 
 
-namespace ser94mor::sensor_fusion::Radar
+namespace ser94mor
 {
+  namespace sensor_fusion
+  {
+    namespace Radar
+    {
 
-  const char kSensorName[]{"RADAR"};
+      const char kSensorName[]{"RADAR"};
 
+    }
+  }
 }

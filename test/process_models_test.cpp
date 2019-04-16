@@ -54,7 +54,7 @@ TEST_CASE("CVProcessModel::B", "[process_models]")
 
   Matrix4d B{Matrix4d::Zero()};
 
-  REQUIRE(cv_pm.B(2).isApprox(B));
+  REQUIRE(cv_pm.B().isApprox(B));
 }
 
 

@@ -22,7 +22,6 @@
 #include <ctime>
 #include <tuple>
 #include <iostream>
-#include <string_view>
 #include <Eigen/Dense>
 
 
@@ -42,7 +41,7 @@ namespace ser94mor
       static Belief Predict(const Belief& belief_posterior, std::time_t dt, const ProcessModel& process_model);
 
       static Belief Update(const Belief& belief_prior, const Measurement& measurement,
-                           std::time_t dt, const MeasurementModel& measurement_model);
+                           const MeasurementModel& measurement_model);
     };
 
     template<class ProcessModel, class MeasurementModel>
@@ -61,12 +60,12 @@ namespace ser94mor
     template<class ProcessModel, class MeasurementModel>
     typename KalmanFilter<ProcessModel, MeasurementModel>::Belief
     KalmanFilter<ProcessModel, MeasurementModel>::Update(const Belief& belief_prior, const Measurement& measurement,
-                                                         std::time_t dt, const MeasurementModel& measurement_model)
+                                                         const MeasurementModel& measurement_model)
     {
-      auto Ct{measurement_model.C(dt)};
+      auto Ct{measurement_model.C()};
       auto mu{belief_prior.mu()};
       auto Sigma{belief_prior.Sigma()};
-      auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + measurement_model.Q(dt)).inverse()};
+      auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + measurement_model.Q()).inverse()};
       auto I{Eigen::Matrix<double, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
 
       return {

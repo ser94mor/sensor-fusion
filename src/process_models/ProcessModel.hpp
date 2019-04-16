@@ -25,58 +25,61 @@
 
 #include <ctime>
 
-namespace ser94mor::sensor_fusion
+namespace ser94mor
 {
-
-  template <class StateVector, class StateCovarianceMatrix, class ControlVector, const char* name, bool is_linear>
-  class ProcessModel
+  namespace sensor_fusion
   {
-  public:
 
-    using Belief_type = Belief<StateVector, StateCovarianceMatrix>;
-    using StateVector_type = StateVector;
-    using StateCovarianceMatrix_type = StateCovarianceMatrix;
-
-    constexpr static const char* Type()
+    template<class StateVector, class StateCovarianceMatrix, class ControlVector, const char* name, bool is_linear>
+    class ProcessModel
     {
-      return kProcessModelType;
+    public:
+
+      using Belief_type = Belief<StateVector, StateCovarianceMatrix>;
+      using StateVector_type = StateVector;
+      using StateCovarianceMatrix_type = StateCovarianceMatrix;
+
+      constexpr static const char* Type()
+      {
+        return kProcessModelType;
+      }
+
+      constexpr static const char* Name()
+      {
+        return name;
+      }
+
+      constexpr static int StateDims()
+      {
+        return StateVector::SizeAtCompileTime;
+      }
+
+      constexpr static int ControlDims()
+      {
+        return ControlVector::SizeAtCompileTime;
+      }
+
+      constexpr static bool IsLinear()
+      {
+        return is_linear;
+      }
+
+      template<typename Derived>
+      void SetIndividualNoiseProcessCovarianceMatrix(const Eigen::MatrixBase<Derived>& mtx);
+
+    protected:
+      IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix_;
+    };
+
+    template<class StateVector, class StateCovarianceMatrix, class ControlVector, const char* name, bool is_linear>
+    template<typename Derived>
+    void ProcessModel<StateVector, StateCovarianceMatrix, ControlVector, name, is_linear>::
+    SetIndividualNoiseProcessCovarianceMatrix(const Eigen::MatrixBase<Derived>& mtx)
+    {
+      individual_noise_processes_covariance_matrix_ = mtx;
     }
 
-    constexpr static const char* Name()
-    {
-      return name;
-    }
-
-    constexpr static int StateDims()
-    {
-      return StateVector::SizeAtCompileTime;
-    }
-
-    constexpr static int ControlDims()
-    {
-      return ControlVector::SizeAtCompileTime;
-    }
-
-    constexpr static bool IsLinear()
-    {
-      return is_linear;
-    }
-
-    template <typename Derived>
-    void SetIndividualNoiseProcessCovarianceMatrix(const Eigen::MatrixBase<Derived>& mtx);
-
-  protected:
-    IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix_;
-  };
-
-  template<class StateVector, class StateCovarianceMatrix, class ControlVector, const char* name, bool is_linear>
-  template<typename Derived>
-  void ProcessModel<StateVector, StateCovarianceMatrix, ControlVector, name, is_linear>::
-      SetIndividualNoiseProcessCovarianceMatrix(const Eigen::MatrixBase<Derived>& mtx)
-  {
-    individual_noise_processes_covariance_matrix_ = mtx;
   }
-
 }
 
 

@@ -49,12 +49,12 @@ namespace ser94mor
 
         }
 
-        const MeasurementMatrix& C(std::time_t dt) const
+        const MeasurementMatrix& C() const
         {
           return measurement_matrix_;
         }
 
-        const MeasurementCovarianceMatrix& Q(std::time_t dt) const
+        const MeasurementCovarianceMatrix& Q() const
         {
           return this->measurement_covariance_matrix_;
         }

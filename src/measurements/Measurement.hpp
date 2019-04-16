@@ -29,7 +29,7 @@
     Measurement(std::time_t timestamp, const MeasurementVector& measurement_vector) \
     : ser94mor::sensor_fusion::Measurement<MeasurementVector, MeasurementCovarianceMatrix, mmk> \
         {timestamp, measurement_vector} { } \
-  };
+  }
 
 
 namespace ser94mor

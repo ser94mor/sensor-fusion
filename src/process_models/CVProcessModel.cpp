@@ -19,38 +19,44 @@
 
 #include <iostream>
 
-namespace ser94mor::sensor_fusion::CV
+namespace ser94mor
 {
-
-  const char kProcessModelName[]{"CV"};
-
-  ProcessModel::ProcessModel() : state_transition_matrix_prototype_{StateTransitionMatrix::Identity()}
+  namespace sensor_fusion
   {
+    namespace CV
+    {
 
+      const char kProcessModelName[]{"CV"};
+
+      ProcessModel::ProcessModel() : state_transition_matrix_prototype_{StateTransitionMatrix::Identity()}
+      {
+
+      }
+
+      StateTransitionMatrix ProcessModel::A(std::time_t dt) const
+      {
+        StateTransitionMatrix state_transition_matrix{state_transition_matrix_prototype_};
+        state_transition_matrix(0, 2) = dt;
+        state_transition_matrix(1, 3) = dt;
+        return state_transition_matrix;
+      }
+
+      ProcessCovarianceMatrix ProcessModel::R(std::time_t dt) const
+      {
+        Eigen::Matrix<double, ProcessModel::StateDims(), 2> Gt;
+        double dt_2_2 = dt * dt / 2.;
+        Gt << dt_2_2, 0.0,
+            0.0, dt_2_2,
+            dt, 0.0,
+            0.0, dt;
+        return Gt * individual_noise_processes_covariance_matrix_ * Gt.transpose();
+      }
+
+      ControlTransitionMatrix ProcessModel::B() const
+      {
+        return ControlTransitionMatrix().setZero();
+      }
+
+    }
   }
-
-  StateTransitionMatrix ProcessModel::A(std::time_t dt) const
-  {
-    StateTransitionMatrix state_transition_matrix{state_transition_matrix_prototype_};
-    state_transition_matrix(0, 2) = dt;
-    state_transition_matrix(1, 3) = dt;
-    return state_transition_matrix;
-  }
-
-  ProcessCovarianceMatrix ProcessModel::R(std::time_t dt) const
-  {
-    Eigen::Matrix<double, ProcessModel::StateDims(), 2> Gt;
-    double dt_2_2 = dt * dt / 2.;
-    Gt << dt_2_2,    0.0,
-             0.0, dt_2_2,
-              dt,    0.0,
-             0.0,     dt;
-    return Gt * individual_noise_processes_covariance_matrix_ * Gt.transpose();
-  }
-
-  ControlTransitionMatrix ProcessModel::B(std::time_t dt) const
-  {
-    return ControlTransitionMatrix().setZero();
-  }
-
 }
