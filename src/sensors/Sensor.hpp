@@ -34,26 +34,8 @@ namespace  ser94mor
     template<class Measurement, SensorKind sk>
     class Sensor : public Entity<EntityType::Sensor, SensorKind, sk>
     {
-    public:
-      Measurement* GetMeasurementIfExists() const;
-
-      void SetMeasurement(Measurement measurement);
-
-    private:
-      Measurement measurement_;
+      // TODO: utilize this class while adding support for asynchronous measurement processing
     };
-
-    template<class Measurement, SensorKind sk>
-    Measurement* Sensor<Measurement, sk>::GetMeasurementIfExists() const
-    {
-      return nullptr;
-    }
-
-    template<class Measurement, SensorKind sk>
-    void Sensor<Measurement, sk>::SetMeasurement(const Measurement measurement)
-    {
-      this->measurement_ = measurement;
-    }
 
   }
 }

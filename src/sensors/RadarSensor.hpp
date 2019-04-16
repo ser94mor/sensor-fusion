@@ -31,7 +31,9 @@ namespace ser94mor
   {
     namespace Radar
     {
+
       SENSOR_DEFINITION(SensorKind::Radar);
+
     }
   }
 }
