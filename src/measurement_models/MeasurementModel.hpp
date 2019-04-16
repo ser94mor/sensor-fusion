@@ -20,68 +20,116 @@
 
 
 #include "definitions.hpp"
-#include "primitives.hpp"
+
 
 namespace ser94mor
 {
   namespace sensor_fusion
   {
 
-    template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector,
-        MeasurementModelKind mmk, bool is_linear>
+    /**
+     * A base template class representing a measurement model. It contains methods and functions common for
+     * all concrete measurement models. Notice that in addition to
+     * {@tparam MeasurementVector} and {@tparam MeasurementCovarianceMatrix} template parameters it also accepts
+     * {@tparam ProcessModel} parameter.
+     *
+     * @tparam MeasurementVector a class of the measurement vector
+     * @tparam MeasurementCovarianceMatrix a class of the measurement covariance matrix
+     * @tparam ProcessModel a class of the process model
+     * @tparam mmk a kind of a measurement model (from a corresponding enum class)
+     * @tparam is_linear flag indicating whether this measurement model is linear or not
+     */
+    template<class MeasurementVector, class MeasurementCovarianceMatrix, class ProcessModel, class Sensor,
+             MeasurementModelKind mmk, bool is_linear>
     class MeasurementModel
     {
     public:
+
+      /**
+       * The typedefs below are needed in other places in the code. These typedefs, in fact, are attributes of the
+       * measurement model.
+       */
       using Measurement_type = Measurement<MeasurementVector, MeasurementCovarianceMatrix, mmk>;
       using MeasurementCovarianceMatrix_type = MeasurementCovarianceMatrix;
+      using Sensor_type = Sensor;
 
-      constexpr static const char* Type()
+      /**
+       * @return an entity type
+       */
+      constexpr static EntityType Type()
       {
-        return kMeasurementModelType;
+        return EntityType::MeasurementModel;
       }
 
+      /**
+       * @return an entity type name (for logging)
+       */
+      constexpr static const char* TypeName()
+      {
+        return EntityNameByType(Type());
+      }
+
+      /**
+       * @return a measurement model kind
+       */
       constexpr MeasurementModelKind Kind()
       {
         return mmk;
       }
 
-      constexpr static const char* Name()
+      /**
+       * @return a measurement model kind name (for logging)
+       */
+      constexpr static const char* KindName()
       {
         return MeasurementModelNameByKind(mmk);
       }
 
+      /**
+       * @return a number of dimensions in measurement vector
+       */
       constexpr static int MeasurementDims()
       {
         return MeasurementVector::SizeAtCompileTime;
       }
 
+      /**
+       * @return a number of state dimensions
+       */
       constexpr static int StateDims()
       {
-        return StateVector::SizeAtCompileTime;
+        return ProcessModel::StateDims();
       }
 
+      /**
+       * @return a flag whether the measurement model is linear or not
+       */
       constexpr static bool IsLinear()
       {
         return is_linear;
       }
 
+      /**
+       * Set measurement covariance matrix. It is done explicitly by the user of measurement model
+       * due to the variadic templates used in this code. MeasurementModel needs a default constructor.
+       * @param mtx a measurement covariance matrix
+       */
       void SetMeasurementCovarianceMatrix(const MeasurementCovarianceMatrix& mtx);
 
     protected:
       MeasurementCovarianceMatrix measurement_covariance_matrix_;
     };
 
-    template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector,
+    template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector, class Sensor,
         MeasurementModelKind mmk, bool is_linear>
     void MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-        StateVector, mmk, is_linear>::SetMeasurementCovarianceMatrix(
+        StateVector, Sensor, mmk, is_linear>::SetMeasurementCovarianceMatrix(
         const MeasurementCovarianceMatrix& mtx)
     {
       measurement_covariance_matrix_ = mtx;
     }
 
   }
-
 }
 
 #endif //SENSOR_FUSION_MEASUREMENTMODEL_HPP

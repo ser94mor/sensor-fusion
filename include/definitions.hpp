@@ -35,6 +35,28 @@ namespace ser94mor
     const char kMeasurementModelType[]{"MEASUREMENT_MODEL"};
     using IndividualNoiseProcessesCovarianceMatrix = Eigen::Matrix<double, 2, 2>;
 
+    enum class EntityType
+    {
+      ProcessModel = 0,
+      MeasurementModel = 1,
+      Sensor = 2,
+    };
+
+    constexpr const char* EntityNameByType(EntityType et)
+    {
+      switch (et)
+      {
+        case EntityType::ProcessModel:
+          return "PROCESS_MODEL";
+        case EntityType::MeasurementModel:
+          return "MEASUREMENT_MODEL";
+        case EntityType::Sensor:
+          return "SENSOR";
+        default:
+          return "!!!___UNDEFINED_ENTITY_TYPE__!!!";
+      }
+    }
+
 
     /////////////
     // sensors //

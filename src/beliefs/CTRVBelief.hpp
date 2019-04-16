@@ -29,7 +29,9 @@ namespace ser94mor
   {
     namespace CTRV
     {
+
       BELIEF_DEFINITION();
+
     }
   }
 }

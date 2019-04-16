@@ -33,34 +33,53 @@ namespace ser94mor
     namespace Lidar
     {
 
-      template<class StateVector>
+      /**
+       * A concrete (Lidar) measurement model. It is still a template because the dimensionality of
+       * the measurement matrix depends on the process model kind, which we know only at compile time.
+       * @tparam ProcessModel a process model class, which is needed to determine the number of state dimensions
+       */
+      template<class ProcessModel>
       class MeasurementModel :
-          public ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-              StateVector, MeasurementModelKind::Lidar, kIsLinear>
+        public ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
+          ProcessModel, Sensor, MeasurementModelKind::Lidar, kIsLinear>
       {
       public:
-        using MeasurementMatrix =
-        Eigen::Matrix<double, MeasurementModel::MeasurementDims(), MeasurementModel::StateDims()>;
-        using Sensor_type = Sensor;
-        using MeasurementCovarianceMatrix_type = MeasurementCovarianceMatrix;
+        using MeasurementMatrix_type =
+          Eigen::Matrix<double, MeasurementModel::MeasurementDims(), MeasurementModel::StateDims()>;
 
-        MeasurementModel() : measurement_matrix_{MeasurementMatrix::Identity()}
+        /**
+         * Constructor.
+         * Measurement matrix is of the form
+         *   1 0 0 0 ...
+         *   0 1 0 0 ...
+         * where the number of columns equal to the number of state dimensions.
+         */
+        MeasurementModel()
+        : ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
+            ProcessModel, Sensor, MeasurementModelKind::Lidar, kIsLinear>{},
+          measurement_matrix_{MeasurementMatrix_type::Identity()}
         {
 
         }
 
-        const MeasurementMatrix& C() const
+        /**
+         * @return a measurement matrix
+         */
+        const MeasurementMatrix_type& C() const
         {
           return measurement_matrix_;
         }
 
+        /**
+         * @return a measurement covariance matrix
+         */
         const MeasurementCovarianceMatrix& Q() const
         {
           return this->measurement_covariance_matrix_;
         }
 
       private:
-        MeasurementMatrix measurement_matrix_;
+        MeasurementMatrix_type measurement_matrix_;
       };
 
     }

@@ -23,6 +23,7 @@
 #include <catch.hpp>
 #include <iostream>
 
+
 using namespace Eigen;
 using namespace ser94mor::sensor_fusion;
 
@@ -41,7 +42,7 @@ TEST_CASE("KalmanFilter::Predict", "[filters]")
        12., 28., 12., 28.,
        28., 20., 28., 20.;
 
-  using KF = KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel::StateVector_type>>;
+  using KF = KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel>>;
   using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
 
   CV::ControlVector control_vector{CV::ControlVector::Zero()};
@@ -76,7 +77,7 @@ TEST_CASE("KalmanFilter::Predict", "[filters]")
 
 TEST_CASE("KalmanFilter::Update", "[filters]")
 {
-  using KF = KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel::StateVector_type>>;
+  using KF = KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel>>;
   using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
 
   Vector4d mu_prior;
@@ -91,7 +92,7 @@ TEST_CASE("KalmanFilter::Update", "[filters]")
   Lidar::MeasurementCovarianceMatrix lidar_mtx;
   lidar_mtx << 5., 4.,
                4., 3.;
-  Lidar::MeasurementModel<CV::StateVector> lidar_mm;
+  Lidar::MeasurementModel<CV::ProcessModel> lidar_mm;
   lidar_mm.SetMeasurementCovarianceMatrix(lidar_mtx);
 
   Lidar::MeasurementVector z;

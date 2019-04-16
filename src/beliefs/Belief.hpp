@@ -24,6 +24,11 @@
 #include <ctime>
 
 
+/**
+ * A macros to be used to define concrete Belief classes. Each concrete belief class "lives" in its own namespace
+ * corresponding to a name of the process model, so that it is possible to rely on the similar class names for
+ * state vector and state covariance matrix.
+ */
 #define BELIEF_DEFINITION() \
   class Belief : public ser94mor::sensor_fusion::Belief<StateVector, StateCovarianceMatrix> { }
 
@@ -35,7 +40,7 @@ namespace ser94mor
   {
 
     /**
-     * A representation of "belief" concept from Bayesian filtering.
+     * A base (template) class for representation of "belief" concept from Bayesian filtering.
      */
     template<class StateVector, class StateCovarianceMatrix>
     class Belief

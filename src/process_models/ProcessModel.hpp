@@ -20,7 +20,7 @@
 
 
 #include "definitions.hpp"
-#include "primitives.hpp"
+#include "beliefs.hpp"
 #include "measurement_models.hpp"
 
 #include <ctime>

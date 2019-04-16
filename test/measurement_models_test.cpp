@@ -16,6 +16,7 @@
  */
 
 
+#include "process_models.hpp"
 #include "measurement_models.hpp"
 
 #include <catch.hpp>
@@ -27,9 +28,9 @@ using namespace ser94mor::sensor_fusion;
 
 TEST_CASE("Lidar::MeasurementModel::C", "[measurement_model]")
 {
-  Lidar::MeasurementModel<CV::StateVector> lidar_mm;
+  Lidar::MeasurementModel<CV::ProcessModel> lidar_mm;
 
-  Lidar::MeasurementModel<CV::StateVector>::MeasurementMatrix meas_mtx;
+  Lidar::MeasurementModel<CV::ProcessModel>::MeasurementMatrix_type meas_mtx;
   meas_mtx << 1.0, 0.0, 0.0, 0.0,
               0.0, 1.0, 0.0, 0.0;
 
@@ -44,7 +45,7 @@ TEST_CASE("Lidar::MeasurementModel::Q", "[measurement_model]")
   lidar_mtx << 0.0225,    0.0,
                   0.0, 0.0225;
 
-  Lidar::MeasurementModel<CV::StateVector> lidar_mm;
+  Lidar::MeasurementModel<CV::ProcessModel> lidar_mm;
   lidar_mm.SetMeasurementCovarianceMatrix(lidar_mtx);
 
   REQUIRE(lidar_mm.Q().isApprox(lidar_mtx));

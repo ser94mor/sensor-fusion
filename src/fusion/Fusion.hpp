@@ -18,6 +18,7 @@
 #ifndef SENSOR_FUSION_FUSION_HPP
 #define SENSOR_FUSION_FUSION_HPP
 
+
 #include "definitions.hpp"
 #include "measurements.hpp"
 
@@ -46,7 +47,7 @@ namespace ser94mor
        * @param measurement_covariance_matrices
        */
       Fusion(IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix,
-             typename MeasurementModel<typename ProcessModel::StateVector_type>::MeasurementCovarianceMatrix_type...
+             typename MeasurementModel<ProcessModel>::MeasurementCovarianceMatrix_type...
              measurement_covariance_matrices);
 
       template <class Measurement>
@@ -74,7 +75,7 @@ namespace ser94mor
 
       Belief belief_;
       ProcessModel process_model_;
-      std::tuple<MeasurementModel<typename ProcessModel::StateVector_type>...> measurement_models_;
+      std::tuple<MeasurementModel<ProcessModel>...> measurement_models_;
     };
 
     template<template<class, class> class Filter, class ProcessModel,
@@ -102,7 +103,7 @@ namespace ser94mor
         template<class> class... MeasurementModel>
     Fusion<Filter, ProcessModel, MeasurementModel...>::
       Fusion(IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix,
-             typename MeasurementModel<typename ProcessModel::StateVector_type>::MeasurementCovarianceMatrix_type...
+             typename MeasurementModel<ProcessModel>::MeasurementCovarianceMatrix_type...
              measurement_covariance_matrices) :
         initialized_{false},
         processed_measurements_counter_{0},
@@ -116,7 +117,7 @@ namespace ser94mor
 
       InitializeMeasurementCovarianceMatrices(
           std::forward_as_tuple(measurement_covariance_matrices...),
-          std::index_sequence_for<MeasurementModel<typename ProcessModel::StateVector_type>...>{});
+          std::index_sequence_for<MeasurementModel<ProcessModel>...>{});
     }
 
     template<template<class, class> class Filter, class ProcessModel,
