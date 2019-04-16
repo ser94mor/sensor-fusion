@@ -28,11 +28,23 @@ using namespace ser94mor::sensor_fusion;
 
 TEST_CASE("LidarSensor::Type", "[sensors]")
 {
-  REQUIRE(std::string(Lidar::Sensor::Type()) == "SENSOR");
+  REQUIRE(Lidar::Sensor::Type() == EntityType::Sensor);
 }
 
 
-TEST_CASE("LidarSensor::Name", "[sensors]")
+TEST_CASE("LidarSensor::TypeName", "[sensors]")
 {
-  REQUIRE(std::string(Lidar::Sensor::Name()) == "LIDAR");
+  REQUIRE(std::string(Lidar::Sensor::TypeName()) == "SENSOR");
+}
+
+
+TEST_CASE("LidarSensor::Kind", "[sensors]")
+{
+  REQUIRE(Lidar::Sensor::Kind() == SensorKind::Lidar);
+}
+
+
+TEST_CASE("LidarSensor::KindName", "[sensors]")
+{
+  REQUIRE(std::string(Lidar::Sensor::KindName()) == "LIDAR");
 }

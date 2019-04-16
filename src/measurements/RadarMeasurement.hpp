@@ -27,7 +27,7 @@ namespace ser94mor
     {
 
       MEASUREMENT_DEFINITION(ser94mor::sensor_fusion::MeasurementModelKind::Radar);
-      
+
     }
   }
 }

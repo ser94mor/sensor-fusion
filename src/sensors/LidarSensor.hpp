@@ -31,7 +31,7 @@ namespace ser94mor
     namespace Lidar
     {
 
-      SENSOR_DEFINITION();
+      SENSOR_DEFINITION(SensorKind::Lidar);
 
     }
   }

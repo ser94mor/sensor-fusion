@@ -31,9 +31,7 @@ namespace ser94mor
     // process models //
     ////////////////////
     const char kProcessModelType[]{"PROCESS_MODEL"};
-    const char kSensorType[]{"SENSOR"};
-    const char kMeasurementModelType[]{"MEASUREMENT_MODEL"};
-    using IndividualNoiseProcessesCovarianceMatrix = Eigen::Matrix<double, 2, 2>;
+
 
     enum class EntityType
     {
@@ -53,7 +51,7 @@ namespace ser94mor
         case EntityType::Sensor:
           return "SENSOR";
         default:
-          return "!!!___UNDEFINED_ENTITY_TYPE__!!!";
+          return "!!!___UNDEFINED_ENTITY_TYPE___!!!";
       }
     }
 
@@ -75,6 +73,8 @@ namespace ser94mor
     ////////////////////
     // PROCESS MODELS //
     ////////////////////
+
+    using IndividualNoiseProcessesCovarianceMatrix = Eigen::Matrix<double, 2, 2>;
 
     namespace CV
     {
@@ -110,7 +110,6 @@ namespace ser94mor
     ////////////////////////
 
 #define MEASUREMENT_MODEL_DEFINITIONS(measurement_vector_dims, is_linear) \
-  extern const char kSensorName[]; \
   const int kMeasurementVectorDims = 2; \
   const bool kIsLinear{is_linear}; \
   using MeasurementVector = Eigen::Matrix<double, kMeasurementVectorDims, 1>; \
@@ -141,7 +140,31 @@ namespace ser94mor
         case MeasurementModelKind::Radar:
           return "RADAR";
         default:
-          return "!!!___UNDEFINED_MEASUREMENT_MODEL__!!!";
+          return "!!!___UNDEFINED_MEASUREMENT_MODEL___!!!";
+      }
+    }
+
+
+    /////////////
+    // SENSORS //
+    /////////////
+
+    enum class SensorKind
+    {
+      Lidar = 0,
+      Radar = 1,
+    };
+
+    constexpr const char* SensorNameByKind(SensorKind sk)
+    {
+      switch (sk)
+      {
+        case SensorKind::Lidar:
+          return "LIDAR";
+        case SensorKind::Radar:
+          return "RADAR";
+        default:
+          return "!!!___UNDEFINED_SENSOR___!!!";
       }
     }
 

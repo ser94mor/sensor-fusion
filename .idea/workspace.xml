@@ -13,9 +13,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ecd128b6-541b-4105-a67a-e4de71c9b93e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/filters/KalmanFilter.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/filters/KalmanFilter.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/measurement_models/LidarMeasurementModel.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/measurement_models/LidarMeasurementModel.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/measurements/Measurement.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/measurements/Measurement.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/definitions.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/definitions.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/measurement_models/MeasurementModel.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/measurement_models/MeasurementModel.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/measurements/RadarMeasurement.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/measurements/RadarMeasurement.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sensors/LidarSensor.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sensors/LidarSensor.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/sensors/LidarSensor.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sensors/RadarSensor.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sensors/RadarSensor.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/sensors/RadarSensor.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sensors/Sensor.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/sensors/Sensor.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/sensors_test.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/test/sensors_test.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -44,37 +51,88 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/measurements/Measurement.hpp">
+        <entry file="file://$PROJECT_DIR$/include/definitions.hpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="60" column="9" selection-start-line="60" selection-start-column="9" selection-end-line="60" selection-end-column="9" />
+            <state relative-caret-position="1380">
+              <caret line="106" selection-start-line="106" selection-end-line="106" />
               <folding>
-                <element signature="e#1295#1381#0" expanded="true" />
+                <element signature="e#799#815#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main.cpp">
+        <entry file="file://$PROJECT_DIR$/src/sensors/Sensor.hpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
-              <caret line="63" column="46" selection-start-line="63" selection-start-column="46" selection-end-line="63" selection-end-column="46" />
+            <state relative-caret-position="502">
+              <caret line="62" column="31" selection-start-line="62" selection-start-column="31" selection-end-line="62" selection-end-column="31" />
               <folding>
-                <element signature="e#721#749#0" expanded="true" />
+                <element signature="e#1001#1035#0" expanded="true" />
+                <element signature="e#1624#1658#0" expanded="true" />
+                <element signature="e#1781#1815#0" expanded="true" />
               </folding>
             </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/include/beliefs.hpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="315">
+              <caret line="21" column="35" selection-start-line="21" selection-start-column="35" selection-end-line="21" selection-end-column="35" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/sensors_test.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="360">
+              <caret line="42" column="52" selection-start-line="42" selection-start-column="52" selection-end-line="42" selection-end-column="52" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/sensors/RadarSensor.hpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="450">
+              <caret line="33" column="41" selection-start-line="33" selection-start-column="41" selection-end-line="33" selection-end-column="41" />
+              <folding>
+                <element signature="e#799#825#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/sensors/LidarSensor.hpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="465">
+              <caret line="33" column="41" selection-start-line="33" selection-start-column="41" selection-end-line="33" selection-end-column="41" />
+              <folding>
+                <element signature="e#799#825#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/sensors/SensorFactory.hpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-600" />
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/measurement_models/MeasurementModel.hpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="810">
-              <caret line="100" selection-start-line="100" selection-end-line="100" />
+            <state relative-caret-position="75">
+              <caret line="41" column="4" selection-start-line="41" selection-start-column="4" selection-end-line="41" selection-end-column="4" />
               <folding>
-                <element signature="e#1660#1809#0" expanded="true" />
-                <element signature="e#3677#3820#0" expanded="true" />
+                <element signature="e#1638#1787#0" expanded="true" />
+                <element signature="e#3864#4007#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -88,67 +146,6 @@
               <folding>
                 <element signature="e#819#845#0" expanded="true" />
                 <element signature="e#1350#1370#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/filters/KalmanFilter.hpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="190">
-              <caret line="34" column="7" lean-forward="true" selection-start-line="34" selection-start-column="7" selection-end-line="35" selection-end-column="85" />
-              <folding>
-                <element signature="e#801#817#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/fusion/Fusion.hpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="142">
-              <caret line="116" selection-start-line="116" selection-end-line="116" />
-              <folding>
-                <element signature="e#788#814#0" expanded="true" />
-                <element signature="e#3690#3798#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/filters_test.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="112">
-              <caret line="74" column="1" selection-start-line="74" selection-start-column="1" selection-end-line="74" selection-end-column="1" />
-              <folding>
-                <element signature="e#722#744#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/measurement_models_test.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="480">
-              <caret line="32" column="42" selection-start-line="32" selection-start-column="42" selection-end-line="32" selection-end-column="42" />
-              <folding>
-                <element signature="e#722#751#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/measurements/LidarMeasurement.hpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="390">
-              <caret line="31" column="82" selection-start-line="31" selection-start-column="82" selection-end-line="31" selection-end-column="82" />
-              <folding>
-                <element signature="e#809#835#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -188,7 +185,6 @@
         <option value="$PROJECT_DIR$/config/radar_measurement_model_config.json" />
         <option value="$PROJECT_DIR$/src/measurement_models/LidarMeasurementModel.cpp" />
         <option value="$PROJECT_DIR$/include/sensors.hpp" />
-        <option value="$PROJECT_DIR$/test/sensors_test.cpp" />
         <option value="$PROJECT_DIR$/src/sensors/__ConcreteSensor.hpp" />
         <option value="$PROJECT_DIR$/src/sensors/Radar.hpp" />
         <option value="$PROJECT_DIR$/include/measurement_models.hpp" />
@@ -199,15 +195,10 @@
         <option value="$PROJECT_DIR$/include/fusion.hpp" />
         <option value="$PROJECT_DIR$/src/sensors/SensorFactory.hpp" />
         <option value="$PROJECT_DIR$/src/filters/KalmanFilter.cpp" />
-        <option value="$PROJECT_DIR$/src/sensors/LidarSensor.hpp" />
         <option value="$PROJECT_DIR$/test/fusion_test.cpp" />
-        <option value="$PROJECT_DIR$/src/measurements/LidarMeasurement.hpp" />
-        <option value="$PROJECT_DIR$/src/measurements/RadarMeasurement.hpp" />
         <option value="$PROJECT_DIR$/src/process_models/CVStateVectorView.hpp" />
         <option value="$PROJECT_DIR$/include/process_models.hpp" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
-        <option value="$PROJECT_DIR$/src/sensors/Sensor.hpp" />
-        <option value="$PROJECT_DIR$/src/sensors/RadarSensor.hpp" />
         <option value="$PROJECT_DIR$/src/sensors/RadarSensor.cpp" />
         <option value="$PROJECT_DIR$/src/sensors/LidarSensor.cpp" />
         <option value="$PROJECT_DIR$/src/process_models/CVProcessModel.hpp" />
@@ -218,8 +209,6 @@
         <option value="$PROJECT_DIR$/include/beliefs.hpp" />
         <option value="$PROJECT_DIR$/src/beliefs/Belief.hpp" />
         <option value="$PROJECT_DIR$/src/beliefs/CTRVBelief.hpp" />
-        <option value="$PROJECT_DIR$/include/definitions.hpp" />
-        <option value="$PROJECT_DIR$/src/measurement_models/MeasurementModel.hpp" />
         <option value="$PROJECT_DIR$/src/process_models/ProcessModel.hpp" />
         <option value="$PROJECT_DIR$/src/fusion/Fusion.hpp" />
         <option value="$PROJECT_DIR$/test/filters_test.cpp" />
@@ -227,6 +216,14 @@
         <option value="$PROJECT_DIR$/src/filters/KalmanFilter.hpp" />
         <option value="$PROJECT_DIR$/src/measurement_models/LidarMeasurementModel.hpp" />
         <option value="$PROJECT_DIR$/src/measurements/Measurement.hpp" />
+        <option value="$PROJECT_DIR$/src/measurements/LidarMeasurement.hpp" />
+        <option value="$PROJECT_DIR$/src/measurements/RadarMeasurement.hpp" />
+        <option value="$PROJECT_DIR$/include/definitions.hpp" />
+        <option value="$PROJECT_DIR$/src/measurement_models/MeasurementModel.hpp" />
+        <option value="$PROJECT_DIR$/src/sensors/Sensor.hpp" />
+        <option value="$PROJECT_DIR$/src/sensors/RadarSensor.hpp" />
+        <option value="$PROJECT_DIR$/src/sensors/LidarSensor.hpp" />
+        <option value="$PROJECT_DIR$/test/sensors_test.cpp" />
       </list>
     </option>
   </component>
@@ -268,18 +265,6 @@
               <item name="sensor_fusion" type="b2602c69:ProjectViewProjectNode" />
               <item name="sensor-fusion" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="beliefs" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="sensor_fusion" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sensor-fusion" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="filters" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="sensor_fusion" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sensor-fusion" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="fusion" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -287,12 +272,6 @@
               <item name="sensor-fusion" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="measurement_models" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="sensor_fusion" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sensor-fusion" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="measurements" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="sensor_fusion" type="b2602c69:ProjectViewProjectNode" />
@@ -395,12 +374,12 @@
       <workItem from="1555148140672" duration="36487000" />
       <workItem from="1555198007771" duration="2670000" />
       <workItem from="1555242327229" duration="35130000" />
-      <workItem from="1555408881087" duration="11550000" />
+      <workItem from="1555408881087" duration="13379000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="263617000" />
+    <option name="totallyTimeSpent" value="265446000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="47" y="-4" width="1633" height="1054" extended-state="6" />
@@ -411,7 +390,7 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3261339" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.325054" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.3336933" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.40820736" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -454,14 +433,6 @@
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/filters/KalmanFilter.cpp" />
-    <entry file="file://$PROJECT_DIR$/src/process_models/CTRVStateVectorView.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="55" column="19" lean-forward="true" selection-start-line="55" selection-start-column="19" selection-end-line="55" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/test/beliefs_test.cpp">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -592,13 +563,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/measurements/RadarMeasurement.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="13" column="68" lean-forward="true" selection-start-line="13" selection-start-column="68" selection-end-line="13" selection-end-column="68" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/process_models/CVStateVectorView.hpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-450">
@@ -610,47 +574,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="15">
           <caret line="1" column="22" selection-start-line="1" selection-start-column="22" selection-end-line="1" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/sensors/Sensor.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="25" column="85" lean-forward="true" selection-start-line="25" selection-start-column="85" selection-end-line="25" selection-end-column="85" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/sensors/RadarSensor.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="490">
-          <caret line="33" column="26" selection-start-line="33" selection-start-column="26" selection-end-line="33" selection-end-column="26" />
-          <folding>
-            <element signature="e#799#825#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/sensors/RadarSensor.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" column="26" lean-forward="true" selection-start-line="18" selection-start-column="26" selection-end-line="18" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/sensors/LidarSensor.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="33" column="6" lean-forward="true" selection-start-line="33" selection-start-column="6" selection-end-line="33" selection-end-column="26" />
-          <folding>
-            <element signature="e#799#825#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/sensors/LidarSensor.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" column="18" selection-start-line="21" selection-start-column="18" selection-end-line="21" selection-end-column="18" />
         </state>
       </provider>
     </entry>
@@ -674,49 +597,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/beliefs.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" column="35" selection-start-line="21" selection-start-column="35" selection-end-line="21" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/beliefs/Belief.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="30" column="3" selection-start-line="30" selection-start-column="3" selection-end-line="30" selection-end-column="3" />
-          <folding>
-            <element signature="e#789#815#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/beliefs/CVBelief.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" column="3" selection-start-line="15" selection-start-column="3" selection-end-line="15" selection-end-column="3" />
-          <folding>
-            <element signature="e#792#818#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/beliefs/CTRVBelief.hpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="495">
           <caret line="34" column="4" selection-start-line="34" selection-start-column="4" selection-end-line="34" selection-end-column="4" />
           <folding>
             <element signature="e#797#823#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/definitions.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="44" column="42" selection-start-line="44" selection-start-column="26" selection-end-line="44" selection-end-column="42" />
-          <folding>
-            <element signature="e#799#815#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -793,16 +679,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/measurements/LidarMeasurement.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="31" column="82" selection-start-line="31" selection-start-column="82" selection-end-line="31" selection-end-column="82" />
-          <folding>
-            <element signature="e#809#835#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="15">
@@ -813,23 +689,81 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/measurement_models/MeasurementModel.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="810">
-          <caret line="100" selection-start-line="100" selection-end-line="100" />
-          <folding>
-            <element signature="e#1660#1809#0" expanded="true" />
-            <element signature="e#3677#3820#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/filters/KalmanFilter.hpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="190">
           <caret line="34" column="7" lean-forward="true" selection-start-line="34" selection-start-column="7" selection-end-line="35" selection-end-column="85" />
           <folding>
             <element signature="e#801#817#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/beliefs/Belief.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="26" column="2" selection-start-line="26" selection-end-line="30" selection-end-column="3" />
+          <folding>
+            <element signature="e#789#815#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/measurements/Measurement.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-690">
+          <caret line="21" column="16" lean-forward="true" selection-start-line="21" selection-start-column="16" selection-end-line="21" selection-end-column="16" />
+          <folding>
+            <element signature="e#1295#1381#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/beliefs/CVBelief.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="3" selection-start-line="15" selection-start-column="3" selection-end-line="15" selection-end-column="3" />
+          <folding>
+            <element signature="e#792#818#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/measurements/LidarMeasurement.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="33" selection-start-line="33" selection-end-line="33" />
+          <folding>
+            <element signature="e#809#835#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/measurements/RadarMeasurement.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="29" selection-start-line="29" selection-end-line="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/process_models/ProcessModel.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="235">
+          <caret line="41" selection-start-line="41" selection-end-line="41" />
+          <folding>
+            <element signature="e#801#827#0" expanded="true" />
+            <element signature="e#971#1074#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/measurement_models/MeasurementModel.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="41" column="4" selection-start-line="41" selection-start-column="4" selection-end-line="41" selection-end-column="4" />
+          <folding>
+            <element signature="e#1638#1787#0" expanded="true" />
+            <element signature="e#3864#4007#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -845,23 +779,77 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/process_models/ProcessModel.hpp">
+    <entry file="file://$PROJECT_DIR$/src/sensors/RadarSensor.hpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="235">
-          <caret line="41" selection-start-line="41" selection-end-line="41" />
+        <state relative-caret-position="450">
+          <caret line="33" column="41" selection-start-line="33" selection-start-column="41" selection-end-line="33" selection-end-column="41" />
           <folding>
-            <element signature="e#801#827#0" expanded="true" />
-            <element signature="e#971#1074#0" expanded="true" />
+            <element signature="e#799#825#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/measurements/Measurement.hpp">
+    <entry file="file://$PROJECT_DIR$/src/sensors/LidarSensor.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="60" column="9" selection-start-line="60" selection-start-column="9" selection-end-line="60" selection-end-column="9" />
+        <state relative-caret-position="315">
+          <caret line="21" column="18" selection-start-line="21" selection-start-column="18" selection-end-line="21" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/sensors/RadarSensor.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="18" column="26" lean-forward="true" selection-start-line="18" selection-start-column="26" selection-end-line="18" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/sensors/LidarSensor.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="465">
+          <caret line="33" column="41" selection-start-line="33" selection-start-column="41" selection-end-line="33" selection-end-column="41" />
           <folding>
-            <element signature="e#1295#1381#0" expanded="true" />
+            <element signature="e#799#825#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/sensors/SensorFactory.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-600" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/sensors_test.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="42" column="52" selection-start-line="42" selection-start-column="52" selection-end-line="42" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/sensors/Sensor.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="502">
+          <caret line="62" column="31" selection-start-line="62" selection-start-column="31" selection-end-line="62" selection-end-column="31" />
+          <folding>
+            <element signature="e#1001#1035#0" expanded="true" />
+            <element signature="e#1624#1658#0" expanded="true" />
+            <element signature="e#1781#1815#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/beliefs.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="21" column="35" selection-start-line="21" selection-start-column="35" selection-end-line="21" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/definitions.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1380">
+          <caret line="106" selection-start-line="106" selection-end-line="106" />
+          <folding>
+            <element signature="e#799#815#0" expanded="true" />
           </folding>
         </state>
       </provider>

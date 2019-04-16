@@ -72,7 +72,7 @@ namespace ser94mor
       /**
        * @return a measurement model kind
        */
-      constexpr MeasurementModelKind Kind()
+      constexpr static MeasurementModelKind Kind()
       {
         return mmk;
       }
@@ -82,7 +82,7 @@ namespace ser94mor
        */
       constexpr static const char* KindName()
       {
-        return MeasurementModelNameByKind(mmk);
+        return MeasurementModelNameByKind(Kind());
       }
 
       /**
@@ -122,9 +122,8 @@ namespace ser94mor
 
     template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector, class Sensor,
         MeasurementModelKind mmk, bool is_linear>
-    void MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-        StateVector, Sensor, mmk, is_linear>::SetMeasurementCovarianceMatrix(
-        const MeasurementCovarianceMatrix& mtx)
+    void MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix, StateVector, Sensor, mmk, is_linear>::
+      SetMeasurementCovarianceMatrix(const MeasurementCovarianceMatrix& mtx)
     {
       measurement_covariance_matrix_ = mtx;
     }

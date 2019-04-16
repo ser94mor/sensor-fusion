@@ -22,8 +22,8 @@
 #include "definitions.hpp"
 
 
-#define SENSOR_DEFINITION() \
-  class Sensor : public ser94mor::sensor_fusion::Sensor<Measurement, kSensorName> { }
+#define SENSOR_DEFINITION(sk) \
+  class Sensor : public ser94mor::sensor_fusion::Sensor<Measurement, sk> { }
 
 
 namespace  ser94mor
@@ -31,18 +31,28 @@ namespace  ser94mor
   namespace sensor_fusion
   {
 
-    template<class Measurement, const char* name>
+    template<class Measurement, SensorKind sk>
     class Sensor
     {
     public:
-      constexpr static const char* Type()
+      constexpr static EntityType Type()
       {
-        return kSensorType;
+        return EntityType::Sensor;
       }
 
-      constexpr static const char* Name()
+      constexpr static const char* TypeName()
       {
-        return name;
+        return EntityNameByType(EntityType::Sensor);
+      }
+
+      constexpr static SensorKind Kind()
+      {
+        return sk;
+      }
+
+      constexpr static const char* KindName()
+      {
+        return SensorNameByKind(Kind());
       }
 
       Measurement* GetMeasurementIfExists() const;
@@ -53,14 +63,14 @@ namespace  ser94mor
       Measurement measurement_;
     };
 
-    template<class Measurement, const char* name>
-    Measurement* Sensor<Measurement, name>::GetMeasurementIfExists() const
+    template<class Measurement, SensorKind sk>
+    Measurement* Sensor<Measurement, sk>::GetMeasurementIfExists() const
     {
       return nullptr;
     }
 
-    template<class Measurement, const char* name>
-    void Sensor<Measurement, name>::SetMeasurement(const Measurement measurement)
+    template<class Measurement, SensorKind sk>
+    void Sensor<Measurement, sk>::SetMeasurement(const Measurement measurement)
     {
       this->measurement_ = measurement;
     }
