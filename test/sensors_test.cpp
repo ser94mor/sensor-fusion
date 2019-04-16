@@ -26,25 +26,49 @@ using namespace Eigen;
 using namespace ser94mor::sensor_fusion;
 
 
-TEST_CASE("LidarSensor::Type", "[sensors]")
+TEST_CASE("Lidar::Sensor::Type", "[sensors]")
 {
   REQUIRE(Lidar::Sensor::Type() == EntityType::Sensor);
 }
 
 
-TEST_CASE("LidarSensor::TypeName", "[sensors]")
+TEST_CASE("Lidar::Sensor::TypeName", "[sensors]")
 {
   REQUIRE(std::string(Lidar::Sensor::TypeName()) == "SENSOR");
 }
 
 
-TEST_CASE("LidarSensor::Kind", "[sensors]")
+TEST_CASE("Lidar::Sensor::Kind", "[sensors]")
 {
   REQUIRE(Lidar::Sensor::Kind() == SensorKind::Lidar);
 }
 
 
-TEST_CASE("LidarSensor::KindName", "[sensors]")
+TEST_CASE("Lidar::Sensor::KindName", "[sensors]")
 {
   REQUIRE(std::string(Lidar::Sensor::KindName()) == "LIDAR");
+}
+
+
+TEST_CASE("Radar::Sensor::Type", "[sensors]")
+{
+  REQUIRE(Radar::Sensor::Type() == EntityType::Sensor);
+}
+
+
+TEST_CASE("Radar::Sensor::TypeName", "[sensors]")
+{
+  REQUIRE(std::string(Radar::Sensor::TypeName()) == "SENSOR");
+}
+
+
+TEST_CASE("Radar::Sensor::Kind", "[sensors]")
+{
+  REQUIRE(Radar::Sensor::Kind() == SensorKind::Radar);
+}
+
+
+TEST_CASE("Radar::Sensor::KindName", "[sensors]")
+{
+  REQUIRE(std::string(Radar::Sensor::KindName()) == "RADAR");
 }

@@ -32,29 +32,9 @@ namespace  ser94mor
   {
 
     template<class Measurement, SensorKind sk>
-    class Sensor
+    class Sensor : public Entity<EntityType::Sensor, SensorKind, sk>
     {
     public:
-      constexpr static EntityType Type()
-      {
-        return EntityType::Sensor;
-      }
-
-      constexpr static const char* TypeName()
-      {
-        return EntityNameByType(EntityType::Sensor);
-      }
-
-      constexpr static SensorKind Kind()
-      {
-        return sk;
-      }
-
-      constexpr static const char* KindName()
-      {
-        return SensorNameByKind(Kind());
-      }
-
       Measurement* GetMeasurementIfExists() const;
 
       void SetMeasurement(Measurement measurement);

@@ -41,7 +41,7 @@ namespace ser94mor
      */
     template<class MeasurementVector, class MeasurementCovarianceMatrix, class ProcessModel, class Sensor,
              MeasurementModelKind mmk, bool is_linear>
-    class MeasurementModel
+    class MeasurementModel : public Entity<EntityType::MeasurementModel, MeasurementModelKind, mmk>
     {
     public:
 
@@ -52,38 +52,6 @@ namespace ser94mor
       using Measurement_type = Measurement<MeasurementVector, MeasurementCovarianceMatrix, mmk>;
       using MeasurementCovarianceMatrix_type = MeasurementCovarianceMatrix;
       using Sensor_type = Sensor;
-
-      /**
-       * @return an entity type
-       */
-      constexpr static EntityType Type()
-      {
-        return EntityType::MeasurementModel;
-      }
-
-      /**
-       * @return an entity type name (for logging)
-       */
-      constexpr static const char* TypeName()
-      {
-        return EntityNameByType(Type());
-      }
-
-      /**
-       * @return a measurement model kind
-       */
-      constexpr static MeasurementModelKind Kind()
-      {
-        return mmk;
-      }
-
-      /**
-       * @return a measurement model kind name (for logging)
-       */
-      constexpr static const char* KindName()
-      {
-        return MeasurementModelNameByKind(Kind());
-      }
 
       /**
        * @return a number of dimensions in measurement vector

@@ -50,3 +50,27 @@ TEST_CASE("Lidar::MeasurementModel::Q", "[measurement_model]")
 
   REQUIRE(lidar_mm.Q().isApprox(lidar_mtx));
 }
+
+
+TEST_CASE("Lidar::MeasurementModel::Type", "[sensors]")
+{
+  REQUIRE(Lidar::MeasurementModel<CV::ProcessModel>::Type() == EntityType::MeasurementModel);
+}
+
+
+TEST_CASE("Lidar::MeasurementModel::TypeName", "[sensors]")
+{
+  REQUIRE(std::string(Lidar::MeasurementModel<CV::ProcessModel>::TypeName()) == "MEASUREMENT_MODEL");
+}
+
+
+TEST_CASE("Lidar::MeasurementModel::Kind", "[sensors]")
+{
+  REQUIRE(Lidar::MeasurementModel<CV::ProcessModel>::Kind() == MeasurementModelKind::Lidar);
+}
+
+
+TEST_CASE("Lidar::MeasurementModel::KindName", "[sensors]")
+{
+  REQUIRE(std::string(Lidar::MeasurementModel<CV::ProcessModel>::KindName()) == "LIDAR");
+}

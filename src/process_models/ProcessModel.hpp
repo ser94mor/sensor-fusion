@@ -30,8 +30,8 @@ namespace ser94mor
   namespace sensor_fusion
   {
 
-    template<class StateVector, class StateCovarianceMatrix, class ControlVector, const char* name, bool is_linear>
-    class ProcessModel
+    template<class StateVector, class StateCovarianceMatrix, class ControlVector, ProcessModelKind pmk, bool is_linear>
+    class ProcessModel : public Entity<EntityType::ProcessModel, ProcessModelKind, pmk>
     {
     public:
 
@@ -39,16 +39,6 @@ namespace ser94mor
       using StateVector_type = StateVector;
       using StateCovarianceMatrix_type = StateCovarianceMatrix;
       using ControlVector_type = ControlVector;
-
-      constexpr static const char* Type()
-      {
-        return kProcessModelType;
-      }
-
-      constexpr static const char* Name()
-      {
-        return name;
-      }
 
       constexpr static int StateDims()
       {
@@ -72,9 +62,9 @@ namespace ser94mor
       IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix_;
     };
 
-    template<class StateVector, class StateCovarianceMatrix, class ControlVector, const char* name, bool is_linear>
+    template<class StateVector, class StateCovarianceMatrix, class ControlVector, ProcessModelKind pmk, bool is_linear>
     template<typename Derived>
-    void ProcessModel<StateVector, StateCovarianceMatrix, ControlVector, name, is_linear>::
+    void ProcessModel<StateVector, StateCovarianceMatrix, ControlVector, pmk, is_linear>::
     SetIndividualNoiseProcessCovarianceMatrix(const Eigen::MatrixBase<Derived>& mtx)
     {
       individual_noise_processes_covariance_matrix_ = mtx;

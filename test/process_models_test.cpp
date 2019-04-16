@@ -16,6 +16,7 @@
  */
 
 
+#include "definitions.hpp"
 #include "process_models.hpp"
 
 #include <catch.hpp>
@@ -44,7 +45,7 @@ TEST_CASE("CV::ProcessModel::A", "[process_models]")
 }
 
 
-TEST_CASE("CVProcessModel::B", "[process_models]")
+TEST_CASE("CV::ProcessModel::B", "[process_models]")
 {
   CV::ProcessModel cv_pm;
   IndividualNoiseProcessesCovarianceMatrix mtx;
@@ -58,7 +59,7 @@ TEST_CASE("CVProcessModel::B", "[process_models]")
 }
 
 
-TEST_CASE("CVProcessModel::R", "[process_models]")
+TEST_CASE("CV::ProcessModel::R", "[process_models]")
 {
   CV::ProcessModel cv_pm1;
   IndividualNoiseProcessesCovarianceMatrix mtx1;
@@ -86,4 +87,28 @@ TEST_CASE("CVProcessModel::R", "[process_models]")
 
   REQUIRE(cv_pm1.R(1).isApprox(R1));
   REQUIRE(cv_pm2.R(2).isApprox(R2));
+}
+
+
+TEST_CASE("CV::ProcessModel::Type", "[sensors]")
+{
+  REQUIRE(CV::ProcessModel::Type() == EntityType::ProcessModel);
+}
+
+
+TEST_CASE("CV::ProcessModel::TypeName", "[sensors]")
+{
+  REQUIRE(std::string(CV::ProcessModel::TypeName()) == "PROCESS_MODEL");
+}
+
+
+TEST_CASE("CV::ProcessModel::Kind", "[sensors]")
+{
+  REQUIRE(CV::ProcessModel::Kind() == ProcessModelKind::CV);
+}
+
+
+TEST_CASE("CV::ProcessModel::KindName", "[sensors]")
+{
+  REQUIRE(std::string(CV::ProcessModel::KindName()) == "CV");
 }

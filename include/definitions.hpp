@@ -19,19 +19,13 @@
 #define SENSOR_FUSION_DEFINITIONS_HPP
 
 
-#include <tuple>
 #include <Eigen/Dense>
+
 
 namespace ser94mor
 {
   namespace sensor_fusion
   {
-
-    ////////////////////
-    // process models //
-    ////////////////////
-    const char kProcessModelType[]{"PROCESS_MODEL"};
-
 
     enum class EntityType
     {
@@ -62,6 +56,7 @@ namespace ser94mor
     const int kMaxSensors = 2;
 
 
+
     //////////////
     // controls //
     //////////////
@@ -73,6 +68,25 @@ namespace ser94mor
     ////////////////////
     // PROCESS MODELS //
     ////////////////////
+
+    enum class ProcessModelKind
+    {
+      CV = 0,
+      CTRV = 1,
+    };
+
+    constexpr const char* NameByKind(ProcessModelKind pmk)
+    {
+      switch (pmk)
+      {
+        case ProcessModelKind::CV:
+          return "CV";
+        case ProcessModelKind::CTRV:
+          return "CTRV";
+        default:
+          return "!!!___UNDEFINED_PROCESS_MODEL_KIND___!!!";
+      }
+    }
 
     using IndividualNoiseProcessesCovarianceMatrix = Eigen::Matrix<double, 2, 2>;
 
@@ -131,7 +145,7 @@ namespace ser94mor
       Radar = 1,
     };
 
-    constexpr const char* MeasurementModelNameByKind(MeasurementModelKind mm)
+    constexpr const char* NameByKind(MeasurementModelKind mm)
     {
       switch (mm)
       {
@@ -155,7 +169,7 @@ namespace ser94mor
       Radar = 1,
     };
 
-    constexpr const char* SensorNameByKind(SensorKind sk)
+    constexpr const char* NameByKind(SensorKind sk)
     {
       switch (sk)
       {
@@ -167,6 +181,33 @@ namespace ser94mor
           return "!!!___UNDEFINED_SENSOR___!!!";
       }
     }
+
+
+    template <EntityType type, class Kind_type, Kind_type kind>
+    class Entity
+    {
+    public:
+
+      constexpr static EntityType Type()
+      {
+        return type;
+      }
+
+      constexpr static const char* TypeName()
+      {
+        return EntityNameByType(Type());
+      }
+
+      constexpr static Kind_type Kind()
+      {
+        return kind;
+      }
+
+      constexpr static const char* KindName()
+      {
+        return NameByKind(Kind());
+      }
+    };
 
 
     /////////////
