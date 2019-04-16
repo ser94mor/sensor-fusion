@@ -80,3 +80,15 @@ TEST_CASE("Lidar::MeasurementModel::IsLinear", "[measurement_models]")
 {
   REQUIRE(Lidar::MeasurementModel<CV::ProcessModel>::IsLinear());
 }
+
+
+TEST_CASE("Lidar::MeasurementModel::MeasurementDims", "[measurement_models]")
+{
+  REQUIRE(Lidar::MeasurementModel<CV::ProcessModel>::MeasurementDims() == 2);
+}
+
+
+TEST_CASE("Lidar::MeasurementModel::StateDims", "[measurement_models]")
+{
+  REQUIRE(Lidar::MeasurementModel<CV::ProcessModel>::StateDims() == 4);
+}

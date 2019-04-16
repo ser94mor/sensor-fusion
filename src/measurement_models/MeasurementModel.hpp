@@ -44,7 +44,6 @@ namespace ser94mor
     class MeasurementModel : public ModelEntity<EntityType::MeasurementModel, MeasurementModelKind, mmk, is_linear>
     {
     public:
-
       /**
        * The typedefs below are needed in other places in the code. These typedefs, in fact, are attributes of the
        * measurement model.

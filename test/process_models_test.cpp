@@ -118,3 +118,15 @@ TEST_CASE("CV::ProcessModel::IsLinear", "[process_models]")
 {
   REQUIRE(CV::ProcessModel::IsLinear());
 }
+
+
+TEST_CASE("CV::ProcessModel::ControlDims", "[process_models]")
+{
+  REQUIRE(CV::ProcessModel::ControlDims() == 4);
+}
+
+
+TEST_CASE("CV::ProcessModel::StateDims", "[process_models]")
+{
+  REQUIRE(CV::ProcessModel::StateDims() == 4);
+}
