@@ -38,6 +38,7 @@ namespace ser94mor
       using Belief_type = Belief<StateVector, StateCovarianceMatrix>;
       using StateVector_type = StateVector;
       using StateCovarianceMatrix_type = StateCovarianceMatrix;
+      using ControlVector_type = ControlVector;
 
       constexpr static const char* Type()
       {

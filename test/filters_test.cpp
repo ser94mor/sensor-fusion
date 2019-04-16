@@ -44,6 +44,8 @@ TEST_CASE("KalmanFilter::Predict", "[filters]")
   using KF = KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel::StateVector_type>>;
   using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
 
+  CV::ControlVector control_vector{CV::ControlVector::Zero()};
+
   Vector4d mu;
   mu << 1., 2., 3., 4.;
 
@@ -66,7 +68,7 @@ TEST_CASE("KalmanFilter::Predict", "[filters]")
                  50., 47., 37., 30.;
   BEL belief_prior_expected{2, mu_prior, Sigma_prior};
 
-  BEL belief_prior{KF::Predict(belief, dt, cv_pm)};
+  BEL belief_prior{KF::Predict(belief, control_vector, dt, cv_pm)};
 
   REQUIRE(belief_prior == belief_prior_expected);
 }

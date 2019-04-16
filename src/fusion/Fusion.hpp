@@ -84,12 +84,14 @@ namespace ser94mor
     Fusion<Filter, ProcessModel, MeasurementModel...>::
     ProcessMeasurement(Measurement_type& measurement, MeasurementModel_type& measurement_model)
     {
+      using ControlVector = typename ProcessModel::ControlVector_type;
       // process measurement only in case measurement model matches measurement
       if (measurement.MeasurementModelKind() == measurement_model.Kind())
       {
         auto dt = measurement.t() - previous_measurement_timestamp_;
 
-        auto belief_prior{Filter<ProcessModel, MeasurementModel_type>::Predict(belief_, dt, process_model_)};
+        auto belief_prior{Filter<ProcessModel, MeasurementModel_type>::
+                          Predict(belief_, ControlVector::Zero(), dt, process_model_)};
         belief_ = Filter<ProcessModel, MeasurementModel_type>::Update(belief_prior, measurement, measurement_model);
 
         previous_measurement_timestamp_ = measurement.t();

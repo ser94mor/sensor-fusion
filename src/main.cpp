@@ -64,7 +64,7 @@ VectorXd CalculateRMSE(const vector<VectorXd> &estimations,
   //  * the estimation vector size should not be zero
   //  * the estimation vector size should equal ground truth vector size
   if(estimations.size() != ground_truth.size()
-     || estimations.size() == 0){
+     || estimations.empty()){
     cout << "Invalid estimation or ground_truth data" << endl;
     return rmse;
   }
@@ -119,9 +119,6 @@ int main(int argc, char *argv[])
               0.0, 0.0225;
 
   KF_CV_LIDAR_Fusion fusion{p_mtx, m_mtx};
-
-
-
 
 
   uWS::Hub h;

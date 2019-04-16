@@ -24,18 +24,27 @@
 #include <ctime>
 
 
+#define BELIEF_DEFINITION() \
+  class Belief : public ser94mor::sensor_fusion::Belief<StateVector, StateCovarianceMatrix> { }
+
+
+
 namespace ser94mor
 {
   namespace sensor_fusion
   {
 
     /**
-     * A representation of "belief" concept from Bayesian filtering;
+     * A representation of "belief" concept from Bayesian filtering.
      */
     template<class StateVector, class StateCovarianceMatrix>
     class Belief
     {
     public:
+      /**
+       * Belief's timestamp.
+       * @return timestamp
+       */
       std::time_t t() const
       {
         return timestamp_;
