@@ -1,0 +1,7 @@
+{
+  "type": "MEASUREMENT_MODEL",
+  "name": "LIDAR",
+  "cov_px_px": 0.0225,
+  "cov_py_py": 0.0225,
+  "cov_px_py": 0.0
+}
