@@ -37,6 +37,10 @@ namespace ser94mor
       {
       public:
 
+        /**
+         * Constructor.
+         * @param state_vector a state vector
+         */
         explicit StateVectorView(const StateVector& state_vector) : state_vector_{state_vector}
         {
 

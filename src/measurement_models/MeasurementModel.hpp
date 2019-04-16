@@ -69,14 +69,6 @@ namespace ser94mor
       }
 
       /**
-       * @return a flag whether the measurement model is linear or not
-       */
-      constexpr static bool IsLinear()
-      {
-        return is_linear;
-      }
-
-      /**
        * Set measurement covariance matrix. It is done explicitly by the user of measurement model
        * due to the variadic templates used in this code. MeasurementModel needs a default constructor.
        * @param mtx a measurement covariance matrix

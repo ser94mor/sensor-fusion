@@ -26,8 +26,6 @@ namespace ser94mor
     namespace CV
     {
 
-      const char kProcessModelName[]{"CV"};
-
       ProcessModel::ProcessModel() : state_transition_matrix_prototype_{StateTransitionMatrix::Identity()}
       {
 
@@ -45,10 +43,10 @@ namespace ser94mor
       {
         Eigen::Matrix<double, ProcessModel::StateDims(), 2> Gt;
         double dt_2_2 = dt * dt / 2.;
-        Gt << dt_2_2, 0.0,
-            0.0, dt_2_2,
-            dt, 0.0,
-            0.0, dt;
+        Gt << dt_2_2,    0.0,
+                 0.0, dt_2_2,
+                  dt,    0.0,
+                 0.0,     dt;
         return Gt * individual_noise_processes_covariance_matrix_ * Gt.transpose();
       }
 

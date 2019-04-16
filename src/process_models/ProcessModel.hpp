@@ -44,33 +44,45 @@ namespace ser94mor
     class ProcessModel : public ModelEntity<EntityType::ProcessModel, ProcessModelKind, pmk, is_linear>
     {
     public:
-
+      /**
+       * The typedefs below are needed in other places in the code. These typedefs, in fact, are attributes of the
+       * process model.
+       */
       using Belief_type = Belief<StateVector, StateCovarianceMatrix>;
       using StateVector_type = StateVector;
       using StateCovarianceMatrix_type = StateCovarianceMatrix;
       using ControlVector_type = ControlVector;
 
+      /**
+       * @return a number of dimensions in the state vector
+       */
       constexpr static int StateDims()
       {
         return StateVector::SizeAtCompileTime;
       }
 
+      /**
+       * @return a number of dimensions in the control vector
+       */
       constexpr static int ControlDims()
       {
         return ControlVector::SizeAtCompileTime;
       }
 
-      template<typename Derived>
-      void SetIndividualNoiseProcessCovarianceMatrix(const Eigen::MatrixBase<Derived>& mtx);
+      /**
+       * Set an individual noise process covariance matrix. It is done explicitly by the user of the process model
+       * due to the variadic templates used in this code. ProcessModel needs a default constructor.
+       * @param mtx an individual noise process covariance matrix
+       */
+      void SetIndividualNoiseProcessCovarianceMatrix(const IndividualNoiseProcessesCovarianceMatrix& mtx);
 
     protected:
       IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix_;
     };
 
     template<class StateVector, class StateCovarianceMatrix, class ControlVector, ProcessModelKind pmk, bool is_linear>
-    template<typename Derived>
     void ProcessModel<StateVector, StateCovarianceMatrix, ControlVector, pmk, is_linear>::
-    SetIndividualNoiseProcessCovarianceMatrix(const Eigen::MatrixBase<Derived>& mtx)
+    SetIndividualNoiseProcessCovarianceMatrix(const IndividualNoiseProcessesCovarianceMatrix& mtx)
     {
       individual_noise_processes_covariance_matrix_ = mtx;
     }
