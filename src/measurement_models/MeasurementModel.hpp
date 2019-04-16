@@ -41,7 +41,7 @@ namespace ser94mor
      */
     template<class MeasurementVector, class MeasurementCovarianceMatrix, class ProcessModel, class Sensor,
              MeasurementModelKind mmk, bool is_linear>
-    class MeasurementModel : public Entity<EntityType::MeasurementModel, MeasurementModelKind, mmk>
+    class MeasurementModel : public ModelEntity<EntityType::MeasurementModel, MeasurementModelKind, mmk, is_linear>
     {
     public:
 

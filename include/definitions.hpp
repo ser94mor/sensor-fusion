@@ -50,21 +50,6 @@ namespace ser94mor
     }
 
 
-    /////////////
-    // sensors //
-    /////////////
-    const int kMaxSensors = 2;
-
-
-
-    //////////////
-    // controls //
-    //////////////
-    const int kMaxControlDims = -1;
-    using ControlVector = Eigen::Matrix<double, Eigen::Dynamic, 1, 0, kMaxControlDims, 1>;
-    using ControlMatrix = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, kMaxControlDims, kMaxControlDims>;
-
-
     ////////////////////
     // PROCESS MODELS //
     ////////////////////
@@ -206,6 +191,16 @@ namespace ser94mor
       constexpr static const char* KindName()
       {
         return NameByKind(Kind());
+      }
+    };
+
+    template <EntityType type, class Kind_type, Kind_type kind, bool is_linear>
+    class ModelEntity : public Entity<type, Kind_type, kind>
+    {
+    public:
+      constexpr static bool IsLinear()
+      {
+        return is_linear;
       }
     };
 

@@ -90,25 +90,31 @@ TEST_CASE("CV::ProcessModel::R", "[process_models]")
 }
 
 
-TEST_CASE("CV::ProcessModel::Type", "[sensors]")
+TEST_CASE("CV::ProcessModel::Type", "[process_models]")
 {
   REQUIRE(CV::ProcessModel::Type() == EntityType::ProcessModel);
 }
 
 
-TEST_CASE("CV::ProcessModel::TypeName", "[sensors]")
+TEST_CASE("CV::ProcessModel::TypeName", "[process_models]")
 {
   REQUIRE(std::string(CV::ProcessModel::TypeName()) == "PROCESS_MODEL");
 }
 
 
-TEST_CASE("CV::ProcessModel::Kind", "[sensors]")
+TEST_CASE("CV::ProcessModel::Kind", "[process_models]")
 {
   REQUIRE(CV::ProcessModel::Kind() == ProcessModelKind::CV);
 }
 
 
-TEST_CASE("CV::ProcessModel::KindName", "[sensors]")
+TEST_CASE("CV::ProcessModel::KindName", "[process_models]")
 {
   REQUIRE(std::string(CV::ProcessModel::KindName()) == "CV");
+}
+
+
+TEST_CASE("CV::ProcessModel::IsLinear", "[process_models]")
+{
+  REQUIRE(CV::ProcessModel::IsLinear());
 }

@@ -30,8 +30,18 @@ namespace ser94mor
   namespace sensor_fusion
   {
 
+    /**
+     * A base template class representing a process model.
+     * It contains methods and functions common for all concrete process models.
+     *
+     * @tparam StateVector a state vector class
+     * @tparam StateCovarianceMatrix a state covariance matrix class
+     * @tparam ControlVector a control vector class
+     * @tparam pmk a process model kind
+     * @tparam is_linear a flag indicating whether the process model is linear or not
+     */
     template<class StateVector, class StateCovarianceMatrix, class ControlVector, ProcessModelKind pmk, bool is_linear>
-    class ProcessModel : public Entity<EntityType::ProcessModel, ProcessModelKind, pmk>
+    class ProcessModel : public ModelEntity<EntityType::ProcessModel, ProcessModelKind, pmk, is_linear>
     {
     public:
 
@@ -48,11 +58,6 @@ namespace ser94mor
       constexpr static int ControlDims()
       {
         return ControlVector::SizeAtCompileTime;
-      }
-
-      constexpr static bool IsLinear()
-      {
-        return is_linear;
       }
 
       template<typename Derived>

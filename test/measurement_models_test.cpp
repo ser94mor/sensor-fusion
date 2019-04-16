@@ -26,7 +26,7 @@
 using namespace ser94mor::sensor_fusion;
 
 
-TEST_CASE("Lidar::MeasurementModel::C", "[measurement_model]")
+TEST_CASE("Lidar::MeasurementModel::C", "[measurement_models]")
 {
   Lidar::MeasurementModel<CV::ProcessModel> lidar_mm;
 
@@ -39,7 +39,7 @@ TEST_CASE("Lidar::MeasurementModel::C", "[measurement_model]")
 }
 
 
-TEST_CASE("Lidar::MeasurementModel::Q", "[measurement_model]")
+TEST_CASE("Lidar::MeasurementModel::Q", "[measurement_models]")
 {
   Lidar::MeasurementCovarianceMatrix lidar_mtx;
   lidar_mtx << 0.0225,    0.0,
@@ -52,25 +52,31 @@ TEST_CASE("Lidar::MeasurementModel::Q", "[measurement_model]")
 }
 
 
-TEST_CASE("Lidar::MeasurementModel::Type", "[sensors]")
+TEST_CASE("Lidar::MeasurementModel::Type", "[measurement_models]")
 {
   REQUIRE(Lidar::MeasurementModel<CV::ProcessModel>::Type() == EntityType::MeasurementModel);
 }
 
 
-TEST_CASE("Lidar::MeasurementModel::TypeName", "[sensors]")
+TEST_CASE("Lidar::MeasurementModel::TypeName", "[measurement_models]")
 {
   REQUIRE(std::string(Lidar::MeasurementModel<CV::ProcessModel>::TypeName()) == "MEASUREMENT_MODEL");
 }
 
 
-TEST_CASE("Lidar::MeasurementModel::Kind", "[sensors]")
+TEST_CASE("Lidar::MeasurementModel::Kind", "[measurement_models]")
 {
   REQUIRE(Lidar::MeasurementModel<CV::ProcessModel>::Kind() == MeasurementModelKind::Lidar);
 }
 
 
-TEST_CASE("Lidar::MeasurementModel::KindName", "[sensors]")
+TEST_CASE("Lidar::MeasurementModel::KindName", "[measurement_models]")
 {
   REQUIRE(std::string(Lidar::MeasurementModel<CV::ProcessModel>::KindName()) == "LIDAR");
+}
+
+
+TEST_CASE("Lidar::MeasurementModel::IsLinear", "[measurement_models]")
+{
+  REQUIRE(Lidar::MeasurementModel<CV::ProcessModel>::IsLinear());
 }
