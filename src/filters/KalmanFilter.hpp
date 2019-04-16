@@ -32,7 +32,7 @@ namespace ser94mor
 
     /**
      * A template class holding Kalman Filter equations.
-     * The naming of vactors and matrices are taken from the
+     * The naming of vectors and matrices are taken from the
      * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
      *
      * @tparam ProcessModel a class of the process model to use

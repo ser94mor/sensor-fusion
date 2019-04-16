@@ -29,7 +29,9 @@ namespace ser94mor
   {
     namespace Lidar
     {
+
       MEASUREMENT_DEFINITION(ser94mor::sensor_fusion::MeasurementModelKind::Lidar);
+
     }
   }
 }

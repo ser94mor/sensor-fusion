@@ -36,6 +36,9 @@ namespace ser94mor
       /**
        * A concrete (Lidar) measurement model. It is still a template because the dimensionality of
        * the measurement matrix depends on the process model kind, which we know only at compile time.
+       * The naming of matrices are taken from the
+       * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
+       *
        * @tparam ProcessModel a process model class, which is needed to determine the number of state dimensions
        */
       template<class ProcessModel>

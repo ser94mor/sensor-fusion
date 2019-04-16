@@ -22,6 +22,11 @@
 #include <ctime>
 
 
+/**
+ * A macros to be used to define concrete Measurement classes. Each concrete measurement class "lives"
+ * in its own namespace corresponding to a name of the measurement model,
+ * so that it is possible to rely on the similar class names for measurement vector and measurment covariance matrix.
+ */
 #define MEASUREMENT_DEFINITION(mmk) \
   class Measurement : public ser94mor::sensor_fusion::Measurement<MeasurementVector, MeasurementCovarianceMatrix, mmk> \
   { \
@@ -37,20 +42,39 @@ namespace ser94mor
   namespace sensor_fusion
   {
 
+    /**
+     * A template class representing a measurement.
+     * @tparam MeasurementVector a measurement vector class
+     * @tparam MeasurementCovarianceMatrix a measurement covariance matrix class
+     * @tparam mmk a measurement model kind
+     */
     template<class MeasurementVector, class MeasurementCovarianceMatrix, MeasurementModelKind mmk>
     class Measurement
     {
     public:
+
+      /**
+       * @return a measurement timestamp
+       */
       std::time_t t() const
       {
         return timestamp_;
       }
 
+      /**
+       * A naming for measurement vector is taken from the
+       * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
+       * @return a measurement vector
+       */
       const MeasurementVector& z() const
       {
         return measurement_vector_;
       }
 
+      /**
+       * @return a measurement model kind, which is determined by the sensor and measurement model which handles such
+       *         a measurement
+       */
       constexpr enum MeasurementModelKind MeasurementModelKind() const
       {
         return mmk;
