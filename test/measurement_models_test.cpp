@@ -102,6 +102,38 @@ TEST_CASE("Lidar::MeasurementModel::StateDims", "[measurement_models]")
 // RADAR //
 ///////////
 
+TEST_CASE("Radar::MeasurementModel::h", "[measurement_models]")
+{
+  Radar::MeasurementModel<CV::ProcessModel> radar_mm;
+
+  CV::StateVector state_vector;
+  state_vector << 3. , 4., 2., 1.;
+
+  Radar::MeasurementVector measurement_vector;
+  measurement_vector << 5., std::atan2(4., 3.) , 2.;
+
+  REQUIRE(radar_mm.h(state_vector).isApprox(measurement_vector));
+}
+
+
+TEST_CASE("Radar::MeasurementModel::H", "[measurement_models]")
+{
+  Radar::MeasurementModel<CV::ProcessModel> radar_mm;
+
+  CV::StateVector state_vector;
+  state_vector << 3. , 4., 2., 1.;
+
+  Radar::MeasurementModel<CV::ProcessModel>::MeasurementMatrix_type measurement_matrix;
+  measurement_matrix <<   3./5.,   4./5.,    0.,    0.,
+                        -4./25.,  3./25.,    0.,    0.,
+                         4./25., -3./25., 3./5., 4./5.;
+
+
+  REQUIRE(radar_mm.H(state_vector).isApprox(measurement_matrix));
+}
+
+
+
 TEST_CASE("Radar::MeasurementModel::Type", "[measurement_models]")
 {
   REQUIRE(Radar::MeasurementModel<CV::ProcessModel>::Type() == EntityType::MeasurementModel);

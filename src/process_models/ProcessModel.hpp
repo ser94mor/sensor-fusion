@@ -53,7 +53,7 @@ namespace ser94mor
       using StateVector_type = StateVector;
       using StateCovarianceMatrix_type = StateCovarianceMatrix;
       using ControlVector_type = ControlVector;
-      using StateVectorView_type = StateVector;
+      using StateVectorView_type = StateVectorView;
 
       /**
        * @return a number of dimensions in the state vector

@@ -117,7 +117,7 @@ namespace ser94mor
           if (rho < epsilon) {
             rho = epsilon;
           }
-        return (px()*vx() + py()*vy()) / std::sqrt(rho);
+        return (px()*vx() + py()*vy()) / rho;
       }
 
     };

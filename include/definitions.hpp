@@ -75,32 +75,25 @@ namespace ser94mor
 
     using IndividualNoiseProcessesCovarianceMatrix = Eigen::Matrix<double, 2, 2>;
 
+#define PROCESS_MODEL_DEFINITIONS(state_vector_dims, control_vector_dims, is_linear) \
+  const int kStateVectorDims{state_vector_dims}; \
+  const int kControlVectorDims{control_vector_dims}; \
+  const bool kIsLinear{is_linear}; \
+  using StateVector             = Eigen::Matrix<double, kStateVectorDims, 1>; \
+  using StateCovarianceMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>; \
+  using StateTransitionMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>; \
+  using ControlVector           = Eigen::Matrix<double, kControlVectorDims, 1>; \
+  using ControlTransitionMatrix = Eigen::Matrix<double, kStateVectorDims, kControlVectorDims>; \
+  using ProcessCovarianceMatrix = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>
+    
     namespace CV
     {
-      extern const char kProcessModelName[];
-      const int kStateVectorDims{4};
-      const int kControlVectorDims{4};
-      const bool kIsLinear{true};
-      using StateVector             = Eigen::Matrix<double, kStateVectorDims, 1>;
-      using StateCovarianceMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
-      using StateTransitionMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
-      using ControlVector           = Eigen::Matrix<double, kControlVectorDims, 1>;
-      using ControlTransitionMatrix = Eigen::Matrix<double, kStateVectorDims, kControlVectorDims>;
-      using ProcessCovarianceMatrix = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
+      PROCESS_MODEL_DEFINITIONS(4, 4, true);
     }
 
     namespace CTRV
     {
-      extern const char kProcessModelName[];
-      const int kStateVectorDims{5};
-      const int kControlVectorDims{5};
-      const bool kIsLinear{false};
-      using StateVector             = Eigen::Matrix<double, kStateVectorDims, 1>;
-      using StateCovarianceMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
-      using StateTransitionMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
-      using ControlVector           = Eigen::Matrix<double, kControlVectorDims, 1>;
-      using ControlTransitionMatrix = Eigen::Matrix<double, kStateVectorDims, kControlVectorDims>;
-      using ProcessCovarianceMatrix = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>;
+      PROCESS_MODEL_DEFINITIONS(5, 5, false);
     }
 
 

@@ -59,17 +59,32 @@ namespace ser94mor
 
         MeasurementVector h(const StateVector_type& state_vector) const
         {
-          StateVectorView_type svw{state_vector};
+          StateVectorView_type svv{state_vector};
 
           MeasurementVector measurement_vector;
-          measurement_vector << svw.range(), svw.bearing(), svw.range_rate();
+          measurement_vector << svv.range(), svv.bearing(), svv.range_rate();
 
           return measurement_vector;
         }
 
-        const MeasurementMatrix_type& H(std::time_t dt) const
+        MeasurementMatrix_type H(const StateVector_type& state_vector) const
         {
+          StateVectorView_type svv{state_vector};
 
+          auto rho{svv.range()};
+          auto rho_2{rho*rho};
+          auto rho_3{rho_2*rho};
+          auto tmp1{svv.px()/rho};
+          auto tmp2{svv.py()/rho};
+          auto tmp3{svv.vx()*svv.py()-svv.vy()*svv.px()};
+
+          MeasurementMatrix_type measurement_matrix;
+          measurement_matrix <<
+            tmp1,                    tmp2,                   0.0,   0.0,
+            (-svv.py()/rho_2),       (svv.px()/rho_2),       0.0,   0.0,
+            (svv.py()*(tmp3)/rho_3), (-svv.px()*tmp3/rho_3), tmp1, tmp2;
+
+          return measurement_matrix;
         }
       };
 
