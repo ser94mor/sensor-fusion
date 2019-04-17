@@ -20,6 +20,7 @@
 
 
 #include "definitions.hpp"
+#include "CVStateVectorView.hpp"
 #include "ProcessModel.hpp"
 
 #include <ctime>
@@ -38,9 +39,9 @@ namespace ser94mor
        * The naming of matrices are taken from the
        * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
        */
-      class ProcessModel :
-          public ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector,
-              ProcessModelKind::CV, kIsLinear>
+      class ProcessModel
+      : public ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector, StateVectorView,
+                                                     ProcessModelKind::CV, kIsLinear>
       {
       public:
         /**

@@ -109,7 +109,7 @@ namespace ser94mor
     ////////////////////////
 
 #define MEASUREMENT_MODEL_DEFINITIONS(measurement_vector_dims, is_linear) \
-  const int kMeasurementVectorDims = 2; \
+  const int kMeasurementVectorDims{measurement_vector_dims}; \
   const bool kIsLinear{is_linear}; \
   using MeasurementVector = Eigen::Matrix<double, kMeasurementVectorDims, 1>; \
   using MeasurementCovarianceMatrix = Eigen::Matrix<double, kMeasurementVectorDims, kMeasurementVectorDims>

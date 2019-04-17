@@ -20,6 +20,7 @@
 
 
 #include "definitions.hpp"
+#include "measurements.hpp"
 
 
 namespace ser94mor
@@ -39,7 +40,7 @@ namespace ser94mor
      * @tparam mmk a kind of a measurement model (from a corresponding enum class)
      * @tparam is_linear flag indicating whether this measurement model is linear or not
      */
-    template<class MeasurementVector, class MeasurementCovarianceMatrix, class ProcessModel, class Sensor,
+    template<class MeasurementVector, class MeasurementCovarianceMatrix, class ProcessModel,
              MeasurementModelKind mmk, bool is_linear>
     class MeasurementModel : public ModelEntity<EntityType::MeasurementModel, MeasurementModelKind, mmk, is_linear>
     {
@@ -50,7 +51,6 @@ namespace ser94mor
        */
       using Measurement_type = Measurement<MeasurementVector, MeasurementCovarianceMatrix, mmk>;
       using MeasurementCovarianceMatrix_type = MeasurementCovarianceMatrix;
-      using Sensor_type = Sensor;
 
       /**
        * @return a number of dimensions in measurement vector
@@ -79,9 +79,9 @@ namespace ser94mor
       MeasurementCovarianceMatrix measurement_covariance_matrix_;
     };
 
-    template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector, class Sensor,
-        MeasurementModelKind mmk, bool is_linear>
-    void MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix, StateVector, Sensor, mmk, is_linear>::
+    template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector,
+             MeasurementModelKind mmk, bool is_linear>
+    void MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix, StateVector, mmk, is_linear>::
       SetMeasurementCovarianceMatrix(const MeasurementCovarianceMatrix& mtx)
     {
       measurement_covariance_matrix_ = mtx;

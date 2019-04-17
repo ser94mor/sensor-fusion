@@ -26,6 +26,10 @@
 using namespace ser94mor::sensor_fusion;
 
 
+///////////
+// LIDAR //
+///////////
+
 TEST_CASE("Lidar::MeasurementModel::C", "[measurement_models]")
 {
   Lidar::MeasurementModel<CV::ProcessModel> lidar_mm;
@@ -78,7 +82,7 @@ TEST_CASE("Lidar::MeasurementModel::KindName", "[measurement_models]")
 
 TEST_CASE("Lidar::MeasurementModel::IsLinear", "[measurement_models]")
 {
-  REQUIRE(Lidar::MeasurementModel<CV::ProcessModel>::IsLinear());
+  REQUIRE(Lidar::MeasurementModel<CV::ProcessModel>::IsLinear() == true);
 }
 
 
@@ -91,4 +95,50 @@ TEST_CASE("Lidar::MeasurementModel::MeasurementDims", "[measurement_models]")
 TEST_CASE("Lidar::MeasurementModel::StateDims", "[measurement_models]")
 {
   REQUIRE(Lidar::MeasurementModel<CV::ProcessModel>::StateDims() == 4);
+}
+
+
+///////////
+// RADAR //
+///////////
+
+TEST_CASE("Radar::MeasurementModel::Type", "[measurement_models]")
+{
+  REQUIRE(Radar::MeasurementModel<CV::ProcessModel>::Type() == EntityType::MeasurementModel);
+}
+
+
+TEST_CASE("Radar::MeasurementModel::TypeName", "[measurement_models]")
+{
+  REQUIRE(std::string(Radar::MeasurementModel<CV::ProcessModel>::TypeName()) == "MEASUREMENT_MODEL");
+}
+
+
+TEST_CASE("Radar::MeasurementModel::Kind", "[measurement_models]")
+{
+  REQUIRE(Radar::MeasurementModel<CV::ProcessModel>::Kind() == MeasurementModelKind::Radar);
+}
+
+
+TEST_CASE("Radar::MeasurementModel::KindName", "[measurement_models]")
+{
+  REQUIRE(std::string(Radar::MeasurementModel<CV::ProcessModel>::KindName()) == "RADAR");
+}
+
+
+TEST_CASE("Radar::MeasurementModel::IsLinear", "[measurement_models]")
+{
+  REQUIRE(Radar::MeasurementModel<CV::ProcessModel>::IsLinear() == false);
+}
+
+
+TEST_CASE("Radar::MeasurementModel::MeasurementDims", "[measurement_models]")
+{
+  REQUIRE(Radar::MeasurementModel<CV::ProcessModel>::MeasurementDims() == 3);
+}
+
+
+TEST_CASE("Radar::MeasurementModel::StateDims", "[measurement_models]")
+{
+  REQUIRE(Radar::MeasurementModel<CV::ProcessModel>::StateDims() == 4);
 }

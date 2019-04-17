@@ -15,25 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_LIDARMEASUREMENTMODEL_HPP
-#define SENSOR_FUSION_LIDARMEASUREMENTMODEL_HPP
+#ifndef SENSOR_FUSION_RADARMEASUREMENTMODEL_HPP
+#define SENSOR_FUSION_RADARMEASUREMENTMODEL_HPP
 
 
 #include "definitions.hpp"
 #include "MeasurementModel.hpp"
 
-#include <ctime>
-
 
 namespace ser94mor
 {
-  namespace  sensor_fusion
+  namespace sensor_fusion
   {
-    namespace Lidar
+    namespace Radar
     {
 
       /**
-       * A concrete (Lidar) measurement model. It is still a template because the dimensionality of
+       * A concrete (Radar) measurement model. It is still a template because the dimensionality of
        * the measurement matrix depends on the process model kind, which we know only at compile time.
        * The naming of matrices are taken from the
        * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
@@ -41,47 +39,38 @@ namespace ser94mor
        * @tparam ProcessModel a process model class, which is needed to determine the number of state dimensions
        */
       template<class ProcessModel>
-      class MeasurementModel :
-        public ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-          ProcessModel, MeasurementModelKind::Lidar, kIsLinear>
+      class MeasurementModel
+      : public ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix, ProcessModel,
+                                                         MeasurementModelKind::Radar, kIsLinear>
       {
       public:
         using MeasurementMatrix_type =
           Eigen::Matrix<double, MeasurementModel::MeasurementDims(), MeasurementModel::StateDims()>;
+        using StateVector_type = typename ProcessModel::StateVector_type;
+        using StateVectorView_type = typename ProcessModel::StateVectorView_type;
 
-        /**
-         * Constructor.
-         * Measurement matrix is of the form
-         *   1 0 0 0 ...
-         *   0 1 0 0 ...
-         * where the number of columns equal to the number of state dimensions.
-         */
+
         MeasurementModel()
-        : ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-            ProcessModel, MeasurementModelKind::Lidar, kIsLinear>{},
-          measurement_matrix_{MeasurementMatrix_type::Identity()}
+        : ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix, ProcessModel,
+                                                    MeasurementModelKind::Radar, kIsLinear>{}
         {
 
         }
 
-        /**
-         * @return a measurement matrix
-         */
-        const MeasurementMatrix_type& C() const
+        MeasurementVector h(const StateVector_type& state_vector) const
         {
-          return measurement_matrix_;
+          StateVectorView_type svw{state_vector};
+
+          MeasurementVector measurement_vector;
+          measurement_vector << svw.range(), svw.bearing(), svw.range_rate();
+
+          return measurement_vector;
         }
 
-        /**
-         * @return a measurement covariance matrix
-         */
-        const MeasurementCovarianceMatrix& Q() const
+        const MeasurementMatrix_type& H(std::time_t dt) const
         {
-          return this->measurement_covariance_matrix_;
-        }
 
-      private:
-        MeasurementMatrix_type measurement_matrix_;
+        }
       };
 
     }
@@ -89,4 +78,4 @@ namespace ser94mor
 }
 
 
-#endif //SENSOR_FUSION_LIDARMEASUREMENTMODEL_HPP
+#endif //SENSOR_FUSION_RADARMEASUREMENTMODEL_HPP
