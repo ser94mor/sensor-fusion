@@ -21,6 +21,8 @@
 
 #include "KalmanFilter.hpp"
 
+#include <type_traits>
+
 
 namespace ser94mor
 {
@@ -38,7 +40,14 @@ namespace ser94mor
     template<class ProcessModel, class MeasurementModel>
     class ExtendedKalmanFilter : public KalmanFilter<ProcessModel, MeasurementModel>
     {
+    private:
+      using Belief = typename ProcessModel::Belief_type;
+      using ControlVector = typename ProcessModel::ControlVector_type;
+      using Measurement = typename MeasurementModel::Measurement_type;
     public:
+      using KalmanFilter<ProcessModel, MeasurementModel>::Predict;
+      using KalmanFilter<ProcessModel, MeasurementModel>::Update;
+
       /**
        * Prediction step of the Kalman filter. Predicts the object's state in dt time in the future in accordance with
        * process model and input control vector.
@@ -50,8 +59,19 @@ namespace ser94mor
        *
        * @return a prior belief, that is, after prediction but before incorporating the measurement
        */
-      static Belief Predict(const Belief& belief_posterior, const ControlVector& ut,
-                            std::time_t dt, const ProcessModel& process_model);
+      template<bool EnableBool = true>
+      static Belief Predict(const Belief& belief_posterior,
+                            const ControlVector& ut,
+                            std::time_t dt,
+                            const std::enable_if_t<not ProcessModel::IsLinear() && EnableBool, ProcessModel>&
+                                process_model)
+      {
+        // For linear process models the compiler will choose the corresponding function from the KalmanFilter class,
+        // which is a base class for this one.
+
+        // TODO: implement while adding CTRV process model
+        throw std::runtime_error("NOT IMPLEMENTED YET");
+      }
 
       /**
        * Update step of the Kalman filter. Incorporates the sensor measurement into the given prior belief.
@@ -62,47 +82,31 @@ namespace ser94mor
        *
        * @return a posterior belief, that is, after the incorporation of the measurement
        */
-      static Belief Update(const Belief& belief_prior, const Measurement& measurement,
-                           const MeasurementModel& measurement_model);
+      template<bool EnableBool = true>
+      static Belief Update(const Belief& belief_prior,
+                           const Measurement& measurement,
+                           const std::enable_if_t<not MeasurementModel::IsLinear() && EnableBool,
+                           MeasurementModel>& measurement_model)
+      {
+        // For linear measurement models the compiler will choose the corresponding function from the KalmanFilter class,
+        // which is a base class for this one.
+
+        auto mu{belief_prior.mu()};
+        auto Sigma{belief_prior.Sigma()};
+        auto Ht{measurement_model.H(mu)};
+
+        std::cout << Sigma * Ht.transpose() << std::endl;
+        auto Kt{Sigma * Ht.transpose() * (Ht * Sigma * Ht.transpose() + measurement_model.Q()).inverse()};
+        auto I{Eigen::Matrix<double, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
+
+        return {
+            /* timestamp */               measurement.t(),
+            /* state vector */            mu + Kt * (measurement.z() - measurement_model.h(mu)),
+            /* state covariance matrix */ (I - Kt * Ht) * Sigma,
+        };
+      }
+
     };
-
-    template<class ProcessModel, class MeasurementModel>
-    typename ExtendedKalmanFilter<ProcessModel, MeasurementModel>::Belief
-    ExtendedKalmanFilter<ProcessModel, MeasurementModel>::Predict(
-        const Belief& belief_posterior, const ControlVector& ut, std::time_t dt, const ProcessModel& process_model)
-    {
-      if constexpr (ProcessModel::IsLinear())
-      {
-        return KalmanFilter<ProcessModel, MeasurementModel>::
-               Predict(belief_posterior, ut, dt, process_model);
-      }
-      else
-      {
-        throw std::runtime_error("NOT IMPLEMENTED YET");
-      }
-    }
-
-    template<class ProcessModel, class MeasurementModel>
-    typename ExtendedKalmanFilter<ProcessModel, MeasurementModel>::Belief
-    ExtendedKalmanFilter<ProcessModel, MeasurementModel>::Update(const Belief& belief_prior, const Measurement& measurement,
-                                                         const MeasurementModel& measurement_model)
-    {
-      static_assert(MeasurementModel::IsLinear(),
-                    "KalmanFilter works only with linear measurement models, "
-                    "while the given measurement model is non-linear.");
-
-      auto Ct{measurement_model.C()};
-      auto mu{belief_prior.mu()};
-      auto Sigma{belief_prior.Sigma()};
-      auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + measurement_model.Q()).inverse()};
-      auto I{Eigen::Matrix<double, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
-
-      return {
-          /* timestamp */               measurement.t(),
-          /* state vector */            mu + Kt * (measurement.z() - Ct * mu),
-          /* state covariance matrix */ (I - Kt * Ct) * Sigma,
-      };
-    }
 
   }
 }

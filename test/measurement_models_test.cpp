@@ -138,7 +138,7 @@ TEST_CASE("Radar::MeasurementModel::Q", "[measurement_models]")
   Radar::MeasurementCovarianceMatrix radar_mtx;
   radar_mtx << 0.09,    0.0,  0.0,
                 0.0, 0.0009,  0.0,
-                0.0,    0.0, 0.09;;
+                0.0,    0.0, 0.09;
 
   Radar::MeasurementModel<CV::ProcessModel> radar_mm;
   radar_mm.SetMeasurementCovarianceMatrix(radar_mtx);

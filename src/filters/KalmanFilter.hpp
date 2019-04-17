@@ -58,8 +58,19 @@ namespace ser94mor
        *
        * @return a prior belief, that is, after prediction but before incorporating the measurement
        */
-      static Belief Predict(const Belief& belief_posterior, const ControlVector& ut,
-                            std::time_t dt, const ProcessModel& process_model);
+      template <bool EnableBool = true>
+      static Belief Predict(const Belief& belief_posterior,
+                            const ControlVector& ut,
+                            std::time_t dt,
+                            const std::enable_if_t<ProcessModel::IsLinear() && EnableBool, ProcessModel>& process_model)
+      {
+        auto At{process_model.A(dt)};
+        return {
+            /* timestamp */               belief_posterior.t() + dt,
+            /* state vector */            At * belief_posterior.mu() + process_model.B() * ut,
+            /* state covariance matrix */ At * belief_posterior.Sigma() * At.transpose() + process_model.R(dt),
+        };
+      }
 
       /**
        * Update step of the Kalman filter. Incorporates the sensor measurement into the given prior belief.
@@ -70,47 +81,24 @@ namespace ser94mor
        *
        * @return a posterior belief, that is, after the incorporation of the measurement
        */
+      template <bool EnableBool = true>
       static Belief Update(const Belief& belief_prior, const Measurement& measurement,
-                           const MeasurementModel& measurement_model);
+                           const std::enable_if_t<MeasurementModel::IsLinear() && EnableBool, MeasurementModel>&
+                               measurement_model)
+      {
+        auto Ct{measurement_model.C()};
+        auto mu{belief_prior.mu()};
+        auto Sigma{belief_prior.Sigma()};
+        auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + measurement_model.Q()).inverse()};
+        auto I{Eigen::Matrix<double, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
+
+        return {
+            /* timestamp */               measurement.t(),
+            /* state vector */            mu + Kt * (measurement.z() - Ct * mu),
+            /* state covariance matrix */ (I - Kt * Ct) * Sigma,
+        };
+      }
     };
-
-    template<class ProcessModel, class MeasurementModel>
-    typename KalmanFilter<ProcessModel, MeasurementModel>::Belief
-    KalmanFilter<ProcessModel, MeasurementModel>::Predict(const Belief& belief_posterior, const ControlVector& ut,
-                                                          std::time_t dt, const ProcessModel& process_model)
-    {
-      static_assert(ProcessModel::IsLinear(),
-                    "KalmanFilter works only with linear process models, while the given process model in non-linear.");
-
-      auto At{process_model.A(dt)};
-      return {
-          /* timestamp */               belief_posterior.t() + dt,
-          /* state vector */            At * belief_posterior.mu() + process_model.B() * ut,
-          /* state covariance matrix */ At * belief_posterior.Sigma() * At.transpose() + process_model.R(dt),
-      };
-    }
-
-    template<class ProcessModel, class MeasurementModel>
-    typename KalmanFilter<ProcessModel, MeasurementModel>::Belief
-    KalmanFilter<ProcessModel, MeasurementModel>::Update(const Belief& belief_prior, const Measurement& measurement,
-                                                         const MeasurementModel& measurement_model)
-    {
-      static_assert(MeasurementModel::IsLinear(),
-                    "KalmanFilter works only with linear measurement models, "
-                    "while the given measurement model is non-linear.");
-
-      auto Ct{measurement_model.C()};
-      auto mu{belief_prior.mu()};
-      auto Sigma{belief_prior.Sigma()};
-      auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + measurement_model.Q()).inverse()};
-      auto I{Eigen::Matrix<double, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
-
-      return {
-          /* timestamp */               measurement.t(),
-          /* state vector */            mu + Kt * (measurement.z() - Ct * mu),
-          /* state covariance matrix */ (I - Kt * Ct) * Sigma,
-      };
-    }
 
   }
 }

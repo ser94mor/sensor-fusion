@@ -20,6 +20,7 @@
 
 
 #include "../src/filters/KalmanFilter.hpp"
+#include "../src/filters/ExtendedKalmanFilter.hpp"
 
 
 #endif //SENSOR_FUSION_FILTERS_HPP

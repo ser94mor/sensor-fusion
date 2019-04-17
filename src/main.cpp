@@ -35,6 +35,8 @@
 using namespace ser94mor::sensor_fusion;
 
 using KF_CV_LIDAR_Fusion = Fusion<KalmanFilter, CV::ProcessModel, Lidar::MeasurementModel>;
+using EKF_CV_LIDAR_RADAR_Fusion = 
+    Fusion<ExtendedKalmanFilter, CV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
 
 using namespace std;
 using namespace Eigen;
@@ -114,11 +116,16 @@ int main(int argc, char *argv[])
   p_mtx << 9.0, 0.0,
            0.0, 9.0;
 
-  Lidar::MeasurementCovarianceMatrix m_mtx;
-  m_mtx << 0.0225,    0.0,
-              0.0, 0.0225;
+  Lidar::MeasurementCovarianceMatrix lidar_mtx;
+  lidar_mtx << 0.0225,    0.0,
+                  0.0, 0.0225;
+  
+  Radar::MeasurementCovarianceMatrix radar_mtx;
+  radar_mtx << 0.09,    0.0,  0.0,
+                0.0, 0.0009,  0.0,
+                0.0,    0.0, 0.09;
 
-  KF_CV_LIDAR_Fusion fusion{p_mtx, m_mtx};
+  EKF_CV_LIDAR_RADAR_Fusion fusion{p_mtx, lidar_mtx, radar_mtx};
 
 
   uWS::Hub h;
@@ -210,8 +217,9 @@ int main(int argc, char *argv[])
             estimations.push_back(estimate);
 
 
-          } else {
-            auto belief{fusion.GetBelief()};
+          } else { 
+            Radar::Measurement measurement{meas_package.timestamp_, meas_package.raw_measurements_};
+            auto belief{fusion.ProcessMeasurement(measurement)};
 
             CV::StateVectorView state_vector_view{belief.mu()};
             estimate(0) = state_vector_view.px();

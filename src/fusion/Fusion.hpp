@@ -25,7 +25,6 @@
 #include <cstddef>
 #include <iostream>
 #include <tuple>
-#include <utility>
 #include <Eigen/Dense>
 
 
@@ -86,6 +85,7 @@ namespace ser94mor
     ProcessMeasurement(Measurement_type& measurement, MeasurementModel_type& measurement_model)
     {
       using ControlVector = typename ProcessModel::ControlVector_type;
+
       // process measurement only in case measurement model matches measurement
       if (measurement.MeasurementModelKind() == measurement_model.Kind())
       {
@@ -141,7 +141,7 @@ namespace ser94mor
     typename Fusion<Filter, ProcessModel, MeasurementModel...>::Belief
     Fusion<Filter, ProcessModel, MeasurementModel...>::ProcessMeasurement(Measurement& measurement)
     {
-      apply(
+      ser94mor::sensor_fusion::apply(
         [this, &measurement](auto... measurement_model)
         {
           (void) std::initializer_list<int>{(this->ProcessMeasurement(measurement, measurement_model), void(), 0)...};
