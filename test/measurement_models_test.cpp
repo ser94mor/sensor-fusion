@@ -133,6 +133,19 @@ TEST_CASE("Radar::MeasurementModel::H", "[measurement_models]")
 }
 
 
+TEST_CASE("Radar::MeasurementModel::Q", "[measurement_models]")
+{
+  Radar::MeasurementCovarianceMatrix radar_mtx;
+  radar_mtx << 0.09,    0.0,  0.0,
+                0.0, 0.0009,  0.0,
+                0.0,    0.0, 0.09;;
+
+  Radar::MeasurementModel<CV::ProcessModel> radar_mm;
+  radar_mm.SetMeasurementCovarianceMatrix(radar_mtx);
+
+  REQUIRE(radar_mm.Q().isApprox(radar_mtx));
+}
+
 
 TEST_CASE("Radar::MeasurementModel::Type", "[measurement_models]")
 {

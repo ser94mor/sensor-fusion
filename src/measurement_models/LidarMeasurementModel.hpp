@@ -72,14 +72,6 @@ namespace ser94mor
           return measurement_matrix_;
         }
 
-        /**
-         * @return a measurement covariance matrix
-         */
-        const MeasurementCovarianceMatrix& Q() const
-        {
-          return this->measurement_covariance_matrix_;
-        }
-
       private:
         MeasurementMatrix_type measurement_matrix_;
       };

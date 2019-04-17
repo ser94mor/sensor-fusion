@@ -69,6 +69,16 @@ namespace ser94mor
       }
 
       /**
+       * The naming of measurement covariance matrix is taken from the
+       * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
+       * @return a measurement covariance matrix
+       */
+      const MeasurementCovarianceMatrix& Q() const
+      {
+        return measurement_covariance_matrix_;
+      }
+
+      /**
        * Set measurement covariance matrix. It is done explicitly by the user of measurement model
        * due to the variadic templates used in this code. MeasurementModel needs a default constructor.
        * @param mtx a measurement covariance matrix
