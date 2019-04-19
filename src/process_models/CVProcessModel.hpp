@@ -20,6 +20,7 @@
 
 
 #include "definitions.hpp"
+#include "CVStateVectorView.hpp"
 #include "ProcessModel.hpp"
 
 #include <ctime>
@@ -38,9 +39,9 @@ namespace ser94mor
        * The naming of matrices are taken from the
        * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
        */
-      class ProcessModel :
-          public ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector,
-              ProcessModelKind::CV, kIsLinear>
+      class ProcessModel
+      : public ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector, StateVectorView,
+                                                     ProcessModelKind::CV, kIsLinear>
       {
       public:
         /**
@@ -52,7 +53,7 @@ namespace ser94mor
          * @param dt a difference between the current measurement timestamp and the previous measurement timestamp
          * @return a state transition matrix
          */
-        StateTransitionMatrix A(std::time_t dt) const;
+        StateTransitionMatrix A(double dt) const;
 
         /**
          * @return a control transition matrix
@@ -63,7 +64,7 @@ namespace ser94mor
          * @param dt a difference between the current measurement timestamp and the previous measurement timestamp
          * @return a process covariance matrix
          */
-        ProcessCovarianceMatrix R(std::time_t dt) const;
+        ProcessCovarianceMatrix R(double dt) const;
 
       private:
         StateTransitionMatrix state_transition_matrix_prototype_;

@@ -63,11 +63,14 @@ TEST_CASE("Fusion::ProcessMeasurement", "[fusion]")
 
   Fusion<KalmanFilter, CV::ProcessModel, Lidar::MeasurementModel>
   fusion{p_mtx, m_mtx};
-  fusion.SetBelief(belief_initial);
 
   Lidar::MeasurementVector meas_vect;
   meas_vect << 11., 8.;
   Lidar::Measurement measurement{2, meas_vect};
+
+  fusion.ProcessMeasurement(measurement); // increments processed counter and initializes initial belief
+  fusion.SetBelief(belief_initial); // override initial belief for testing purposes
+
   auto belief{fusion.ProcessMeasurement(measurement)};
 
   REQUIRE(belief == belief_posterior_expected);

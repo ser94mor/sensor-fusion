@@ -20,6 +20,9 @@
 
 
 #include "definitions.hpp"
+#include "StateVectorView.hpp"
+
+#include <cmath>
 
 
 namespace ser94mor
@@ -33,7 +36,7 @@ namespace ser94mor
        * A wrapper around StateVector for CV process model (which is just an Eigen vector)
        * that provides meaningful accessors to the StateVector components.
        */
-      class StateVectorView
+      class StateVectorView : public ser94mor::sensor_fusion::StateVectorView<CV::StateVector>
       {
       public:
 
@@ -41,7 +44,8 @@ namespace ser94mor
          * Constructor.
          * @param state_vector a state vector
          */
-        explicit StateVectorView(const StateVector& state_vector) : state_vector_{state_vector}
+        explicit StateVectorView(StateVector& state_vector)
+            : ser94mor::sensor_fusion::StateVectorView<CV::StateVector>{state_vector}
         {
 
         }
@@ -49,7 +53,15 @@ namespace ser94mor
         /**
          * @return X-axis coordinate
          */
-        double px() const
+        double px() const override
+        {
+          return state_vector_(0);
+        }
+
+        /**
+         * @return X-axis coordinate
+         */
+        double& px() override
         {
           return state_vector_(0);
         }
@@ -57,7 +69,15 @@ namespace ser94mor
         /**
          * @return Y-axis coordinate
          */
-        double py() const
+        double py() const override
+        {
+          return state_vector_(1);
+        }
+
+        /**
+         * @return Y-axis coordinate
+         */
+        double& py() override
         {
           return state_vector_(1);
         }
@@ -65,7 +85,7 @@ namespace ser94mor
         /**
          * @return X-axis velocity
          */
-        double vx() const
+        double vx() const override
         {
           return state_vector_(2);
         }
@@ -73,13 +93,63 @@ namespace ser94mor
         /**
          * @return Y-axis velocity
          */
-        double vy() const
+        double vy() const override
         {
           return state_vector_(3);
         }
 
-      private:
-        const StateVector& state_vector_;
+        /**
+         * @return velocity module
+         */
+        double v() const override
+        {
+          return std::sqrt(vx()*vx() + vy()*vy());
+        }
+
+        /**
+         * @return yaw rotation angle
+         */
+        double yaw() const override
+        {
+          // TODO: implement while adding CTRV process model
+          return 0.;
+        }
+
+        /**
+         * @return angular velocity of yaw rotation
+         */
+        double yaw_rate() const override
+        {
+          // TODO: implement while adding CTRV process model
+          return 0.;
+        }
+
+        /**
+         * @return range: radial distance from origin
+         */
+        double range() const override
+        {
+          double epsilon{0.00001};
+          double rho{std::sqrt(px()*px() + py()*py())};
+          return (rho < epsilon) ? epsilon : rho;
+        }
+
+        /**
+         * @return bearing: angle between range and X-axis
+         * (which points into the direction of heading of our car, where sensors are installed)
+         */
+        double bearing() const override
+        {
+          return std::atan2(py(), px());
+        }
+
+        /**
+         * @return radial velocity: change of range, i.e., range rate
+         */
+        double range_rate() const override
+        {
+          return (px()*vx() + py()*vy()) / range();
+        }
 
       };
 

@@ -15,5 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../src/process_models/CVStateVectorView.hpp"
-#include "../src/process_models/CVProcessModel.hpp"
+#ifndef SENSOR_FUSION_UTILS_HPP
+#define SENSOR_FUSION_UTILS_HPP
+
+
+/**
+ * Class containing different helper methods.
+ */
+class Utils
+{
+public:
+
+  /**
+   * Normalize angle to be between [-pi, pi].
+   * @param angle the pointer to variable containing angle to be normalized.
+   */
+  static void NormalizeAngle(double* angle);
+
+};
+
+
+#endif //SENSOR_FUSION_UTILS_HPP

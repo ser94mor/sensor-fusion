@@ -20,8 +20,8 @@
 
 
 #include "definitions.hpp"
-#include "sensors.hpp"
 #include "MeasurementModel.hpp"
+#include "LidarMeasurementVectorView.hpp"
 
 #include <ctime>
 
@@ -44,7 +44,8 @@ namespace ser94mor
       template<class ProcessModel>
       class MeasurementModel :
         public ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-          ProcessModel, Sensor, MeasurementModelKind::Lidar, kIsLinear>
+                                                         MeasurementVectorView, ProcessModel,
+                                                         MeasurementModelKind::Lidar, kIsLinear>
       {
       public:
         using MeasurementMatrix_type =
@@ -59,7 +60,7 @@ namespace ser94mor
          */
         MeasurementModel()
         : ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-            ProcessModel, Sensor, MeasurementModelKind::Lidar, kIsLinear>{},
+            MeasurementVectorView, ProcessModel, MeasurementModelKind::Lidar, kIsLinear>{},
           measurement_matrix_{MeasurementMatrix_type::Identity()}
         {
 
@@ -74,11 +75,16 @@ namespace ser94mor
         }
 
         /**
-         * @return a measurement covariance matrix
+         * Calculate a difference between two measurement vectors. In Lidar case, it is simply a vector subtraction.
+         *
+         * @param measurement_vector_1 the first measurement vector
+         * @param measurement_vector_2 the second measurement vector
+         * @return the difference between the two measurement vectors
          */
-        const MeasurementCovarianceMatrix& Q() const
+        MeasurementVector Diff(const MeasurementVector& measurement_vector_1,
+                               const MeasurementVector& measurement_vector_2) const override
         {
-          return this->measurement_covariance_matrix_;
+          return (measurement_vector_1 - measurement_vector_2);
         }
 
       private:

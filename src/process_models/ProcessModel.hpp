@@ -36,11 +36,13 @@ namespace ser94mor
      *
      * @tparam StateVector a state vector class
      * @tparam StateCovarianceMatrix a state covariance matrix class
+     * @tparam StateVectorView a state vector view (accessor to the state vector dimensions)
      * @tparam ControlVector a control vector class
      * @tparam pmk a process model kind
      * @tparam is_linear a flag indicating whether the process model is linear or not
      */
-    template<class StateVector, class StateCovarianceMatrix, class ControlVector, ProcessModelKind pmk, bool is_linear>
+    template<class StateVector, class StateCovarianceMatrix, class ControlVector, class StateVectorView,
+             ProcessModelKind pmk, bool is_linear>
     class ProcessModel : public ModelEntity<EntityType::ProcessModel, ProcessModelKind, pmk, is_linear>
     {
     public:
@@ -52,6 +54,7 @@ namespace ser94mor
       using StateVector_type = StateVector;
       using StateCovarianceMatrix_type = StateCovarianceMatrix;
       using ControlVector_type = ControlVector;
+      using StateVectorView_type = StateVectorView;
 
       /**
        * @return a number of dimensions in the state vector
@@ -80,8 +83,9 @@ namespace ser94mor
       IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix_;
     };
 
-    template<class StateVector, class StateCovarianceMatrix, class ControlVector, ProcessModelKind pmk, bool is_linear>
-    void ProcessModel<StateVector, StateCovarianceMatrix, ControlVector, pmk, is_linear>::
+    template<class StateVector, class StateCovarianceMatrix, class ControlVector, class StateVectorView,
+             ProcessModelKind pmk, bool is_linear>
+    void ProcessModel<StateVector, StateCovarianceMatrix, ControlVector, StateVectorView, pmk, is_linear>::
     SetIndividualNoiseProcessCovarianceMatrix(const IndividualNoiseProcessesCovarianceMatrix& mtx)
     {
       individual_noise_processes_covariance_matrix_ = mtx;

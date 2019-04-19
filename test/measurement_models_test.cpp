@@ -26,6 +26,10 @@
 using namespace ser94mor::sensor_fusion;
 
 
+///////////
+// LIDAR //
+///////////
+
 TEST_CASE("Lidar::MeasurementModel::C", "[measurement_models]")
 {
   Lidar::MeasurementModel<CV::ProcessModel> lidar_mm;
@@ -78,7 +82,7 @@ TEST_CASE("Lidar::MeasurementModel::KindName", "[measurement_models]")
 
 TEST_CASE("Lidar::MeasurementModel::IsLinear", "[measurement_models]")
 {
-  REQUIRE(Lidar::MeasurementModel<CV::ProcessModel>::IsLinear());
+  REQUIRE(Lidar::MeasurementModel<CV::ProcessModel>::IsLinear() == true);
 }
 
 
@@ -91,4 +95,143 @@ TEST_CASE("Lidar::MeasurementModel::MeasurementDims", "[measurement_models]")
 TEST_CASE("Lidar::MeasurementModel::StateDims", "[measurement_models]")
 {
   REQUIRE(Lidar::MeasurementModel<CV::ProcessModel>::StateDims() == 4);
+}
+
+
+TEST_CASE("Lidar::MeasurementModel::GetInitialBeliefBasedOn", "[measurement_models]")
+{
+  Lidar::MeasurementVector mv;
+  mv << 3., 4.;
+
+  Lidar::Measurement measurement{2, mv};
+
+  auto belief{Lidar::MeasurementModel<CV::ProcessModel>::GetInitialBeliefBasedOn(measurement)};
+
+  CV::StateVector sv;
+  sv << 3., 4., 0., 0.;
+
+  CV::StateCovarianceMatrix scm;
+  scm << 1., 0., 0., 0.,
+         0., 1., 0., 0.,
+         0., 0., 1., 0.,
+         0., 0., 0., 1.;
+
+  CV::ProcessModel::Belief_type belief_expected{measurement.t(), sv, scm};
+
+  REQUIRE(belief == belief_expected);
+}
+
+
+///////////
+// RADAR //
+///////////
+
+TEST_CASE("Radar::MeasurementModel::h", "[measurement_models]")
+{
+  Radar::MeasurementModel<CV::ProcessModel> radar_mm;
+
+  CV::StateVector state_vector;
+  state_vector << 3. , 4., 2., 1.;
+
+  Radar::MeasurementVector measurement_vector;
+  measurement_vector << 5., std::atan2(4., 3.) , 2.;
+
+  REQUIRE(radar_mm.h(state_vector).isApprox(measurement_vector));
+}
+
+
+TEST_CASE("Radar::MeasurementModel::H", "[measurement_models]")
+{
+  Radar::MeasurementModel<CV::ProcessModel> radar_mm;
+
+  CV::StateVector state_vector;
+  state_vector << 3. , 4., 2., 1.;
+
+  Radar::MeasurementModel<CV::ProcessModel>::MeasurementMatrix_type measurement_matrix;
+  measurement_matrix <<   3./5.,   4./5.,    0.,    0.,
+                        -4./25.,  3./25.,    0.,    0.,
+                         4./25., -3./25., 3./5., 4./5.;
+
+
+  REQUIRE(radar_mm.H(state_vector).isApprox(measurement_matrix));
+}
+
+
+TEST_CASE("Radar::MeasurementModel::Q", "[measurement_models]")
+{
+  Radar::MeasurementCovarianceMatrix radar_mtx;
+  radar_mtx << 0.09,    0.0,  0.0,
+                0.0, 0.0009,  0.0,
+                0.0,    0.0, 0.09;
+
+  Radar::MeasurementModel<CV::ProcessModel> radar_mm;
+  radar_mm.SetMeasurementCovarianceMatrix(radar_mtx);
+
+  REQUIRE(radar_mm.Q().isApprox(radar_mtx));
+}
+
+
+TEST_CASE("Radar::MeasurementModel::Type", "[measurement_models]")
+{
+  REQUIRE(Radar::MeasurementModel<CV::ProcessModel>::Type() == EntityType::MeasurementModel);
+}
+
+
+TEST_CASE("Radar::MeasurementModel::TypeName", "[measurement_models]")
+{
+  REQUIRE(std::string(Radar::MeasurementModel<CV::ProcessModel>::TypeName()) == "MEASUREMENT_MODEL");
+}
+
+
+TEST_CASE("Radar::MeasurementModel::Kind", "[measurement_models]")
+{
+  REQUIRE(Radar::MeasurementModel<CV::ProcessModel>::Kind() == MeasurementModelKind::Radar);
+}
+
+
+TEST_CASE("Radar::MeasurementModel::KindName", "[measurement_models]")
+{
+  REQUIRE(std::string(Radar::MeasurementModel<CV::ProcessModel>::KindName()) == "RADAR");
+}
+
+
+TEST_CASE("Radar::MeasurementModel::IsLinear", "[measurement_models]")
+{
+  REQUIRE(Radar::MeasurementModel<CV::ProcessModel>::IsLinear() == false);
+}
+
+
+TEST_CASE("Radar::MeasurementModel::MeasurementDims", "[measurement_models]")
+{
+  REQUIRE(Radar::MeasurementModel<CV::ProcessModel>::MeasurementDims() == 3);
+}
+
+
+TEST_CASE("Radar::MeasurementModel::StateDims", "[measurement_models]")
+{
+  REQUIRE(Radar::MeasurementModel<CV::ProcessModel>::StateDims() == 4);
+}
+
+
+TEST_CASE("Radar::MeasurementModel::GetInitialBeliefBasedOn", "[measurement_models]")
+{
+  Radar::MeasurementVector mv;
+  mv << 3., M_PI/6., 1.;
+
+  Radar::Measurement measurement{2, mv};
+
+  auto belief{Radar::MeasurementModel<CV::ProcessModel>::GetInitialBeliefBasedOn(measurement)};
+
+  CV::StateVector sv;
+  sv << 3.*std::sqrt(3.)/2., 3./2., 0., 0.;
+
+  CV::StateCovarianceMatrix scm;
+  scm << 1., 0., 0., 0.,
+         0., 1., 0., 0.,
+         0., 0., 1., 0.,
+         0., 0., 0., 1.;
+
+  CV::ProcessModel::Belief_type belief_expected{measurement.t(), sv, scm};
+
+  REQUIRE(belief == belief_expected);
 }

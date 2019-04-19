@@ -15,11 +15,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_FUSION_HPP
-#define SENSOR_FUSION_FUSION_HPP
-
-
 #include "../src/fusion/Fusion.hpp"
-
-
-#endif //SENSOR_FUSION_FUSION_HPP
