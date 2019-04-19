@@ -60,9 +60,9 @@ namespace ser94mor
       void InitializeMeasurementCovarianceMatrices(
           const TupleOfMeasurementConvarianceMatrices& tup, std::index_sequence<Is...>);
 
-      template<class Measurement_type, class MeasurementModel_type, bool EnableBool = true>
+      template<class Measurement_type, class MeasurementModel_type>
       auto ProcessMeasurement(Measurement_type& measurement, MeasurementModel_type& measurement_model)
-      -> std::enable_if_t<Measurement_type::MeasurementModelKind() == MeasurementModel_type::Kind() && EnableBool, void>
+      -> std::enable_if_t<Measurement_type::MeasurementModelKind() == MeasurementModel_type::Kind(), void>
       {
         using ControlVector = typename ProcessModel::ControlVector_type;
 
@@ -82,9 +82,9 @@ namespace ser94mor
         ++processed_measurements_counter_;
       }
 
-      template<class Measurement_type, class MeasurementModel_type, bool EnableBool = true>
+      template<class Measurement_type, class MeasurementModel_type>
       auto ProcessMeasurement(Measurement_type& measurement, MeasurementModel_type& measurement_model)
-      -> std::enable_if_t<Measurement_type::MeasurementModelKind() != MeasurementModel_type::Kind() && EnableBool, void>
+      -> std::enable_if_t<Measurement_type::MeasurementModelKind() != MeasurementModel_type::Kind(), void>
       {
         // Do nothing.
       }
