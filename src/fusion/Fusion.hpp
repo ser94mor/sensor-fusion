@@ -60,44 +60,43 @@ namespace ser94mor
       void InitializeMeasurementCovarianceMatrices(
           const TupleOfMeasurementConvarianceMatrices& tup, std::index_sequence<Is...>);
 
-      template<class Measurement_type, class MeasurementModel_type>
-      void ProcessMeasurement(Measurement_type& measurement, MeasurementModel_type& measurement_model);
+      template<class Measurement_type, class MeasurementModel_type, bool EnableBool = true>
+      auto ProcessMeasurement(Measurement_type& measurement, MeasurementModel_type& measurement_model)
+      -> std::enable_if_t<Measurement_type::MeasurementModelKind() == MeasurementModel_type::Kind() && EnableBool, void>
+      {
+        using ControlVector = typename ProcessModel::ControlVector_type;
 
-      // flag indicating whether the first measurement processed
-      bool initialized_;
+        if (processed_measurements_counter_ == 0)
+        {
+          belief_ = measurement_model.GetInitialBeliefBasedOn(measurement);
+        }
+        else
+        {
+          auto dt = measurement.t() - belief_.t();
+
+          auto belief_prior{Filter<ProcessModel, MeasurementModel_type>::
+                            Predict(belief_, ControlVector::Zero(), dt, process_model_)};
+          belief_ = Filter<ProcessModel, MeasurementModel_type>::Update(belief_prior, measurement, measurement_model);
+        }
+
+        ++processed_measurements_counter_;
+      }
+
+      template<class Measurement_type, class MeasurementModel_type, bool EnableBool = true>
+      auto ProcessMeasurement(Measurement_type& measurement, MeasurementModel_type& measurement_model)
+      -> std::enable_if_t<Measurement_type::MeasurementModelKind() != MeasurementModel_type::Kind() && EnableBool, void>
+      {
+        // Do nothing.
+      }
 
       // counter of processed measurements
       uint64_t processed_measurements_counter_;
-
-      // timestamp of the previously processed measurement
-      uint64_t previous_measurement_timestamp_;
 
       Belief belief_;
       ProcessModel process_model_;
       std::tuple<MeasurementModel<ProcessModel>...> measurement_models_;
     };
 
-    template<template<class, class> class Filter, class ProcessModel,
-        template<class> class... MeasurementModel>
-    template<class Measurement_type, class MeasurementModel_type>
-    void
-    Fusion<Filter, ProcessModel, MeasurementModel...>::
-    ProcessMeasurement(Measurement_type& measurement, MeasurementModel_type& measurement_model)
-    {
-      using ControlVector = typename ProcessModel::ControlVector_type;
-
-      // process measurement only in case measurement model matches measurement
-      if (measurement.MeasurementModelKind() == measurement_model.Kind())
-      {
-        auto dt = measurement.t() - previous_measurement_timestamp_;
-
-        auto belief_prior{Filter<ProcessModel, MeasurementModel_type>::
-                          Predict(belief_, ControlVector::Zero(), dt, process_model_)};
-        belief_ = Filter<ProcessModel, MeasurementModel_type>::Update(belief_prior, measurement, measurement_model);
-
-        previous_measurement_timestamp_ = measurement.t();
-      }
-    }
 
     template<template<class, class> class Filter, class ProcessModel,
         template<class> class... MeasurementModel>
@@ -105,9 +104,7 @@ namespace ser94mor
       Fusion(IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix,
              typename MeasurementModel<ProcessModel>::MeasurementCovarianceMatrix_type...
              measurement_covariance_matrices) :
-        initialized_{false},
         processed_measurements_counter_{0},
-        previous_measurement_timestamp_{0},
         belief_{0, {}, {}},
         process_model_{},
         measurement_models_{}

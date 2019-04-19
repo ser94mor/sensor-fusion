@@ -44,7 +44,7 @@ namespace ser94mor
          * Constructor.
          * @param state_vector a state vector
          */
-        explicit StateVectorView(const StateVector& state_vector)
+        explicit StateVectorView(StateVector& state_vector)
         : ser94mor::sensor_fusion::StateVectorView<CV::StateVector>{state_vector}
         {
 
@@ -59,9 +59,25 @@ namespace ser94mor
         }
 
         /**
+         * @return X-axis coordinate
+         */
+        double& px() override
+        {
+          return state_vector_(0);
+        }
+
+        /**
          * @return Y-axis coordinate
          */
         double py() const override
+        {
+          return state_vector_(1);
+        }
+
+        /**
+         * @return Y-axis coordinate
+         */
+        double& py() override
         {
           return state_vector_(1);
         }
@@ -111,7 +127,7 @@ namespace ser94mor
 
       double range_rate() const override
       {
-          double epsilon = 0.0000001;
+          double epsilon = 0.00001;
           double rho = range();
           // protection from division by zero
           if (rho < epsilon) {

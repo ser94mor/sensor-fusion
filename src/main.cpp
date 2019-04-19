@@ -35,6 +35,7 @@
 using namespace ser94mor::sensor_fusion;
 
 using KF_CV_LIDAR_Fusion = Fusion<KalmanFilter, CV::ProcessModel, Lidar::MeasurementModel>;
+using EKF_CV_RADAR_Fusion = Fusion<ExtendedKalmanFilter, CV::ProcessModel, Radar::MeasurementModel>;
 using EKF_CV_LIDAR_RADAR_Fusion = 
     Fusion<ExtendedKalmanFilter, CV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
 
@@ -127,7 +128,6 @@ int main(int argc, char *argv[])
 
   EKF_CV_LIDAR_RADAR_Fusion fusion{p_mtx, lidar_mtx, radar_mtx};
 
-
   uWS::Hub h;
 
 
@@ -203,25 +203,28 @@ int main(int argc, char *argv[])
           ground_truth.push_back(gt_values);
 
           VectorXd estimate(4);
+
           if (meas_package.sensor_type_ == MeasurementPackage::LASER)
           {
             Lidar::Measurement measurement{meas_package.timestamp_, meas_package.raw_measurements_};
+
             auto belief{fusion.ProcessMeasurement(measurement)};
 
-            CV::StateVectorView state_vector_view{belief.mu()};
+            auto sv{belief.mu()};
+            CV::StateVectorView state_vector_view{sv};
             estimate(0) = state_vector_view.px();
             estimate(1) = state_vector_view.py();
             estimate(2) = state_vector_view.vx();
             estimate(3) = state_vector_view.vy();
 
             estimations.push_back(estimate);
-
-
-          } else { 
+          } else {
             Radar::Measurement measurement{meas_package.timestamp_, meas_package.raw_measurements_};
+
             auto belief{fusion.ProcessMeasurement(measurement)};
 
-            CV::StateVectorView state_vector_view{belief.mu()};
+            auto sv{belief.mu()};
+            CV::StateVectorView state_vector_view{sv};
             estimate(0) = state_vector_view.px();
             estimate(1) = state_vector_view.py();
             estimate(2) = state_vector_view.vx();

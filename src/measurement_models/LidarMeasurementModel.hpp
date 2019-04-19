@@ -21,6 +21,7 @@
 
 #include "definitions.hpp"
 #include "MeasurementModel.hpp"
+#include "LidarMeasurementVectorView.hpp"
 
 #include <ctime>
 
@@ -43,7 +44,8 @@ namespace ser94mor
       template<class ProcessModel>
       class MeasurementModel :
         public ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-          ProcessModel, MeasurementModelKind::Lidar, kIsLinear>
+                                                         MeasurementVectorView, ProcessModel,
+                                                         MeasurementModelKind::Lidar, kIsLinear>
       {
       public:
         using MeasurementMatrix_type =
@@ -58,7 +60,7 @@ namespace ser94mor
          */
         MeasurementModel()
         : ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-            ProcessModel, MeasurementModelKind::Lidar, kIsLinear>{},
+            MeasurementVectorView, ProcessModel, MeasurementModelKind::Lidar, kIsLinear>{},
           measurement_matrix_{MeasurementMatrix_type::Identity()}
         {
 

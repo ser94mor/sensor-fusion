@@ -40,8 +40,8 @@ namespace ser94mor
      * @tparam mmk a kind of a measurement model (from a corresponding enum class)
      * @tparam is_linear flag indicating whether this measurement model is linear or not
      */
-    template<class MeasurementVector, class MeasurementCovarianceMatrix, class ProcessModel,
-             MeasurementModelKind mmk, bool is_linear>
+    template<class MeasurementVector, class MeasurementCovarianceMatrix, class MeasurementVectorView,
+             class ProcessModel, MeasurementModelKind mmk, bool is_linear>
     class MeasurementModel : public ModelEntity<EntityType::MeasurementModel, MeasurementModelKind, mmk, is_linear>
     {
     public:
@@ -50,7 +50,14 @@ namespace ser94mor
        * measurement model.
        */
       using Measurement_type = Measurement<MeasurementVector, MeasurementCovarianceMatrix, mmk>;
+      using MeasurementVector_type = MeasurementVector;
+      using MeasurementVectorView_type = MeasurementVectorView;
       using MeasurementCovarianceMatrix_type = MeasurementCovarianceMatrix;
+
+      using StateVectorView_type = typename ProcessModel::StateVectorView_type;
+      using StateVector_type = typename ProcessModel::StateVector_type;
+
+      using Belief_type = typename ProcessModel::Belief_type;
 
       /**
        * @return a number of dimensions in measurement vector
@@ -83,19 +90,26 @@ namespace ser94mor
        * due to the variadic templates used in this code. MeasurementModel needs a default constructor.
        * @param mtx a measurement covariance matrix
        */
-      void SetMeasurementCovarianceMatrix(const MeasurementCovarianceMatrix& mtx);
+      void SetMeasurementCovarianceMatrix(const MeasurementCovarianceMatrix& mtx)
+      {
+        measurement_covariance_matrix_ = mtx;
+      }
+
+      static Belief_type GetInitialBeliefBasedOn(const Measurement_type& measurement)
+      {
+        StateVector_type state_vector{StateVector_type::Zero()};
+        StateVectorView_type svv{state_vector};
+        MeasurementVectorView_type mvv{measurement.z()};
+
+        svv.px() = mvv.px();
+        svv.py() = mvv.py();
+
+        return Belief_type{measurement.t(), state_vector, ProcessModel::StateCovarianceMatrix_type::Identity()};
+      }
 
     protected:
       MeasurementCovarianceMatrix measurement_covariance_matrix_;
     };
-
-    template<class MeasurementVector, class MeasurementCovarianceMatrix, class StateVector,
-             MeasurementModelKind mmk, bool is_linear>
-    void MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix, StateVector, mmk, is_linear>::
-      SetMeasurementCovarianceMatrix(const MeasurementCovarianceMatrix& mtx)
-    {
-      measurement_covariance_matrix_ = mtx;
-    }
 
   }
 }

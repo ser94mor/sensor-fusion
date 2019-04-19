@@ -32,7 +32,7 @@ namespace ser94mor
          * Constructor.
          * @param state_vector a state vector
          */
-      explicit StateVectorView(const StateVector& state_vector) : state_vector_{state_vector}
+      explicit StateVectorView(StateVector& state_vector) : state_vector_{state_vector}
       {
 
       }
@@ -43,9 +43,19 @@ namespace ser94mor
       virtual double px() const = 0;
 
       /**
+       * @return X-axis coordinate
+       */
+      virtual double& px() = 0;
+
+      /**
        * @return Y-axis coordinate
        */
       virtual double py() const = 0;
+
+      /**
+       * @return Y-axis coordinate
+       */
+      virtual double& py() = 0;
 
       /**
        * @return X-axis velocity
@@ -89,7 +99,7 @@ namespace ser94mor
       virtual double range_rate() const = 0;
 
     protected:
-      const StateVector& state_vector_;
+      StateVector& state_vector_;
     };
 
   }

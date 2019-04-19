@@ -99,9 +99,20 @@ namespace ser94mor
         auto Kt{Sigma * Ht.transpose() * (Ht * Sigma * Ht.transpose() + measurement_model.Q()).inverse()};
         auto I{Eigen::Matrix<double, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
 
+        typename MeasurementModel::MeasurementVector_type tmp_diff = measurement.z() - measurement_model.h(mu);
+
+        // normalize the angle between -pi to pi
+        while(tmp_diff(1) > M_PI){
+          tmp_diff(1) -= 2 * M_PI;
+        }
+
+        while(tmp_diff(1) < -M_PI){
+          tmp_diff(1) += 2 * M_PI;
+        }
+
         return {
             /* timestamp */               measurement.t(),
-            /* state vector */            mu + Kt * (measurement.z() - measurement_model.h(mu)),
+            /* state vector */            mu + Kt * tmp_diff,
             /* state covariance matrix */ (I - Kt * Ht) * Sigma,
         };
       }

@@ -21,6 +21,7 @@
 
 #include "definitions.hpp"
 #include "MeasurementModel.hpp"
+#include "RadarMeasurementVectorView.hpp"
 
 
 namespace ser94mor
@@ -40,7 +41,8 @@ namespace ser94mor
        */
       template<class ProcessModel>
       class MeasurementModel
-      : public ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix, ProcessModel,
+      : public ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
+                                                         MeasurementVectorView, ProcessModel,
                                                          MeasurementModelKind::Radar, kIsLinear>
       {
       public:
@@ -51,7 +53,8 @@ namespace ser94mor
 
 
         MeasurementModel()
-        : ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix, ProcessModel,
+        : ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
+                                                    MeasurementVectorView, ProcessModel,
                                                     MeasurementModelKind::Radar, kIsLinear>{}
         {
 
@@ -59,7 +62,8 @@ namespace ser94mor
 
         MeasurementVector h(const StateVector_type& state_vector) const
         {
-          StateVectorView_type svv{state_vector};
+          auto sv{state_vector};
+          StateVectorView_type svv{sv};
 
           MeasurementVector measurement_vector;
           measurement_vector << svv.range(), svv.bearing(), svv.range_rate();
@@ -69,7 +73,8 @@ namespace ser94mor
 
         MeasurementMatrix_type H(const StateVector_type& state_vector) const
         {
-          StateVectorView_type svv{state_vector};
+          auto sv{state_vector};
+          StateVectorView_type svv{sv};
 
           auto rho{svv.range()};
           auto rho_2{rho*rho};

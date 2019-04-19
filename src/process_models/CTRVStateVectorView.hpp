@@ -7,8 +7,10 @@
 
 
 #include "definitions.hpp"
+#include "StateVectorView.hpp"
 
-namespace ser94mor::sensor_fusion::CTRV
+
+namespace ser94mor
 {
   namespace sensor_fusion
   {
@@ -19,7 +21,7 @@ namespace ser94mor::sensor_fusion::CTRV
        * A wrapper around StateVector for CTRV process model (which is just an Eigen vector)
        * that provides meaningful accessors to the StateVector components.
        */
-      class StateVectorView
+      class StateVectorView : ser94mor::sensor_fusion::StateVectorView<StateVector>
       {
       public:
 
@@ -27,7 +29,8 @@ namespace ser94mor::sensor_fusion::CTRV
          * Constructor.
          * @param state_vector a state vector
          */
-        explicit StateVectorView(const StateVector& state_vector) : state_vector_{state_vector}
+        explicit StateVectorView(StateVector& state_vector)
+        : ser94mor::sensor_fusion::StateVectorView<StateVector>{state_vector}
         {
 
         }
@@ -41,9 +44,25 @@ namespace ser94mor::sensor_fusion::CTRV
         }
 
         /**
+         * @return X-axis coordinate
+         */
+        double& px() override
+        {
+          return state_vector_(0);
+        }
+
+        /**
          * @return Y-axis coordinate
          */
         double py() const
+        {
+          return state_vector_(1);
+        }
+
+        /**
+         * @return Y-axis coordinate
+         */
+        double& py() override
         {
           return state_vector_(1);
         }
@@ -71,10 +90,6 @@ namespace ser94mor::sensor_fusion::CTRV
         {
           return state_vector_(4);
         }
-
-      private:
-        const StateVector& state_vector_;
-
       };
 
     }

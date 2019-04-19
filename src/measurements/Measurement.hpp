@@ -75,7 +75,7 @@ namespace ser94mor
        * @return a measurement model kind, which is determined by the sensor and measurement model which handles such
        *         a measurement
        */
-      constexpr enum MeasurementModelKind MeasurementModelKind() const
+      constexpr static enum MeasurementModelKind MeasurementModelKind()
       {
         return mmk;
       }
