@@ -228,18 +228,18 @@ TEST_CASE("ExtendedKalmanFilter<CV::ProcessModel, Radar::MeasurementModel<CV::Pr
   Radar::Measurement measurement{2, z};
 
   CV::StateVector state_vector_expected;
-  state_vector_expected << (6128./537.), (1499./179.), (3532./537.), (785./537.);
+  state_vector_expected << 6.5601563736393267, 8.8442906470847316, 4.421325574037267, 5.5173910728606534;
 
   CV::StateCovarianceMatrix state_covariance_matrix_expected;
-  state_covariance_matrix_expected << (2633./537.),  (1411./358.), (1696./537.),  (1747./1074.),
-      (1411./358.),  (1063./358.), (919./358.),   (413./358.),
-      (1696./537.),  (919./358.),  (3176./537.),  (7337./1074.),
-      (1747./1074.), (413./358.),  (7337./1074.), (9199./1074.);
+  state_covariance_matrix_expected <<
+     -7.7423273663513541,  6.0580378541632163, -7.0780179461910935,  6.4404125444715659,
+      6.8607045995033218, -6.2275790258719192,  7.0179341272832367, -5.476430297456611,
+     -8.1537415978815844,  5.1091222365733984, -6.4374919854575268,  7.1841315639005643,
+      5.6807191159736803, -7.1102590161828161,  7.5671502297651809, -4.0525670391244084;
 
   BEL belief_posterior_expected{2, state_vector_expected, state_covariance_matrix_expected};
 
-
   BEL belief_posterior{EKF::Update(belief_prior, measurement, radar_mm)};
-
-  //REQUIRE(belief_posterior == belief_posterior_expected);
+  
+  REQUIRE(belief_posterior == belief_posterior_expected);
 }
