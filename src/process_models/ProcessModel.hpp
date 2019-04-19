@@ -36,6 +36,7 @@ namespace ser94mor
      *
      * @tparam StateVector a state vector class
      * @tparam StateCovarianceMatrix a state covariance matrix class
+     * @tparam StateVectorView a state vector view (accessor to the state vector dimensions)
      * @tparam ControlVector a control vector class
      * @tparam pmk a process model kind
      * @tparam is_linear a flag indicating whether the process model is linear or not

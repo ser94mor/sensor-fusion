@@ -74,6 +74,13 @@ namespace ser94mor
           return measurement_matrix_;
         }
 
+        /**
+         * Calculate a difference between two measurement vectors. In Lidar case, it is simply a vector subtraction.
+         *
+         * @param measurement_vector_1 the first measurement vector
+         * @param measurement_vector_2 the second measurement vector
+         * @return the difference between the two measurement vectors
+         */
         MeasurementVector Diff(const MeasurementVector& measurement_vector_1,
                                const MeasurementVector& measurement_vector_2) const override
         {

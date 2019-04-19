@@ -29,9 +29,9 @@ namespace ser94mor
     {
     public:
       /**
-         * Constructor.
-         * @param state_vector a state vector
-         */
+       * Constructor.
+       * @param state_vector a state vector
+       */
       explicit StateVectorView(StateVector& state_vector) : state_vector_{state_vector}
       {
 
@@ -68,8 +68,8 @@ namespace ser94mor
       virtual double vy() const = 0;
 
       /**
-         * @return velocity module
-         */
+       * @return velocity module
+       */
       virtual double v() const = 0;
 
       /**

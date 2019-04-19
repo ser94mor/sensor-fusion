@@ -36,7 +36,7 @@ namespace ser94mor
        * A wrapper around StateVector for CV process model (which is just an Eigen vector)
        * that provides meaningful accessors to the StateVector components.
        */
-    class StateVectorView : public ser94mor::sensor_fusion::StateVectorView<CV::StateVector>
+      class StateVectorView : public ser94mor::sensor_fusion::StateVectorView<CV::StateVector>
       {
       public:
 
@@ -45,7 +45,7 @@ namespace ser94mor
          * @param state_vector a state vector
          */
         explicit StateVectorView(StateVector& state_vector)
-        : ser94mor::sensor_fusion::StateVectorView<CV::StateVector>{state_vector}
+            : ser94mor::sensor_fusion::StateVectorView<CV::StateVector>{state_vector}
         {
 
         }
@@ -98,41 +98,60 @@ namespace ser94mor
           return state_vector_(3);
         }
 
-      double v() const override
-      {
-        return std::sqrt(vx()*vx() + vy()*vy());
-      }
+        /**
+         * @return velocity module
+         */
+        double v() const override
+        {
+          return std::sqrt(vx()*vx() + vy()*vy());
+        }
 
-      double yaw() const override
-      {
-        // TODO: implement while adding CTRV process model
-        return 0.;
-      }
+        /**
+         * @return yaw rotation angle
+         */
+        double yaw() const override
+        {
+          // TODO: implement while adding CTRV process model
+          return 0.;
+        }
 
-      double yaw_rate() const override
-      {
-        // TODO: implement while adding CTRV process model
-        return 0.;
-      }
+        /**
+         * @return angular velocity of yaw rotation
+         */
+        double yaw_rate() const override
+        {
+          // TODO: implement while adding CTRV process model
+          return 0.;
+        }
 
-      double range() const override
-      {
-        double epsilon{0.00001};
-        double rho{std::sqrt(px()*px() + py()*py())};
-        return (rho < epsilon) ? epsilon : rho;
-      }
+        /**
+         * @return range: radial distance from origin
+         */
+        double range() const override
+        {
+          double epsilon{0.00001};
+          double rho{std::sqrt(px()*px() + py()*py())};
+          return (rho < epsilon) ? epsilon : rho;
+        }
 
-      double bearing() const override
-      {
-        return std::atan2(py(), px());
-      }
+        /**
+         * @return bearing: angle between range and X-axis
+         * (which points into the direction of heading of our car, where sensors are installed)
+         */
+        double bearing() const override
+        {
+          return std::atan2(py(), px());
+        }
 
-      double range_rate() const override
-      {
-        return (px()*vx() + py()*vy()) / range();
-      }
+        /**
+         * @return radial velocity: change of range, i.e., range rate
+         */
+        double range_rate() const override
+        {
+          return (px()*vx() + py()*vy()) / range();
+        }
 
-    };
+      };
 
     }
   }

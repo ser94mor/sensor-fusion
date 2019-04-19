@@ -19,10 +19,17 @@
 #define SENSOR_FUSION_UTILS_HPP
 
 
+/**
+ * Class containing different helper methods.
+ */
 class Utils
 {
 public:
 
+  /**
+   * Normalize angle to be between [-pi, pi].
+   * @param angle the pointer to variable containing angle to be normalized.
+   */
   static void NormalizeAngle(double* angle);
 
 };

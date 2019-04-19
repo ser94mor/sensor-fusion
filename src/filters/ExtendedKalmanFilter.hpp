@@ -30,7 +30,7 @@ namespace ser94mor
   {
 
     /**
-     * A template class holding Kalman Filter equations.
+     * A template class holding Extended Kalman Filter equations.
      * The naming of vectors and matrices are taken from the
      * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
      *
@@ -49,8 +49,11 @@ namespace ser94mor
       using KalmanFilter<ProcessModel, MeasurementModel>::Update;
 
       /**
-       * Prediction step of the Kalman filter. Predicts the object's state in dt time in the future in accordance with
-       * process model and input control vector.
+       * Prediction step of the Extended Kalman filter. Predicts the object's state in dt time in the future
+       * in accordance with NON-LINEAR process model and input control vector.
+       *
+       * Notice that for linear process models the compiler will choose the corresponding method from the
+       * base class (KalmanFilter) which works with linear process models.
        *
        * @param belief_posterior a current belief of the object's state
        * @param ut a control vector
@@ -66,17 +69,18 @@ namespace ser94mor
                             const std::enable_if_t<not ProcessModel::IsLinear() && EnableBool, ProcessModel>&
                                 process_model)
       {
-        // For linear process models the compiler will choose the corresponding function from the KalmanFilter class,
-        // which is a base class for this one.
-
         // TODO: implement while adding CTRV process model
         throw std::runtime_error("NOT IMPLEMENTED YET");
       }
 
       /**
-       * Update step of the Kalman filter. Incorporates the sensor measurement into the given prior belief.
+       * Update step of the Extended Kalman filter. Incorporates the sensor measurement into the given prior belief.
+       * Works only with NON-LINEAR measurement models.
        *
-       * @param belief_prior a belief after the prediction Kalman filter step
+       * Notice that for linear measurement models the compiler will choose the corresponding method from the
+       * base class (KalmanFilter) which works with linear measurement models.
+       *
+       * @param belief_prior a belief after the prediction Extended Kalman filter step
        * @param measurement a measurement from the sensor
        * @param measurement_model an instance of the measurement model
        *
@@ -88,9 +92,6 @@ namespace ser94mor
                            const std::enable_if_t<not MeasurementModel::IsLinear() && EnableBool,
                            MeasurementModel>& measurement_model)
       {
-        // For linear measurement models the compiler will choose the corresponding function from the KalmanFilter class,
-        // which is a base class for this one.
-
         auto mu{belief_prior.mu()};
         auto Sigma{belief_prior.Sigma()};
         auto Ht{measurement_model.H(mu)};

@@ -24,13 +24,19 @@ namespace ser94mor
   namespace sensor_fusion
   {
 
+    /**
+     * A base class for so-called measurement vector views, that is, classes that provides a meaningful access to the
+     * measurement vector dimensions.
+     *
+     * @tparam MeasurementVector a measurement vector class
+     */
     template <class MeasurementVector>
     class MeasurementVectorView
     {
     public:
       /**
        * Constructor.
-       * @param measurement_vector a state vector
+       * @param measurement_vector a measurement vector
        */
       explicit MeasurementVectorView(const MeasurementVector& measurement_vector)
       : measurement_vector_{measurement_vector}

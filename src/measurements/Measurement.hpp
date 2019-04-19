@@ -80,6 +80,11 @@ namespace ser94mor
         return mmk;
       }
 
+      /**
+       * Constructor.
+       * @param timestamp a timestamp
+       * @param measurement_vector a measurement vector
+       */
       Measurement(double timestamp, const MeasurementVector& measurement_vector)
       : timestamp_{timestamp}, measurement_vector_{measurement_vector}
       {

@@ -36,6 +36,8 @@ namespace ser94mor
      *
      * @tparam MeasurementVector a class of the measurement vector
      * @tparam MeasurementCovarianceMatrix a class of the measurement covariance matrix
+     * @tparam MeasurementVectorView a class of the measurement vector view
+     *                               (accessor to the measurement vector dimensions)
      * @tparam ProcessModel a class of the process model
      * @tparam mmk a kind of a measurement model (from a corresponding enum class)
      * @tparam is_linear flag indicating whether this measurement model is linear or not
@@ -85,6 +87,15 @@ namespace ser94mor
         return measurement_covariance_matrix_;
       }
 
+      /**
+       * Calculate a difference between two measurement vectors. Some kinds of measurement vectors may have a dimensions
+       * that need to be adjusted after the simple vector subtraction operation, such as dimensions representing
+       * angles that has to be within in [-pi, pi].
+       *
+       * @param measurement_vector_1 the first measurement vector
+       * @param measurement_vector_2 the second measurement vector
+       * @return the difference between the two measurement vectors
+       */
       virtual MeasurementVector Diff(const MeasurementVector& measurement_vector_1,
                                      const MeasurementVector& measurement_vector_2) const = 0;
 
@@ -98,6 +109,17 @@ namespace ser94mor
         measurement_covariance_matrix_ = mtx;
       }
 
+      /**
+       * During the sensor fusion process, we need to initialize our initial belief based on something. When we receive
+       * a first measurement, it becomes the most precise notion of the object's state. So, it is reasonable to
+       * form an initial belief based on the first measurement.
+       *
+       * TODO: measurement covariance matrix should have 1's in px, py dimensions and much higher values
+       *       for the dimensions of the state vector about which we have no information from the measurement vector.
+       *
+       * @param measurement the first received measurement
+       * @return an initial belief
+       */
       static Belief_type GetInitialBeliefBasedOn(const Measurement_type& measurement)
       {
         StateVector_type state_vector{StateVector_type::Zero()};

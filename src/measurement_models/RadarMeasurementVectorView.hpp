@@ -31,12 +31,17 @@ namespace ser94mor
     namespace Radar
     {
 
+      /**
+       * A measurement vector view for the Radar measurement vector, that is,
+       * it is a class  that provides a meaningful access to the
+       * Radar measurement vector dimensions.
+       */
       class MeasurementVectorView : ser94mor::sensor_fusion::MeasurementVectorView<MeasurementVector>
       {
       public:
         /**
          * Constructor.
-         * @param measurement_vector a state vector
+         * @param measurement_vector a measurement vector
          */
         explicit MeasurementVectorView(const MeasurementVector& measurement_vector)
         : ser94mor::sensor_fusion::MeasurementVectorView<MeasurementVector>{measurement_vector}

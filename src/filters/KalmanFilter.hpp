@@ -21,7 +21,6 @@
 
 #include <ctime>
 #include <tuple>
-#include <iostream>
 #include <Eigen/Dense>
 
 
@@ -49,7 +48,7 @@ namespace ser94mor
     public:
       /**
        * Prediction step of the Kalman filter. Predicts the object's state in dt time in the future in accordance with
-       * process model and input control vector.
+       * LINEAR process model and input control vector.
        *
        * @param belief_posterior a current belief of the object's state
        * @param ut a control vector
@@ -74,6 +73,7 @@ namespace ser94mor
 
       /**
        * Update step of the Kalman filter. Incorporates the sensor measurement into the given prior belief.
+       * Works only with linear measurement models.
        *
        * @param belief_prior a belief after the prediction Kalman filter step
        * @param measurement a measurement from the sensor

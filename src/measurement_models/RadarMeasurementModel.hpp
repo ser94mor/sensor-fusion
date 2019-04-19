@@ -35,7 +35,7 @@ namespace ser94mor
       /**
        * A concrete (Radar) measurement model. It is still a template because the dimensionality of
        * the measurement matrix depends on the process model kind, which we know only at compile time.
-       * The naming of matrices are taken from the
+       * The naming of matrices and vectors are taken from the
        * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
        *
        * @tparam ProcessModel a process model class, which is needed to determine the number of state dimensions
@@ -61,6 +61,11 @@ namespace ser94mor
 
         }
 
+        /**
+         * A measurement function. It transforms the a vector from the state space into a measurement space.
+         * @param state_vector a state vector
+         * @return a corresponding vector in measurement space
+         */
         MeasurementVector h(const StateVector_type& state_vector) const
         {
           auto sv{state_vector};
@@ -72,6 +77,11 @@ namespace ser94mor
           return measurement_vector;
         }
 
+        /**
+         * A Jacobian for non-linear case corresponding to the measurement matrix "C" for the linear case.
+         * @param state_vector a state vector
+         * @return
+         */
         MeasurementMatrix_type H(const StateVector_type& state_vector) const
         {
           auto sv{state_vector};
@@ -93,6 +103,15 @@ namespace ser94mor
           return measurement_matrix;
         }
 
+        /**
+         * Calculate a difference between two measurement vectors. In Radar case, there is a need to "normalize"
+         * the bearing dimension because after the vector subtraction the bearing angle may fall out of the [-pi, pi]
+         * interval.
+         *
+         * @param measurement_vector_1 the first measurement vector
+         * @param measurement_vector_2 the second measurement vector
+         * @return the difference between the two measurement vectors
+         */
         MeasurementVector Diff(const MeasurementVector& measurement_vector_1,
                                const MeasurementVector& measurement_vector_2) const
         {
