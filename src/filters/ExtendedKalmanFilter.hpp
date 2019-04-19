@@ -62,7 +62,7 @@ namespace ser94mor
       template<bool EnableBool = true>
       static Belief Predict(const Belief& belief_posterior,
                             const ControlVector& ut,
-                            std::time_t dt,
+                            double dt,
                             const std::enable_if_t<not ProcessModel::IsLinear() && EnableBool, ProcessModel>&
                                 process_model)
       {
@@ -94,25 +94,12 @@ namespace ser94mor
         auto mu{belief_prior.mu()};
         auto Sigma{belief_prior.Sigma()};
         auto Ht{measurement_model.H(mu)};
-
-        std::cout << Sigma * Ht.transpose() << std::endl;
         auto Kt{Sigma * Ht.transpose() * (Ht * Sigma * Ht.transpose() + measurement_model.Q()).inverse()};
         auto I{Eigen::Matrix<double, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
 
-        typename MeasurementModel::MeasurementVector_type tmp_diff = measurement.z() - measurement_model.h(mu);
-
-        // normalize the angle between -pi to pi
-        while(tmp_diff(1) > M_PI){
-          tmp_diff(1) -= 2 * M_PI;
-        }
-
-        while(tmp_diff(1) < -M_PI){
-          tmp_diff(1) += 2 * M_PI;
-        }
-
         return {
             /* timestamp */               measurement.t(),
-            /* state vector */            mu + Kt * tmp_diff,
+            /* state vector */            mu + Kt * measurement_model.Diff(measurement.z(), measurement_model.h(mu)),
             /* state covariance matrix */ (I - Kt * Ht) * Sigma,
         };
       }

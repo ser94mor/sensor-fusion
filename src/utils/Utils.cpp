@@ -15,5 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../src/process_models/CVStateVectorView.hpp"
-#include "../src/process_models/CVProcessModel.hpp"
+
+#include "Utils.hpp"
+
+#include <cmath>
+
+void Utils::NormalizeAngle(double* angle)
+{
+  auto times = std::round( std::fabs( *angle / (2.0 * M_PI) ) );  // for the case when angle is very very large
+
+  if (*angle >  M_PI) *angle -= times * 2.0 * M_PI;
+
+  if (*angle < -M_PI) *angle += times * 2.0 * M_PI;
+}

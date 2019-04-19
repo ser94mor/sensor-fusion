@@ -108,6 +108,11 @@ std::string hasData(const std::string &s) {
   return "";
 }
 
+constexpr double us_to_s(std::time_t us)
+{
+  return us / 1000000.0;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -206,7 +211,7 @@ int main(int argc, char *argv[])
 
           if (meas_package.sensor_type_ == MeasurementPackage::LASER)
           {
-            Lidar::Measurement measurement{meas_package.timestamp_, meas_package.raw_measurements_};
+            Lidar::Measurement measurement{us_to_s(meas_package.timestamp_), meas_package.raw_measurements_};
 
             auto belief{fusion.ProcessMeasurement(measurement)};
 
@@ -219,7 +224,7 @@ int main(int argc, char *argv[])
 
             estimations.push_back(estimate);
           } else {
-            Radar::Measurement measurement{meas_package.timestamp_, meas_package.raw_measurements_};
+            Radar::Measurement measurement{us_to_s(meas_package.timestamp_), meas_package.raw_measurements_};
 
             auto belief{fusion.ProcessMeasurement(measurement)};
 

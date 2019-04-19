@@ -15,5 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../src/process_models/CVStateVectorView.hpp"
-#include "../src/process_models/CVProcessModel.hpp"
+#ifndef SENSOR_FUSION_UTILS_HPP
+#define SENSOR_FUSION_UTILS_HPP
+
+
+class Utils
+{
+public:
+
+  static void NormalizeAngle(double* angle);
+
+};
+
+
+#endif //SENSOR_FUSION_UTILS_HPP

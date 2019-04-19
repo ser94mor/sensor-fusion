@@ -53,7 +53,7 @@ namespace ser94mor
          * @param dt a difference between the current measurement timestamp and the previous measurement timestamp
          * @return a state transition matrix
          */
-        StateTransitionMatrix A(std::time_t dt) const;
+        StateTransitionMatrix A(double dt) const;
 
         /**
          * @return a control transition matrix
@@ -64,7 +64,7 @@ namespace ser94mor
          * @param dt a difference between the current measurement timestamp and the previous measurement timestamp
          * @return a process covariance matrix
          */
-        ProcessCovarianceMatrix R(std::time_t dt) const;
+        ProcessCovarianceMatrix R(double dt) const;
 
       private:
         StateTransitionMatrix state_transition_matrix_prototype_;

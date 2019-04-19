@@ -117,7 +117,9 @@ namespace ser94mor
 
       double range() const override
       {
-        return std::sqrt(px()*px() + py()*py());
+        double epsilon{0.00001};
+        double rho{std::sqrt(px()*px() + py()*py())};
+        return (rho < epsilon) ? epsilon : rho;
       }
 
       double bearing() const override
@@ -127,13 +129,7 @@ namespace ser94mor
 
       double range_rate() const override
       {
-          double epsilon = 0.00001;
-          double rho = range();
-          // protection from division by zero
-          if (rho < epsilon) {
-            rho = epsilon;
-          }
-        return (px()*vx() + py()*vy()) / rho;
+        return (px()*vx() + py()*vy()) / range();
       }
 
     };

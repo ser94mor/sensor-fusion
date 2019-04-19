@@ -20,6 +20,7 @@
 
 
 #include "definitions.hpp"
+#include "utils.hpp"
 #include "MeasurementModel.hpp"
 #include "RadarMeasurementVectorView.hpp"
 
@@ -91,6 +92,16 @@ namespace ser94mor
 
           return measurement_matrix;
         }
+
+        MeasurementVector Diff(const MeasurementVector& measurement_vector_1,
+                               const MeasurementVector& measurement_vector_2) const
+        {
+          MeasurementVector diff{measurement_vector_1 - measurement_vector_2};
+          Utils::NormalizeAngle(&diff(1)); // bearing
+
+          return diff;
+        }
+
       };
 
     }

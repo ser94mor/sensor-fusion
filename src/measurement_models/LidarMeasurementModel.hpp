@@ -74,6 +74,12 @@ namespace ser94mor
           return measurement_matrix_;
         }
 
+        MeasurementVector Diff(const MeasurementVector& measurement_vector_1,
+                               const MeasurementVector& measurement_vector_2) const override
+        {
+          return (measurement_vector_1 - measurement_vector_2);
+        }
+
       private:
         MeasurementMatrix_type measurement_matrix_;
       };

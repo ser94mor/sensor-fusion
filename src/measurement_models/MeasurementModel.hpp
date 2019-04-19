@@ -85,6 +85,9 @@ namespace ser94mor
         return measurement_covariance_matrix_;
       }
 
+      virtual MeasurementVector Diff(const MeasurementVector& measurement_vector_1,
+                                     const MeasurementVector& measurement_vector_2) const = 0;
+
       /**
        * Set measurement covariance matrix. It is done explicitly by the user of measurement model
        * due to the variadic templates used in this code. MeasurementModel needs a default constructor.
@@ -104,7 +107,9 @@ namespace ser94mor
         svv.px() = mvv.px();
         svv.py() = mvv.py();
 
-        return Belief_type{measurement.t(), state_vector, ProcessModel::StateCovarianceMatrix_type::Identity()};
+        typename ProcessModel::StateCovarianceMatrix_type
+          state_covariance_matrix{ProcessModel::StateCovarianceMatrix_type::Identity()};
+        return Belief_type{measurement.t(), state_vector, state_covariance_matrix};
       }
 
     protected:

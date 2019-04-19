@@ -56,7 +56,7 @@ TEST_CASE("KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessMod
            4., 7., 9., 10;
   BEL belief{0, mu, Sigma};
 
-  std::time_t dt{2};
+  double dt{2.};
 
   Vector4d mu_prior;
   mu_prior << 7., 10., 3., 4.;
@@ -143,7 +143,7 @@ TEST_CASE("ExtendedKalmanFilter<CV::ProcessModel, Radar::MeasurementModel<CV::Pr
            4., 7., 9., 10;
   BEL belief{0, mu, Sigma};
 
-  std::time_t dt{2};
+  double dt{2.};
 
   Vector4d mu_prior;
   mu_prior << 7., 10., 3., 4.;

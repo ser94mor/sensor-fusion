@@ -15,12 +15,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_FILTERS_HPP
-#define SENSOR_FUSION_FILTERS_HPP
-
-
 #include "../src/filters/KalmanFilter.hpp"
 #include "../src/filters/ExtendedKalmanFilter.hpp"
-
-
-#endif //SENSOR_FUSION_FILTERS_HPP

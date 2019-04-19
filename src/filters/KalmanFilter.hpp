@@ -61,7 +61,7 @@ namespace ser94mor
       template <bool EnableBool = true>
       static Belief Predict(const Belief& belief_posterior,
                             const ControlVector& ut,
-                            std::time_t dt,
+                            double dt,
                             const std::enable_if_t<ProcessModel::IsLinear() && EnableBool, ProcessModel>& process_model)
       {
         auto At{process_model.A(dt)};
