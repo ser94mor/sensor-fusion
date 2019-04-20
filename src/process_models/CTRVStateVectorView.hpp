@@ -17,11 +17,72 @@ namespace ser94mor
     namespace CTRV
     {
 
+      class ConstStateVectorView : ser94mor::sensor_fusion::ConstStateVectorView<StateVector>
+      {
+      public:
+
+        explicit ConstStateVectorView(const StateVector& state_vector)
+        : ser94mor::sensor_fusion::ConstStateVectorView<StateVector>{state_vector}
+        {
+
+        }
+
+        double px() const override
+        {
+          return state_vector_(0);
+        }
+
+        double py() const override
+        {
+          return state_vector_(1);
+        }
+
+        double vx() const override
+        {
+          return 0;
+        }
+
+        double vy() const override
+        {
+          return 0;
+        }
+
+        double v() const override
+        {
+          return state_vector_(2);
+        }
+
+        double yaw() const override
+        {
+          return state_vector_(3);
+        }
+
+        double yaw_rate() const override
+        {
+          return state_vector_(4);
+        }
+
+        double range() const override
+        {
+          return 0;
+        }
+
+        double bearing() const override
+        {
+          return 0;
+        }
+
+        double range_rate() const override
+        {
+          return 0;
+        }
+      };
+
       /**
        * A wrapper around StateVector for CTRV process model (which is just an Eigen vector)
        * that provides meaningful accessors to the StateVector components.
        */
-      class StateVectorView : ser94mor::sensor_fusion::StateVectorView<StateVector>
+      class StateVectorView
       {
       public:
 
@@ -29,8 +90,7 @@ namespace ser94mor
          * Constructor.
          * @param state_vector a state vector
          */
-        explicit StateVectorView(StateVector& state_vector)
-        : ser94mor::sensor_fusion::StateVectorView<StateVector>{state_vector}
+        explicit StateVectorView(StateVector& state_vector) : state_vector_modifiable_{state_vector}
         {
 
         }
@@ -38,58 +98,36 @@ namespace ser94mor
         /**
          * @return X-axis coordinate
          */
-        double px() const
+        double& px()
         {
-          return state_vector_(0);
-        }
-
-        /**
-         * @return X-axis coordinate
-         */
-        double& px() override
-        {
-          return state_vector_(0);
+          return state_vector_modifiable_(0);
         }
 
         /**
          * @return Y-axis coordinate
          */
-        double py() const
+        double& py()
         {
-          return state_vector_(1);
+          return state_vector_modifiable_(1);
         }
 
-        /**
-         * @return Y-axis coordinate
-         */
-        double& py() override
+        double& v()
         {
-          return state_vector_(1);
+          return state_vector_modifiable_(2);
         }
 
-        /**
-         * @return velocity module
-         */
-        double v() const
+        double& yaw()
         {
-          return state_vector_(2);
+          return state_vector_modifiable_(3);
         }
 
-        /**
-         * @return yaw rotation angle
-         */
-        double yaw() const
+        double& yaw_rate()
         {
-          return state_vector_(3);
+          return state_vector_modifiable_(4);
         }
 
-        /**
-         * @return angular velocity of yaw rotation
-         */
-        double yaw_rate() const
-        {
-          return state_vector_(4);
-        }
+      private:
+        StateVector& state_vector_modifiable_;
       };
 
     }

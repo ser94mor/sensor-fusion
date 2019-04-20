@@ -17,3 +17,6 @@
 
 #include "../src/process_models/CVStateVectorView.hpp"
 #include "../src/process_models/CVProcessModel.hpp"
+
+#include "../src/process_models/CTRVStateVectorView.hpp"
+#include "../src/process_models/CTRVProcessModel.hpp"

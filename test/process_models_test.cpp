@@ -27,6 +27,10 @@ using namespace ser94mor::sensor_fusion;
 using namespace Eigen;
 
 
+////////
+// CV //
+////////
+
 TEST_CASE("CV::ProcessModel::A", "[process_models]")
 {
   CV::ProcessModel cv_pm;
@@ -136,10 +140,44 @@ TEST_CASE("CV::StateVectorView", "[process_models]")
 {
   CV::StateVector sv;
   sv << 1., 2., 3., 4.;
-  CV::StateVectorView svw{sv};
+  CV::ConstStateVectorView svw{sv};
 
   REQUIRE(Approx(svw.px()) == 1.);
   REQUIRE(Approx(svw.py()) == 2.);
   REQUIRE(Approx(svw.vx()) == 3.);
   REQUIRE(Approx(svw.vy()) == 4.);
+}
+
+
+//////////
+// CTRV //
+//////////
+
+TEST_CASE("CTRV::ProcessModel::g", "[process_models]")
+{
+  CTRV::ProcessModel ctrv_pm;
+
+  CTRV::StateVector sv1;
+  sv1 << 1., 2., 3., M_PI / 6., M_PI/12.;
+
+  CTRV::StateVector sv2;
+  sv2 << 1., 2., 3., M_PI / 6., -kEpsilon / 10.;
+
+  CTRV::ControlVector cv{CTRV::ControlVector::Zero()};
+
+  double dt{2.};
+
+  CTRV::StateVector sv1_expected;
+  sv1_expected << (1. + (18.*(std::sqrt(3.)-1.))/M_PI),
+                  (2. + (18.*(std::sqrt(3.)-1.))/M_PI),
+                  3.,
+                  M_PI / 3.,
+                  M_PI / 12.;
+
+  CTRV::StateVector sv2_expected;
+  sv2_expected << (1. + 3.*std::sqrt(3.)), 5., 3., M_PI / 6., 0.;
+
+
+  REQUIRE(ctrv_pm.g(dt, cv, sv1).isApprox(sv1_expected));
+  REQUIRE(ctrv_pm.g(dt, cv, sv2).isApprox(sv2_expected));
 }

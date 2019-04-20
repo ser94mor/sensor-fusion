@@ -31,12 +31,43 @@ namespace ser94mor
   {
     namespace CV
     {
+      class StateVectorView
+      {
+      public:
+        /**
+         * Constructor.
+         * @param state_vector a state vector
+         */
+        explicit StateVectorView(StateVector& state_vector) : state_vector_modifiable_{state_vector}
+        {
+
+        }
+
+        /**
+         * @return X-axis coordinate
+         */
+        double& px()
+        {
+          return state_vector_modifiable_(0);
+        }
+
+        /**
+         * @return Y-axis coordinate
+         */
+        double& py()
+        {
+          return state_vector_modifiable_(1);
+        }
+
+      private:
+        StateVector& state_vector_modifiable_;
+      };
 
       /**
        * A wrapper around StateVector for CV process model (which is just an Eigen vector)
        * that provides meaningful accessors to the StateVector components.
        */
-      class StateVectorView : public ser94mor::sensor_fusion::StateVectorView<CV::StateVector>
+      class ConstStateVectorView : public ser94mor::sensor_fusion::ConstStateVectorView<CV::StateVector>
       {
       public:
 
@@ -44,8 +75,8 @@ namespace ser94mor
          * Constructor.
          * @param state_vector a state vector
          */
-        explicit StateVectorView(StateVector& state_vector)
-            : ser94mor::sensor_fusion::StateVectorView<CV::StateVector>{state_vector}
+        explicit ConstStateVectorView(const StateVector& state_vector)
+        : ser94mor::sensor_fusion::ConstStateVectorView<CV::StateVector>{state_vector}
         {
 
         }
@@ -58,13 +89,7 @@ namespace ser94mor
           return state_vector_(0);
         }
 
-        /**
-         * @return X-axis coordinate
-         */
-        double& px() override
-        {
-          return state_vector_(0);
-        }
+
 
         /**
          * @return Y-axis coordinate
@@ -74,13 +99,7 @@ namespace ser94mor
           return state_vector_(1);
         }
 
-        /**
-         * @return Y-axis coordinate
-         */
-        double& py() override
-        {
-          return state_vector_(1);
-        }
+
 
         /**
          * @return X-axis velocity
@@ -129,9 +148,8 @@ namespace ser94mor
          */
         double range() const override
         {
-          double epsilon{0.00001};
           double rho{std::sqrt(px()*px() + py()*py())};
-          return (rho < epsilon) ? epsilon : rho;
+          return (rho < kEpsilon) ? kEpsilon : rho;
         }
 
         /**

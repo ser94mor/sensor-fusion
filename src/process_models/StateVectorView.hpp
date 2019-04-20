@@ -29,14 +29,14 @@ namespace ser94mor
      * that provides meaningful accessors to the StateVector components.
      */
     template <class StateVector>
-    class StateVectorView
+    class ConstStateVectorView
     {
     public:
       /**
        * Constructor.
        * @param state_vector a state vector
        */
-      explicit StateVectorView(StateVector& state_vector) : state_vector_{state_vector}
+      explicit ConstStateVectorView(const StateVector& state_vector) : state_vector_{state_vector}
       {
 
       }
@@ -47,19 +47,9 @@ namespace ser94mor
       virtual double px() const = 0;
 
       /**
-       * @return X-axis coordinate
-       */
-      virtual double& px() = 0;
-
-      /**
        * @return Y-axis coordinate
        */
       virtual double py() const = 0;
-
-      /**
-       * @return Y-axis coordinate
-       */
-      virtual double& py() = 0;
 
       /**
        * @return X-axis velocity
@@ -103,7 +93,7 @@ namespace ser94mor
       virtual double range_rate() const = 0;
 
     protected:
-      StateVector& state_vector_;
+      const StateVector& state_vector_;
     };
 
   }
