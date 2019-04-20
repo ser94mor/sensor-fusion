@@ -38,6 +38,8 @@ using KF_CV_LIDAR_Fusion = Fusion<KalmanFilter, CV::ProcessModel, Lidar::Measure
 using EKF_CV_RADAR_Fusion = Fusion<ExtendedKalmanFilter, CV::ProcessModel, Radar::MeasurementModel>;
 using EKF_CV_LIDAR_RADAR_Fusion = 
     Fusion<ExtendedKalmanFilter, CV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
+using EKF_CTRV_LIDAR_RADAR_Fusion =
+    Fusion<ExtendedKalmanFilter, CTRV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
 
 using namespace std;
 using namespace Eigen;
@@ -118,9 +120,13 @@ int main(int argc, char *argv[])
 {
   openlog(argv[0], LOG_PID, LOG_USER);
 
-  IndividualNoiseProcessesCovarianceMatrix p_mtx;
-  p_mtx << 9.0, 0.0,
-           0.0, 9.0;
+  IndividualNoiseProcessesCovarianceMatrix cv_p_mtx;
+  cv_p_mtx << 9.0, 0.0,
+              0.0, 9.0;
+
+  IndividualNoiseProcessesCovarianceMatrix ctrv_p_mtx;
+  ctrv_p_mtx << 0.355, 0.0,
+                  0.0, 0.4;
 
   Lidar::MeasurementCovarianceMatrix lidar_mtx;
   lidar_mtx << 0.0225,    0.0,
@@ -131,7 +137,7 @@ int main(int argc, char *argv[])
                 0.0, 0.0009,  0.0,
                 0.0,    0.0, 0.09;
 
-  EKF_CV_LIDAR_RADAR_Fusion fusion{p_mtx, lidar_mtx, radar_mtx};
+  EKF_CV_LIDAR_RADAR_Fusion fusion{ctrv_p_mtx, lidar_mtx, radar_mtx};
 
   uWS::Hub h;
 
