@@ -125,8 +125,8 @@ int main(int argc, char *argv[])
               0.0, 9.0;
 
   IndividualNoiseProcessesCovarianceMatrix ctrv_p_mtx;
-  ctrv_p_mtx << 0.355, 0.0,
-                  0.0, 0.4;
+  ctrv_p_mtx << 0.126025,  0.0,
+                     0.0, 0.16;
 
   Lidar::MeasurementCovarianceMatrix lidar_mtx;
   lidar_mtx << 0.0225,    0.0,
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
                 0.0, 0.0009,  0.0,
                 0.0,    0.0, 0.09;
 
-  EKF_CV_LIDAR_RADAR_Fusion fusion{ctrv_p_mtx, lidar_mtx, radar_mtx};
+  EKF_CTRV_LIDAR_RADAR_Fusion fusion{ctrv_p_mtx, lidar_mtx, radar_mtx};
 
   uWS::Hub h;
 
@@ -222,7 +222,7 @@ int main(int argc, char *argv[])
             auto belief{fusion.ProcessMeasurement(measurement)};
 
             auto sv{belief.mu()};
-            CV::ConstStateVectorView state_vector_view{sv};
+            CTRV::ConstStateVectorView state_vector_view{sv};
             estimate(0) = state_vector_view.px();
             estimate(1) = state_vector_view.py();
             estimate(2) = state_vector_view.vx();
@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
             auto belief{fusion.ProcessMeasurement(measurement)};
 
             auto sv{belief.mu()};
-            CV::ConstStateVectorView state_vector_view{sv};
+            CTRV::ConstStateVectorView state_vector_view{sv};
             estimate(0) = state_vector_view.px();
             estimate(1) = state_vector_view.py();
             estimate(2) = state_vector_view.vx();

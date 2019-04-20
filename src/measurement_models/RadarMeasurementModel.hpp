@@ -92,13 +92,54 @@ namespace ser94mor
           auto rho_3{rho_2*rho};
           auto tmp1{svv.px()/rho};
           auto tmp2{svv.py()/rho};
-          auto tmp3{svv.vx()*svv.py()-svv.vy()*svv.px()};
 
-          MeasurementMatrix_type measurement_matrix;
-          measurement_matrix <<
-            tmp1,                    tmp2,                   0.0,   0.0,
-            (-svv.py()/rho_2),       (svv.px()/rho_2),       0.0,   0.0,
-            (svv.py()*(tmp3)/rho_3), (-svv.px()*tmp3/rho_3), tmp1, tmp2;
+          MeasurementMatrix_type measurement_matrix{MeasurementMatrix_type::Zero()};
+          switch (ProcessModel::Kind())
+          {
+            case ProcessModelKind::CV:
+            {
+              auto tmp3{svv.vx()*svv.py()-svv.vy()*svv.px()};
+
+              measurement_matrix(0,0) = tmp1;
+              measurement_matrix(0,1) = tmp2;
+
+              measurement_matrix(1,0) = -svv.py() / rho_2;
+              measurement_matrix(1,1) =  svv.px() / rho_2;
+
+              measurement_matrix(2,0) =  svv.py() * tmp3 / rho_3;
+              measurement_matrix(2,1) = -svv.px() * tmp3 / rho_3;
+              measurement_matrix(2,2) = tmp1;
+              measurement_matrix(2,3) = tmp2;
+
+              break;
+            }
+
+            case ProcessModelKind::CTRV:
+            {
+              auto sin{std::sin(svv.yaw())};
+              auto cos{std::cos(svv.yaw())};
+              auto tmp4{svv.v()/rho};
+              auto tmp5{svv.px()*cos + svv.py()*sin};
+
+              measurement_matrix(0,0) = tmp1;
+              measurement_matrix(0,1) = tmp2;
+
+              measurement_matrix(1,0) = -svv.py() / rho_2;
+              measurement_matrix(1,1) =  svv.px() / rho_2;
+
+              measurement_matrix(2,0) = tmp4 * (cos - svv.px() * tmp5 / rho_2);
+              measurement_matrix(2,1) = tmp4 * (sin - svv.py() * tmp5 / rho_2);
+              measurement_matrix(2,2) = tmp5 / rho;
+              measurement_matrix(2,3) = tmp4 * (svv.py()*cos - svv.px()*sin);
+
+              break;
+            }
+
+            default:
+            {
+              throw std::logic_error("unknown process model");
+            }
+          }
 
           return measurement_matrix;
         }

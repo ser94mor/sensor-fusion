@@ -152,7 +152,6 @@ TEST_CASE("Radar::MeasurementModel::H", "[measurement_models]")
                         -4./25.,  3./25.,    0.,    0.,
                          4./25., -3./25., 3./5., 4./5.;
 
-
   REQUIRE(radar_mm.H(state_vector).isApprox(measurement_matrix));
 }
 

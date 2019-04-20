@@ -9,6 +9,8 @@
 #include "definitions.hpp"
 #include "StateVectorView.hpp"
 
+#include <cmath>
+
 
 namespace ser94mor
 {
@@ -39,12 +41,12 @@ namespace ser94mor
 
         double vx() const override
         {
-          return 0;
+          return v() * std::cos(yaw());
         }
 
         double vy() const override
         {
-          return 0;
+          return v() * std::sin(yaw());
         }
 
         double v() const override
@@ -64,17 +66,18 @@ namespace ser94mor
 
         double range() const override
         {
-          return 0;
+          double rho{std::sqrt(px()*px() + py()*py())};
+          return (rho < kEpsilon) ? kEpsilon : rho;
         }
 
         double bearing() const override
         {
-          return 0;
+          return std::atan2(py(), px());
         }
 
         double range_rate() const override
         {
-          return 0;
+          return (px()*vx() + py()*vy()) / range();
         }
       };
 
