@@ -80,7 +80,7 @@ namespace ser94mor
         /**
          * A Jacobian for non-linear case corresponding to the measurement matrix "C" for the linear case.
          * @param state_vector a state vector
-         * @return
+         * @return a measurement matrix
          */
         MeasurementMatrix_type H(const StateVector_type& state_vector) const
         {
