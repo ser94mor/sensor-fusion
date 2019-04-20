@@ -1,0 +1,7 @@
+{
+  "type": "PROCESS MODEL",
+  "name": "CTRV",
+  "cov_aa_aa": 0.355,
+  "cov_apsi_apsi": 0.4,
+  "cov_aa_apsi": 0.0
+}

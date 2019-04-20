@@ -44,13 +44,16 @@ namespace ser94mor
 
         StateVector g(double dt, const ControlVector& control_vector, const StateVector& state_vector) const;
 
-        StateTransitionMatrix G(double dt) const;
+        StateTransitionMatrix G(double dt, const StateVector& state_vector) const;
 
         /**
          * @param dt a difference between the current measurement timestamp and the previous measurement timestamp
          * @return a process covariance matrix
          */
-        ProcessCovarianceMatrix R(double dt) const;
+        ProcessCovarianceMatrix R(double dt, const StateVector& state_vector) const;
+
+      private:
+        StateTransitionMatrix state_transition_matrix_prototype_;
 
       };
 

@@ -31,7 +31,7 @@ namespace ser94mor
     namespace CTRV
     {
 
-      ProcessModel::ProcessModel()
+      ProcessModel::ProcessModel() : state_transition_matrix_prototype_{StateTransitionMatrix::Identity()}
       {
 
       }
@@ -61,19 +61,58 @@ namespace ser94mor
         return sv_dst;
       }
 
-      StateTransitionMatrix ProcessModel::G(double dt) const
+      StateTransitionMatrix ProcessModel::G(double dt, const StateVector& state_vector) const
       {
-        return {};
+        ConstStateVectorView src{state_vector};
+        StateTransitionMatrix stm{state_transition_matrix_prototype_};
+
+        double sin1{std::sin(src.yaw())};
+        double cos1{std::cos(src.yaw())};
+
+        double v{src.v()};
+
+        if (std::fabs(src.yaw_rate()) < kEpsilon)
+        {
+          stm(0,2) = dt * cos1;
+          stm(0,3) = -dt * v * sin1;
+
+          stm(1,2) = dt * sin1;
+          stm(1,3) = dt * v * cos1;
+        }
+        else
+        {
+          double sin2{std::sin(dt * src.yaw_rate() + src.yaw())};
+          double cos2{std::cos(dt * src.yaw_rate() + src.yaw())};
+
+          double yaw_rate{src.yaw_rate()};
+          double yaw_rate_2{yaw_rate * yaw_rate};
+
+          stm(0, 2) = (-sin1 + sin2) / yaw_rate;
+          stm(0, 3) = v * (-cos1 + cos2) / yaw_rate;
+          stm(0, 4) = dt * v * cos2 / yaw_rate - v * (-sin1 + sin2) / yaw_rate_2;
+
+          stm(1, 2) = (cos1 - cos2) / yaw_rate;
+          stm(1, 3) = v * (-sin1 + sin2) / yaw_rate;
+          stm(1, 4) = dt * v * sin2 / yaw_rate - v * (cos1 - cos2) / yaw_rate_2;
+
+          stm(3, 4) = dt;
+        }
+
+        return stm;
       }
 
-      ProcessCovarianceMatrix ProcessModel::R(double dt) const
+      ProcessCovarianceMatrix ProcessModel::R(double dt, const StateVector& state_vector) const
       {
+        double dt_2{dt * dt};
         Eigen::Matrix<double, ProcessModel::StateDims(), 2> Gt;
-        double dt_2_2 = dt * dt / 2.;
-        Gt << dt_2_2,    0.0,
-            0.0, dt_2_2,
-            dt,    0.0,
-            0.0,     dt;
+
+        ConstStateVectorView src{state_vector};
+
+        Gt << 0.5 * dt_2 * std::cos(src.yaw()),        0.0,
+              0.5 * dt_2 * std::sin(src.yaw()),        0.0,
+                                            dt,        0.0,
+                                           0.0, 0.5 * dt_2,
+                                           0.0,         dt;
         return Gt * individual_noise_processes_covariance_matrix_ * Gt.transpose();
       }
 
