@@ -15,3 +15,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+#include "definitions.hpp"
+#include "measurement_vector_views.hpp"
+
+#include <catch.hpp>
+
+
+using namespace ser94mor::sensor_fusion;
+
+
+TEST_CASE("Lidar::MeasurementVectorView", "[measurement_vector_views]")
+{
+  Lidar::MeasurementVector mv;
+  mv << 2., 1.;
+
+  Lidar::MeasurementVectorView mvv{mv};
+
+  REQUIRE(Approx(2.) == mvv.px());
+  REQUIRE(Approx(1.) == mvv.py());
+}
+
+
+TEST_CASE("Radar::MeasurementVectorView", "[measurement_vector_views]")
+{
+  Radar::MeasurementVector mv;
+  mv << 4., M_PI/6., 2.;
+
+  Radar::MeasurementVectorView mvv{mv};
+
+  REQUIRE(Approx(4.) == mvv.range());
+  REQUIRE(Approx(M_PI/6.) == mvv.bearing());
+  REQUIRE(Approx(2.) == mvv.range_rate());
+  REQUIRE(Approx(2.*std::sqrt(3.)) == mvv.px());
+  REQUIRE(Approx(2.) == mvv.py());
+}

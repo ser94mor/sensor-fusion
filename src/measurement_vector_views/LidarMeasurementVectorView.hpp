@@ -19,6 +19,7 @@
 #define SENSOR_FUSION_LIDARMEASUREMENTVECTORVIEW_HPP
 
 
+#include "definitions.hpp"
 #include "MeasurementVectorView.hpp"
 
 
@@ -50,7 +51,7 @@ namespace ser94mor
         /**
          * @return X-axis coordinate
          */
-        double px() const override
+        double px() const
         {
           return measurement_vector_(0);
         }
@@ -58,7 +59,7 @@ namespace ser94mor
         /**
          * @return Y-axis coordinate
          */
-        double py() const override
+        double py() const
         {
           return measurement_vector_(1);
         }

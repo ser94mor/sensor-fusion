@@ -19,7 +19,8 @@
 #define SENSOR_FUSION_RADARMEASUREMENTVECTORVIEW_HPP
 
 
-#include "../measurement_models/MeasurementModel.hpp"
+#include "definitions.hpp"
+#include "MeasurementVectorView.hpp"
 
 #include <cmath>
 
@@ -63,6 +64,31 @@ namespace ser94mor
         double py() const override
         {
           return measurement_vector_(0) * std::sin(measurement_vector_(1));
+        }
+
+        /**
+         * @return range: radial distance from origin
+         */
+        double range() const
+        {
+          return measurement_vector_(0);
+        }
+
+        /**
+         * @return bearing: angle between range and X-axis
+         * (which points into the direction of heading of our car, where sensors are installed)
+         */
+        double bearing() const
+        {
+          return measurement_vector_(1);
+        }
+
+        /**
+         * @return radial velocity: change of range, i.e., range rate
+         */
+        double range_rate() const
+        {
+          return measurement_vector_(2);
         }
 
       };
