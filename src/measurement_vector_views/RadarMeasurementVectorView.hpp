@@ -15,24 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_LIDARMEASUREMENTVECTORVIEW_HPP
-#define SENSOR_FUSION_LIDARMEASUREMENTVECTORVIEW_HPP
+#ifndef SENSOR_FUSION_RADARMEASUREMENTVECTORVIEW_HPP
+#define SENSOR_FUSION_RADARMEASUREMENTVECTORVIEW_HPP
 
 
+#include "definitions.hpp"
 #include "MeasurementVectorView.hpp"
+
+#include <cmath>
 
 
 namespace ser94mor
 {
   namespace sensor_fusion
   {
-    namespace Lidar
+    namespace Radar
     {
 
       /**
-       * A measurement vector view for the Lidar measurement vector, that is,
+       * A measurement vector view for the Radar measurement vector, that is,
        * it is a class  that provides a meaningful access to the
-       * Lidar measurement vector dimensions.
+       * Radar measurement vector dimensions.
        */
       class MeasurementVectorView : ser94mor::sensor_fusion::MeasurementVectorView<MeasurementVector>
       {
@@ -52,7 +55,7 @@ namespace ser94mor
          */
         double px() const override
         {
-          return measurement_vector_(0);
+          return measurement_vector_(0) * std::cos(measurement_vector_(1));
         }
 
         /**
@@ -60,12 +63,39 @@ namespace ser94mor
          */
         double py() const override
         {
+          return measurement_vector_(0) * std::sin(measurement_vector_(1));
+        }
+
+        /**
+         * @return range: radial distance from origin
+         */
+        double range() const
+        {
+          return measurement_vector_(0);
+        }
+
+        /**
+         * @return bearing: angle between range and X-axis
+         * (which points into the direction of heading of our car, where sensors are installed)
+         */
+        double bearing() const
+        {
           return measurement_vector_(1);
         }
+
+        /**
+         * @return radial velocity: change of range, i.e., range rate
+         */
+        double range_rate() const
+        {
+          return measurement_vector_(2);
+        }
+
       };
 
     }
   }
 }
 
-#endif //SENSOR_FUSION_LIDARMEASUREMENTVECTORVIEW_HPP
+
+#endif //SENSOR_FUSION_RADARMEASUREMENTVECTORVIEW_HPP

@@ -15,26 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_RADARMEASUREMENTVECTORVIEW_HPP
-#define SENSOR_FUSION_RADARMEASUREMENTVECTORVIEW_HPP
+#ifndef SENSOR_FUSION_LIDARMEASUREMENTVECTORVIEW_HPP
+#define SENSOR_FUSION_LIDARMEASUREMENTVECTORVIEW_HPP
 
 
-#include "MeasurementModel.hpp"
-
-#include <cmath>
+#include "definitions.hpp"
+#include "MeasurementVectorView.hpp"
 
 
 namespace ser94mor
 {
   namespace sensor_fusion
   {
-    namespace Radar
+    namespace Lidar
     {
 
       /**
-       * A measurement vector view for the Radar measurement vector, that is,
+       * A measurement vector view for the Lidar measurement vector, that is,
        * it is a class  that provides a meaningful access to the
-       * Radar measurement vector dimensions.
+       * Lidar measurement vector dimensions.
        */
       class MeasurementVectorView : ser94mor::sensor_fusion::MeasurementVectorView<MeasurementVector>
       {
@@ -52,24 +51,22 @@ namespace ser94mor
         /**
          * @return X-axis coordinate
          */
-        double px() const override
+        double px() const
         {
-          return measurement_vector_(0) * std::cos(measurement_vector_(1));
+          return measurement_vector_(0);
         }
 
         /**
          * @return Y-axis coordinate
          */
-        double py() const override
+        double py() const
         {
-          return measurement_vector_(0) * std::sin(measurement_vector_(1));
+          return measurement_vector_(1);
         }
-
       };
 
     }
   }
 }
 
-
-#endif //SENSOR_FUSION_RADARMEASUREMENTVECTORVIEW_HPP
+#endif //SENSOR_FUSION_LIDARMEASUREMENTVECTORVIEW_HPP

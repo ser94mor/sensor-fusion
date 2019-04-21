@@ -15,5 +15,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../src/process_models/CVProcessModel.hpp"
-#include "../src/process_models/CTRVProcessModel.hpp"
+#include "../src/state_vector_views/CVStateVectorView.hpp"
+#include "../src/state_vector_views/CTRVStateVectorView.hpp"

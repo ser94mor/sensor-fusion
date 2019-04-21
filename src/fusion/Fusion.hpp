@@ -29,6 +29,15 @@ namespace ser94mor
   namespace  sensor_fusion
   {
 
+    /**
+     * A top-level class which is responsible for sensor fusion operations. It is a template class. It accepts
+     * as a template arguments a process model class and an arbitrary number of measurement models. The Fusion
+     * class implements Predict-Update cycle for all variations of Kalman filters.
+     *
+     * @tparam Filter a template class for of concrete kind of a filter
+     * @tparam ProcessModel a concrete process model
+     * @tparam MeasurementModel concrete measurement models (arbitrary number)
+     */
     template<template<class, class> class Filter, class ProcessModel,
         template<class> class... MeasurementModel>
     class Fusion
@@ -38,7 +47,7 @@ namespace ser94mor
     public:
       /**
        * Constructor.
-       * @param individual_noise_processes_covariance_matrix
+       * @param individual_noise_processes_covariance_matrix an individual noise processes covariance matrix
        * @param measurement_covariance_matrices
        */
       Fusion(IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix,

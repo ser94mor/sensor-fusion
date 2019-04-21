@@ -27,6 +27,10 @@ using namespace ser94mor::sensor_fusion;
 using namespace Eigen;
 
 
+////////
+// CV //
+////////
+
 TEST_CASE("CV::ProcessModel::A", "[process_models]")
 {
   CV::ProcessModel cv_pm;
@@ -116,7 +120,7 @@ TEST_CASE("CV::ProcessModel::KindName", "[process_models]")
 
 TEST_CASE("CV::ProcessModel::IsLinear", "[process_models]")
 {
-  REQUIRE(CV::ProcessModel::IsLinear());
+  REQUIRE(CV::ProcessModel::IsLinear() == true);
 }
 
 
@@ -132,14 +136,106 @@ TEST_CASE("CV::ProcessModel::StateDims", "[process_models]")
 }
 
 
-TEST_CASE("CV::StateVectorView", "[process_models]")
-{
-  CV::StateVector sv;
-  sv << 1., 2., 3., 4.;
-  CV::StateVectorView svw{sv};
+//////////
+// CTRV //
+//////////
 
-  REQUIRE(Approx(svw.px()) == 1.);
-  REQUIRE(Approx(svw.py()) == 2.);
-  REQUIRE(Approx(svw.vx()) == 3.);
-  REQUIRE(Approx(svw.vy()) == 4.);
+TEST_CASE("CTRV::ProcessModel::g", "[process_models]")
+{
+  CTRV::ProcessModel ctrv_pm;
+
+  CTRV::StateVector sv1;
+  sv1 << 1., 2., 3., M_PI / 6., M_PI/12.;
+
+  CTRV::StateVector sv2;
+  sv2 << 1., 2., 3., M_PI / 6., -kEpsilon / 10.;
+
+  CTRV::ControlVector cv{CTRV::ControlVector::Zero()};
+
+  double dt{2.};
+
+  CTRV::StateVector sv1_expected;
+  sv1_expected << (1. + (18.*(std::sqrt(3.)-1.))/M_PI),
+                  (2. + (18.*(std::sqrt(3.)-1.))/M_PI),
+                  3.,
+                  M_PI / 3.,
+                  M_PI / 12.;
+
+  CTRV::StateVector sv2_expected;
+  sv2_expected << (1. + 3.*std::sqrt(3.)), 5., 3., M_PI / 6., 0.;
+
+
+  REQUIRE(ctrv_pm.g(dt, cv, sv1).isApprox(sv1_expected));
+  REQUIRE(ctrv_pm.g(dt, cv, sv2).isApprox(sv2_expected));
+}
+
+
+TEST_CASE("CTRV::ProcessModel::G", "[process_model]")
+{
+  // TODO: write this unit test
+}
+
+
+TEST_CASE("CTRV::ProcessModel::R", "[process_models]")
+{
+  CTRV::ProcessModel pm;
+  IndividualNoiseProcessesCovarianceMatrix mtx;
+  mtx << 3.0, 7.0,
+         7.0, 5.0;
+  pm.SetIndividualNoiseProcessCovarianceMatrix(mtx);
+
+  CTRV::StateCovarianceMatrix R_expected;
+  R_expected <<         9.0, 5.1961524227066311, 10.392304845413264, 24.248711305964285,  24.248711305964285,
+         5.1961524227066311,                3.0,                6.0,               14.0,                14.0,
+         10.392304845413264,                6.0,               12.0,               28.0,                28.0,
+         24.248711305964285,               14.0,               28.0,               20.0,                20.0,
+         24.248711305964285,               14.0,               28.0,               20.0,                20.0;
+
+  double dt{2.};
+  CTRV::StateVector state_vector;
+  state_vector << 1., 2., 3., M_PI/6., M_PI/12.;
+
+  REQUIRE(pm.R(dt, state_vector).isApprox(R_expected));
+}
+
+
+TEST_CASE("CTRV::ProcessModel::Type", "[process_models]")
+{
+  REQUIRE(CTRV::ProcessModel::Type() == EntityType::ProcessModel);
+}
+
+
+TEST_CASE("CTRV::ProcessModel::TypeName", "[process_models]")
+{
+  REQUIRE(std::string(CTRV::ProcessModel::TypeName()) == "PROCESS_MODEL");
+}
+
+
+TEST_CASE("CTRV::ProcessModel::Kind", "[process_models]")
+{
+  REQUIRE(CTRV::ProcessModel::Kind() == ProcessModelKind::CTRV);
+}
+
+
+TEST_CASE("CTRV::ProcessModel::KindName", "[process_models]")
+{
+  REQUIRE(std::string(CTRV::ProcessModel::KindName()) == "CTRV");
+}
+
+
+TEST_CASE("CTRV::ProcessModel::IsLinear", "[process_models]")
+{
+  REQUIRE(CTRV::ProcessModel::IsLinear() == false);
+}
+
+
+TEST_CASE("CTRV::ProcessModel::ControlDims", "[process_models]")
+{
+  REQUIRE(CTRV::ProcessModel::ControlDims() == 5);
+}
+
+
+TEST_CASE("CTRV::ProcessModel::StateDims", "[process_models]")
+{
+  REQUIRE(CTRV::ProcessModel::StateDims() == 5);
 }

@@ -69,8 +69,14 @@ namespace ser94mor
                             const std::enable_if_t<not ProcessModel::IsLinear() && EnableBool, ProcessModel>&
                                 process_model)
       {
-        // TODO: implement while adding CTRV process model
-        throw std::runtime_error("NOT IMPLEMENTED YET");
+        auto mu{belief_posterior.mu()};
+        auto Gt{process_model.G(dt, mu)};
+        return {
+            /* timestamp */               belief_posterior.t() + dt,
+            /* state vector */            process_model.g(dt, ut, mu),
+            /* state covariance matrix */ Gt * belief_posterior.Sigma() * Gt.transpose()
+                                          + process_model.R(dt, mu),
+        };
       }
 
       /**

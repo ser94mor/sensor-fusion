@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "fusion/Fusion.hpp"
+#include "definitions.hpp"
+#include "fusion.hpp"
 #include "filters.hpp"
 #include "process_models.hpp"
 
@@ -38,6 +39,8 @@ using KF_CV_LIDAR_Fusion = Fusion<KalmanFilter, CV::ProcessModel, Lidar::Measure
 using EKF_CV_RADAR_Fusion = Fusion<ExtendedKalmanFilter, CV::ProcessModel, Radar::MeasurementModel>;
 using EKF_CV_LIDAR_RADAR_Fusion = 
     Fusion<ExtendedKalmanFilter, CV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
+using EKF_CTRV_LIDAR_RADAR_Fusion =
+    Fusion<ExtendedKalmanFilter, CTRV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
 
 using namespace std;
 using namespace Eigen;
@@ -118,9 +121,13 @@ int main(int argc, char *argv[])
 {
   openlog(argv[0], LOG_PID, LOG_USER);
 
-  IndividualNoiseProcessesCovarianceMatrix p_mtx;
-  p_mtx << 9.0, 0.0,
-           0.0, 9.0;
+  IndividualNoiseProcessesCovarianceMatrix cv_p_mtx;
+  cv_p_mtx << 9.0, 0.0,
+              0.0, 9.0;
+
+  IndividualNoiseProcessesCovarianceMatrix ctrv_p_mtx;
+  ctrv_p_mtx << 0.126025,  0.0,
+                     0.0, 0.16;
 
   Lidar::MeasurementCovarianceMatrix lidar_mtx;
   lidar_mtx << 0.0225,    0.0,
@@ -131,10 +138,9 @@ int main(int argc, char *argv[])
                 0.0, 0.0009,  0.0,
                 0.0,    0.0, 0.09;
 
-  EKF_CV_LIDAR_RADAR_Fusion fusion{p_mtx, lidar_mtx, radar_mtx};
+  EKF_CTRV_LIDAR_RADAR_Fusion fusion{ctrv_p_mtx, lidar_mtx, radar_mtx};
 
   uWS::Hub h;
-
 
   vector<VectorXd> estimations;
   vector<VectorXd> ground_truth;
@@ -216,7 +222,7 @@ int main(int argc, char *argv[])
             auto belief{fusion.ProcessMeasurement(measurement)};
 
             auto sv{belief.mu()};
-            CV::StateVectorView state_vector_view{sv};
+            CTRV::ROStateVectorView state_vector_view{sv};
             estimate(0) = state_vector_view.px();
             estimate(1) = state_vector_view.py();
             estimate(2) = state_vector_view.vx();
@@ -229,7 +235,7 @@ int main(int argc, char *argv[])
             auto belief{fusion.ProcessMeasurement(measurement)};
 
             auto sv{belief.mu()};
-            CV::StateVectorView state_vector_view{sv};
+            CTRV::ROStateVectorView state_vector_view{sv};
             estimate(0) = state_vector_view.px();
             estimate(1) = state_vector_view.py();
             estimate(2) = state_vector_view.vx();

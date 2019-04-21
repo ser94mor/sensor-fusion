@@ -35,16 +35,6 @@ namespace ser94mor
     {
     public:
       /**
-       * Constructor.
-       * @param measurement_vector a measurement vector
-       */
-      explicit MeasurementVectorView(const MeasurementVector& measurement_vector)
-      : measurement_vector_{measurement_vector}
-      {
-
-      }
-
-      /**
        * @return X-axis coordinate
        */
       virtual double px() const = 0;
@@ -55,6 +45,16 @@ namespace ser94mor
       virtual double py() const = 0;
 
     protected:
+      /**
+       * Constructor.
+       * @param measurement_vector a measurement vector
+       */
+      explicit MeasurementVectorView(const MeasurementVector& measurement_vector)
+          : measurement_vector_{measurement_vector}
+      {
+
+      }
+
       const MeasurementVector& measurement_vector_;
     };
 

@@ -25,41 +25,43 @@ namespace ser94mor
   {
 
     /**
-     * A base class for wrappers around StateVector for some process model (which is just an Eigen vector)
-     * that provides meaningful accessors to the StateVector components.
+     * A base class for read-write wrappers around StateVector for some process model (which is just an Eigen vector)
+     * that provides meaningful accessors and setters to the StateVector components.
      */
     template <class StateVector>
-    class StateVectorView
+    class RWStateVectorView
     {
-    public:
+    protected:
       /**
        * Constructor.
        * @param state_vector a state vector
        */
-      explicit StateVectorView(StateVector& state_vector) : state_vector_{state_vector}
+      explicit RWStateVectorView(StateVector& state_vector) : state_vector_modifiable_{state_vector}
       {
 
       }
 
+      StateVector& state_vector_modifiable_;
+    };
+
+
+    /**
+     * A base class for read-only wrappers around StateVector for some process model (which is just an Eigen vector)
+     * that provides meaningful accessors to the StateVector components.
+     */
+    template <class StateVector>
+    class ROStateVectorView
+    {
+    public:
       /**
        * @return X-axis coordinate
        */
       virtual double px() const = 0;
 
       /**
-       * @return X-axis coordinate
-       */
-      virtual double& px() = 0;
-
-      /**
        * @return Y-axis coordinate
        */
       virtual double py() const = 0;
-
-      /**
-       * @return Y-axis coordinate
-       */
-      virtual double& py() = 0;
 
       /**
        * @return X-axis velocity
@@ -103,7 +105,16 @@ namespace ser94mor
       virtual double range_rate() const = 0;
 
     protected:
-      StateVector& state_vector_;
+      /**
+       * Constructor.
+       * @param state_vector a state vector
+       */
+      explicit ROStateVectorView(const StateVector& state_vector) : state_vector_{state_vector}
+      {
+
+      }
+
+      const StateVector& state_vector_;
     };
 
   }

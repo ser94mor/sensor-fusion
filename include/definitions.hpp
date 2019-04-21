@@ -27,6 +27,8 @@ namespace ser94mor
   namespace sensor_fusion
   {
 
+    constexpr const double kEpsilon{1e-11};
+
     enum class EntityType
     {
       ProcessModel = 0,

@@ -15,34 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_CONSTANTVELOCITY_HPP
-#define SENSOR_FUSION_CONSTANTVELOCITY_HPP
+#ifndef SENSOR_FUSION_CTRVPROCESSMODEL_HPP
+#define SENSOR_FUSION_CTRVPROCESSMODEL_HPP
 
 
 #include "definitions.hpp"
-#include "../state_vector_views/CVStateVectorView.hpp"
 #include "ProcessModel.hpp"
-
-#include <ctime>
+#include "../state_vector_views/CTRVStateVectorView.hpp"
 
 
 namespace ser94mor
 {
   namespace sensor_fusion
   {
-    namespace CV
+    namespace CTRV
     {
 
       /**
-       * A concrete process model class for CV process model. The State vector for process model consists of
-       *   [ px, py, vx, vy ].
-       * The naming of matrices are taken from the
+       * A concrete process model class for CTRV process model. The State vector for process model consists of
+       *   [ px, py, v, yaw, yaw_rate ].
+       * The naming of matrices and functions are taken from the
        * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
        */
       class ProcessModel
       : public ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector,
                                                      ROStateVectorView, RWStateVectorView,
-                                                     ProcessModelKind::CV, kIsLinear>
+                                                     ProcessModelKind::CTRV, kIsLinear>
       {
       public:
         /**
@@ -51,24 +49,31 @@ namespace ser94mor
         ProcessModel();
 
         /**
+         * A state transition function.
+         *
          * @param dt a difference between the current measurement timestamp and the previous measurement timestamp
-         * @return a state transition matrix
+         * @param control_vector a control vector
+         * @param state_vector a state vector
+         * @return a prior state vector, that is, a state vector after the state transition function applied.
          */
-        StateTransitionMatrix A(double dt) const;
+        StateVector g(double dt, const ControlVector& control_vector, const StateVector& state_vector) const;
 
         /**
-         * @return a control transition matrix
+         * @param dt a difference between the current measurement timestamp and the previous measurement timestamp
+         * @param state_vector a state vector
+         * @return a state transition matrix
          */
-        ControlTransitionMatrix B() const;
+        StateTransitionMatrix G(double dt, const StateVector& state_vector) const;
 
         /**
          * @param dt a difference between the current measurement timestamp and the previous measurement timestamp
          * @return a process covariance matrix
          */
-        ProcessCovarianceMatrix R(double dt) const;
+        ProcessCovarianceMatrix R(double dt, const StateVector& state_vector) const;
 
       private:
         StateTransitionMatrix state_transition_matrix_prototype_;
+
       };
 
     }
@@ -76,4 +81,4 @@ namespace ser94mor
 }
 
 
-#endif //SENSOR_FUSION_CONSTANTVELOCITY_HPP
+#endif //SENSOR_FUSION_CTRVPROCESSMODEL_HPP
