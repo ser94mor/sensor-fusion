@@ -56,7 +56,7 @@ namespace ser94mor
       using MeasurementVectorView_type = MeasurementVectorView;
       using MeasurementCovarianceMatrix_type = MeasurementCovarianceMatrix;
 
-      using StateVectorView_type = typename ProcessModel::StateVectorView_type;
+      using RWStateVectorView_type = typename ProcessModel::RWStateVectorView_type;
       using StateVector_type = typename ProcessModel::StateVector_type;
 
       using Belief_type = typename ProcessModel::Belief_type;
@@ -123,7 +123,7 @@ namespace ser94mor
       static Belief_type GetInitialBeliefBasedOn(const Measurement_type& measurement)
       {
         StateVector_type state_vector{StateVector_type::Zero()};
-        StateVectorView_type svv{state_vector};
+        RWStateVectorView_type svv{state_vector};
         MeasurementVectorView_type mvv{measurement.z()};
 
         svv.px() = mvv.px();

@@ -222,7 +222,7 @@ int main(int argc, char *argv[])
             auto belief{fusion.ProcessMeasurement(measurement)};
 
             auto sv{belief.mu()};
-            CTRV::ConstStateVectorView state_vector_view{sv};
+            CTRV::ROStateVectorView state_vector_view{sv};
             estimate(0) = state_vector_view.px();
             estimate(1) = state_vector_view.py();
             estimate(2) = state_vector_view.vx();
@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
             auto belief{fusion.ProcessMeasurement(measurement)};
 
             auto sv{belief.mu()};
-            CTRV::ConstStateVectorView state_vector_view{sv};
+            CTRV::ROStateVectorView state_vector_view{sv};
             estimate(0) = state_vector_view.px();
             estimate(1) = state_vector_view.py();
             estimate(2) = state_vector_view.vx();

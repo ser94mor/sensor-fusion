@@ -31,14 +31,16 @@ namespace ser94mor
   {
     namespace CV
     {
-      class StateVectorView
+
+      class RWStateVectorView : public ser94mor::sensor_fusion::RWStateVectorView<StateVector>
       {
       public:
         /**
          * Constructor.
          * @param state_vector a state vector
          */
-        explicit StateVectorView(StateVector& state_vector) : state_vector_modifiable_{state_vector}
+        explicit RWStateVectorView(StateVector& state_vector)
+        : ser94mor::sensor_fusion::RWStateVectorView<StateVector>{state_vector}
         {
 
         }
@@ -59,15 +61,28 @@ namespace ser94mor
           return state_vector_modifiable_(1);
         }
 
-      private:
-        StateVector& state_vector_modifiable_;
+        /**
+         * @return X-axis velocity
+         */
+        double& vx()
+        {
+          return state_vector_modifiable_(2);
+        }
+
+        /**
+         * @return Y-axis velocity
+         */
+        double& vy()
+        {
+          return state_vector_modifiable_(3);
+        }
       };
 
       /**
        * A wrapper around StateVector for CV process model (which is just an Eigen vector)
        * that provides meaningful accessors to the StateVector components.
        */
-      class ConstStateVectorView : public ser94mor::sensor_fusion::ConstStateVectorView<CV::StateVector>
+      class ROStateVectorView : public ser94mor::sensor_fusion::ROStateVectorView<CV::StateVector>
       {
       public:
 
@@ -75,8 +90,8 @@ namespace ser94mor
          * Constructor.
          * @param state_vector a state vector
          */
-        explicit ConstStateVectorView(const StateVector& state_vector)
-        : ser94mor::sensor_fusion::ConstStateVectorView<CV::StateVector>{state_vector}
+        explicit ROStateVectorView(const StateVector& state_vector)
+        : ser94mor::sensor_fusion::ROStateVectorView<CV::StateVector>{state_vector}
         {
 
         }
@@ -89,8 +104,6 @@ namespace ser94mor
           return state_vector_(0);
         }
 
-
-
         /**
          * @return Y-axis coordinate
          */
@@ -98,8 +111,6 @@ namespace ser94mor
         {
           return state_vector_(1);
         }
-
-
 
         /**
          * @return X-axis velocity
@@ -130,8 +141,7 @@ namespace ser94mor
          */
         double yaw() const override
         {
-          // TODO: implement while adding CTRV process model
-          return 0.;
+          return std::acos(vx()/v());
         }
 
         /**
@@ -139,8 +149,7 @@ namespace ser94mor
          */
         double yaw_rate() const override
         {
-          // TODO: implement while adding CTRV process model
-          return 0.;
+          return 0.0;
         }
 
         /**

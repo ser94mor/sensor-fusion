@@ -20,7 +20,7 @@
 
 
 #include "definitions.hpp"
-#include "CVStateVectorView.hpp"
+#include "../state_vector_views/CVStateVectorView.hpp"
 #include "ProcessModel.hpp"
 
 #include <ctime>
@@ -41,7 +41,7 @@ namespace ser94mor
        */
       class ProcessModel
       : public ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector,
-                                                     ConstStateVectorView, StateVectorView,
+                                                     ROStateVectorView, RWStateVectorView,
                                                      ProcessModelKind::CV, kIsLinear>
       {
       public:

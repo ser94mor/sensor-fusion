@@ -23,24 +23,31 @@ namespace ser94mor
 {
   namespace sensor_fusion
   {
+    template <class StateVector>
+    class RWStateVectorView
+    {
+    protected:
+      /**
+       * Constructor.
+       * @param state_vector a state vector
+       */
+      explicit RWStateVectorView(StateVector& state_vector) : state_vector_modifiable_{state_vector}
+      {
+
+      }
+
+      StateVector& state_vector_modifiable_;
+    };
+
 
     /**
      * A base class for wrappers around StateVector for some process model (which is just an Eigen vector)
      * that provides meaningful accessors to the StateVector components.
      */
     template <class StateVector>
-    class ConstStateVectorView
+    class ROStateVectorView
     {
     public:
-      /**
-       * Constructor.
-       * @param state_vector a state vector
-       */
-      explicit ConstStateVectorView(const StateVector& state_vector) : state_vector_{state_vector}
-      {
-
-      }
-
       /**
        * @return X-axis coordinate
        */
@@ -93,6 +100,15 @@ namespace ser94mor
       virtual double range_rate() const = 0;
 
     protected:
+      /**
+       * Constructor.
+       * @param state_vector a state vector
+       */
+      explicit ROStateVectorView(const StateVector& state_vector) : state_vector_{state_vector}
+      {
+
+      }
+
       const StateVector& state_vector_;
     };
 

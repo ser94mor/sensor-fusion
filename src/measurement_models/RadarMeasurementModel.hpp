@@ -22,7 +22,7 @@
 #include "definitions.hpp"
 #include "utils.hpp"
 #include "MeasurementModel.hpp"
-#include "RadarMeasurementVectorView.hpp"
+#include "../measurement_vector_views/RadarMeasurementVectorView.hpp"
 
 
 namespace ser94mor
@@ -50,7 +50,7 @@ namespace ser94mor
         using MeasurementMatrix_type =
           Eigen::Matrix<double, MeasurementModel::MeasurementDims(), MeasurementModel::StateDims()>;
         using StateVector_type = typename ProcessModel::StateVector_type;
-        using ConstStateVectorView_type = typename ProcessModel::ConstStateVectorView_type;
+        using ROStateVectorView_type = typename ProcessModel::ROStateVectorView_type;
 
 
         MeasurementModel()
@@ -69,7 +69,7 @@ namespace ser94mor
         MeasurementVector h(const StateVector_type& state_vector) const
         {
           auto sv{state_vector};
-          ConstStateVectorView_type svv{sv};
+          ROStateVectorView_type svv{sv};
 
           MeasurementVector measurement_vector;
           measurement_vector << svv.range(), svv.bearing(), svv.range_rate();
@@ -85,7 +85,7 @@ namespace ser94mor
         MeasurementMatrix_type H(const StateVector_type& state_vector) const
         {
           auto sv{state_vector};
-          ConstStateVectorView_type svv{sv};
+          ROStateVectorView_type svv{sv};
 
           auto rho{svv.range()};
           auto rho_2{rho*rho};

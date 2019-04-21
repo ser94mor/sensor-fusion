@@ -136,19 +136,6 @@ TEST_CASE("CV::ProcessModel::StateDims", "[process_models]")
 }
 
 
-TEST_CASE("CV::StateVectorView", "[process_models]")
-{
-  CV::StateVector sv;
-  sv << 1., 2., 3., 4.;
-  CV::ConstStateVectorView svw{sv};
-
-  REQUIRE(Approx(svw.px()) == 1.);
-  REQUIRE(Approx(svw.py()) == 2.);
-  REQUIRE(Approx(svw.vx()) == 3.);
-  REQUIRE(Approx(svw.vy()) == 4.);
-}
-
-
 //////////
 // CTRV //
 //////////

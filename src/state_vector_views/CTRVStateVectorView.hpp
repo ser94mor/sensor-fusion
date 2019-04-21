@@ -19,12 +19,12 @@ namespace ser94mor
     namespace CTRV
     {
 
-      class ConstStateVectorView : ser94mor::sensor_fusion::ConstStateVectorView<StateVector>
+      class ROStateVectorView : ser94mor::sensor_fusion::ROStateVectorView<StateVector>
       {
       public:
 
-        explicit ConstStateVectorView(const StateVector& state_vector)
-        : ser94mor::sensor_fusion::ConstStateVectorView<StateVector>{state_vector}
+        explicit ROStateVectorView(const StateVector& state_vector)
+        : ser94mor::sensor_fusion::ROStateVectorView<StateVector>{state_vector}
         {
 
         }
@@ -85,7 +85,7 @@ namespace ser94mor
        * A wrapper around StateVector for CTRV process model (which is just an Eigen vector)
        * that provides meaningful accessors to the StateVector components.
        */
-      class StateVectorView
+      class RWStateVectorView
       {
       public:
 
@@ -93,7 +93,7 @@ namespace ser94mor
          * Constructor.
          * @param state_vector a state vector
          */
-        explicit StateVectorView(StateVector& state_vector) : state_vector_modifiable_{state_vector}
+        explicit RWStateVectorView(StateVector& state_vector) : state_vector_modifiable_{state_vector}
         {
 
         }

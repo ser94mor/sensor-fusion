@@ -42,7 +42,7 @@ namespace ser94mor
      * @tparam is_linear a flag indicating whether the process model is linear or not
      */
     template<class StateVector, class StateCovarianceMatrix, class ControlVector,
-             class ConstStateVectorView, class StateVectorView, ProcessModelKind pmk, bool is_linear>
+             class ROStateVectorView, class RWStateVectorView, ProcessModelKind pmk, bool is_linear>
     class ProcessModel : public ModelEntity<EntityType::ProcessModel, ProcessModelKind, pmk, is_linear>
     {
     public:
@@ -54,8 +54,8 @@ namespace ser94mor
       using StateVector_type = StateVector;
       using StateCovarianceMatrix_type = StateCovarianceMatrix;
       using ControlVector_type = ControlVector;
-      using StateVectorView_type = StateVectorView;
-      using ConstStateVectorView_type = ConstStateVectorView;
+      using RWStateVectorView_type = RWStateVectorView;
+      using ROStateVectorView_type = ROStateVectorView;
 
       /**
        * @return a number of dimensions in the state vector

@@ -21,7 +21,7 @@
 
 #include "definitions.hpp"
 #include "MeasurementModel.hpp"
-#include "LidarMeasurementVectorView.hpp"
+#include "../measurement_vector_views/LidarMeasurementVectorView.hpp"
 
 #include <ctime>
 

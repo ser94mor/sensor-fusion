@@ -21,7 +21,7 @@
 
 #include "definitions.hpp"
 #include "ProcessModel.hpp"
-#include "CTRVStateVectorView.hpp"
+#include "../state_vector_views/CTRVStateVectorView.hpp"
 
 
 namespace ser94mor
@@ -33,7 +33,7 @@ namespace ser94mor
 
       class ProcessModel
       : public ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector,
-                                                     ConstStateVectorView, StateVectorView,
+                                                     ROStateVectorView, RWStateVectorView,
                                                      ProcessModelKind::CTRV, kIsLinear>
       {
       public:

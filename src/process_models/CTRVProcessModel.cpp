@@ -39,8 +39,8 @@ namespace ser94mor
       StateVector ProcessModel::g(double dt, const ControlVector&, const StateVector& state_vector) const
       {
         StateVector sv_dst{state_vector};
-        StateVectorView dst{sv_dst};
-        ConstStateVectorView src{state_vector};
+        RWStateVectorView dst{sv_dst};
+        ROStateVectorView src{state_vector};
 
         if (std::fabs(src.yaw_rate()) < kEpsilon)
         {
@@ -63,7 +63,7 @@ namespace ser94mor
 
       StateTransitionMatrix ProcessModel::G(double dt, const StateVector& state_vector) const
       {
-        ConstStateVectorView src{state_vector};
+        ROStateVectorView src{state_vector};
         StateTransitionMatrix stm{state_transition_matrix_prototype_};
 
         double sin1{std::sin(src.yaw())};
@@ -106,7 +106,7 @@ namespace ser94mor
         double dt_2{dt * dt};
         Eigen::Matrix<double, ProcessModel::StateDims(), 2> Gt;
 
-        ConstStateVectorView src{state_vector};
+        ROStateVectorView src{state_vector};
 
         Gt << 0.5 * dt_2 * std::cos(src.yaw()),        0.0,
               0.5 * dt_2 * std::sin(src.yaw()),        0.0,
