@@ -32,6 +32,10 @@ namespace ser94mor
     namespace CV
     {
 
+      /**
+       * A read-write wrapper around StateVector for CV process model (which is just an Eigen vector)
+       * that provides meaningful accessors and setters to the StateVector components.
+       */
       class RWStateVectorView : public ser94mor::sensor_fusion::RWStateVectorView<StateVector>
       {
       public:
@@ -79,7 +83,7 @@ namespace ser94mor
       };
 
       /**
-       * A wrapper around StateVector for CV process model (which is just an Eigen vector)
+       * A read-only wrapper around StateVector for CV process model (which is just an Eigen vector)
        * that provides meaningful accessors to the StateVector components.
        */
       class ROStateVectorView : public ser94mor::sensor_fusion::ROStateVectorView<CV::StateVector>

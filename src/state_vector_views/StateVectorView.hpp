@@ -23,6 +23,11 @@ namespace ser94mor
 {
   namespace sensor_fusion
   {
+
+    /**
+     * A base class for read-write wrappers around StateVector for some process model (which is just an Eigen vector)
+     * that provides meaningful accessors and setters to the StateVector components.
+     */
     template <class StateVector>
     class RWStateVectorView
     {
@@ -41,7 +46,7 @@ namespace ser94mor
 
 
     /**
-     * A base class for wrappers around StateVector for some process model (which is just an Eigen vector)
+     * A base class for read-only wrappers around StateVector for some process model (which is just an Eigen vector)
      * that provides meaningful accessors to the StateVector components.
      */
     template <class StateVector>

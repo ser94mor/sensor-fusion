@@ -53,6 +53,9 @@ namespace ser94mor
         using ROStateVectorView_type = typename ProcessModel::ROStateVectorView_type;
 
 
+        /**
+         * Constructor.
+         */
         MeasurementModel()
         : ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
                                                     MeasurementVectorView, ProcessModel,
@@ -79,6 +82,8 @@ namespace ser94mor
 
         /**
          * A Jacobian for non-linear case corresponding to the measurement matrix "C" for the linear case.
+         * It depends on the process model kind.
+         * 
          * @param state_vector a state vector
          * @return a measurement matrix
          */
