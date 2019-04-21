@@ -85,7 +85,7 @@ namespace ser94mor
        * A wrapper around StateVector for CTRV process model (which is just an Eigen vector)
        * that provides meaningful accessors to the StateVector components.
        */
-      class RWStateVectorView
+      class RWStateVectorView : ser94mor::sensor_fusion::RWStateVectorView<StateVector>
       {
       public:
 
@@ -93,7 +93,8 @@ namespace ser94mor
          * Constructor.
          * @param state_vector a state vector
          */
-        explicit RWStateVectorView(StateVector& state_vector) : state_vector_modifiable_{state_vector}
+        explicit RWStateVectorView(StateVector& state_vector)
+        : ser94mor::sensor_fusion::RWStateVectorView<StateVector>{state_vector}
         {
 
         }
@@ -128,9 +129,6 @@ namespace ser94mor
         {
           return state_vector_modifiable_(4);
         }
-
-      private:
-        StateVector& state_vector_modifiable_;
       };
 
     }

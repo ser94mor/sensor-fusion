@@ -47,6 +47,7 @@ TEST_CASE("CV::ROStateVectorView", "[state_vector_views]")
   REQUIRE(Approx(11./std::sqrt(5.)) == svv.range_rate());
 }
 
+
 TEST_CASE("CV::RWStateVectorView", "[state_vector_views]")
 {
   CV::StateVector sv;
@@ -94,6 +95,95 @@ TEST_CASE("CV::RWStateVectorView", "[state_vector_views]")
 
   CV::StateVector sv_expected;
   sv_expected << 10., 11., 12., 13.;
+
+  REQUIRE(sv.isApprox(sv_expected));
+}
+
+
+///////////
+// CTRV  //
+///////////
+
+TEST_CASE("CTRV::ROStateVectorView", "[state_vector_views]")
+{
+  CTRV::StateVector sv;
+  sv << 1., 2., 3., M_PI/6., M_PI/12.;
+  CTRV::ROStateVectorView svv{sv};
+
+  REQUIRE(Approx(1.) == svv.px());
+  REQUIRE(Approx(2.) == svv.py());
+  REQUIRE(Approx(std::sqrt(3.)*1.5) == svv.vx());
+  REQUIRE(Approx(1.5) == svv.vy());
+  REQUIRE(Approx(3.) == svv.v());
+  REQUIRE(Approx(M_PI/6.) == svv.yaw());
+  REQUIRE(Approx(M_PI/12.) == svv.yaw_rate());
+  REQUIRE(Approx(std::sqrt(5.)) == svv.range());
+  REQUIRE(Approx(std::atan2(2., 1.)) == svv.bearing());
+  REQUIRE(Approx((1.5*std::sqrt(3.)+3.)/std::sqrt(5.)) == svv.range_rate());
+}
+
+
+TEST_CASE("CTRV::RWStateVectorView", "[state_vector_views]")
+{
+  CTRV::StateVector sv;
+  sv << 1., 2., 3., M_PI/6., M_PI/12.;
+  CTRV::RWStateVectorView svv{sv};
+
+  //=====
+
+  REQUIRE(Approx(1.) == svv.px());
+  REQUIRE(Approx(2.) == svv.py());
+  REQUIRE(Approx(3.) == svv.v());
+  REQUIRE(Approx(M_PI/6.) == svv.yaw());
+  REQUIRE(Approx(M_PI/12.) == svv.yaw_rate());
+
+  //=====
+
+  svv.px() = 10.;
+  REQUIRE(Approx(10.) == svv.px());
+  REQUIRE(Approx(2.) == svv.py());
+  REQUIRE(Approx(3.) == svv.v());
+  REQUIRE(Approx(M_PI/6.) == svv.yaw());
+  REQUIRE(Approx(M_PI/12.) == svv.yaw_rate());
+
+  //=====
+
+  svv.py() = 11.;
+  REQUIRE(Approx(10.) == svv.px());
+  REQUIRE(Approx(11.) == svv.py());
+  REQUIRE(Approx(3.) == svv.v());
+  REQUIRE(Approx(M_PI/6.) == svv.yaw());
+  REQUIRE(Approx(M_PI/12.) == svv.yaw_rate());
+
+  //=====
+
+  svv.v() = 12.;
+  REQUIRE(Approx(10.) == svv.px());
+  REQUIRE(Approx(11.) == svv.py());
+  REQUIRE(Approx(12.) == svv.v());
+  REQUIRE(Approx(M_PI/6.) == svv.yaw());
+  REQUIRE(Approx(M_PI/12.) == svv.yaw_rate());
+
+  //=====
+
+  svv.yaw() = M_PI/3.;
+  REQUIRE(Approx(10.) == svv.px());
+  REQUIRE(Approx(11.) == svv.py());
+  REQUIRE(Approx(12.) == svv.v());
+  REQUIRE(Approx(M_PI/3.) == svv.yaw());
+  REQUIRE(Approx(M_PI/12.) == svv.yaw_rate());
+
+  //=====
+
+  svv.yaw_rate() = M_PI;
+  REQUIRE(Approx(10.) == svv.px());
+  REQUIRE(Approx(11.) == svv.py());
+  REQUIRE(Approx(12.) == svv.v());
+  REQUIRE(Approx(M_PI/3.) == svv.yaw());
+  REQUIRE(Approx(M_PI) == svv.yaw_rate());
+
+  CTRV::StateVector sv_expected;
+  sv_expected << 10., 11., 12., M_PI/3., M_PI;
 
   REQUIRE(sv.isApprox(sv_expected));
 }
