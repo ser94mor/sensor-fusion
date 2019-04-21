@@ -161,6 +161,12 @@ TEST_CASE("ExtendedKalmanFilter<CV::ProcessModel, Radar::MeasurementModel<CV::Pr
 }
 
 
+TEST_CASE("ExtendedKalmanFilter<CTRV::ProcessModel, Radar::MeasurementModel<CTRV::ProcessModel>>::Predict", "[filters]")
+{
+  // TODO: write this unit test
+}
+
+
 TEST_CASE("ExtendedKalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel>>::Update", "[filters]")
 {
   using EKF = ExtendedKalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel>>;

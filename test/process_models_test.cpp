@@ -120,7 +120,7 @@ TEST_CASE("CV::ProcessModel::KindName", "[process_models]")
 
 TEST_CASE("CV::ProcessModel::IsLinear", "[process_models]")
 {
-  REQUIRE(CV::ProcessModel::IsLinear());
+  REQUIRE(CV::ProcessModel::IsLinear() == true);
 }
 
 
@@ -167,4 +167,75 @@ TEST_CASE("CTRV::ProcessModel::g", "[process_models]")
 
   REQUIRE(ctrv_pm.g(dt, cv, sv1).isApprox(sv1_expected));
   REQUIRE(ctrv_pm.g(dt, cv, sv2).isApprox(sv2_expected));
+}
+
+
+TEST_CASE("CTRV::ProcessModel::G", "[process_model]")
+{
+  // TODO: write this unit test
+}
+
+
+TEST_CASE("CTRV::ProcessModel::R", "[process_models]")
+{
+  CTRV::ProcessModel pm;
+  IndividualNoiseProcessesCovarianceMatrix mtx;
+  mtx << 3.0, 7.0,
+         7.0, 5.0;
+  pm.SetIndividualNoiseProcessCovarianceMatrix(mtx);
+
+  CTRV::StateCovarianceMatrix R_expected;
+  R_expected <<         9.0, 5.1961524227066311, 10.392304845413264, 24.248711305964285,  24.248711305964285,
+         5.1961524227066311,                3.0,                6.0,               14.0,                14.0,
+         10.392304845413264,                6.0,               12.0,               28.0,                28.0,
+         24.248711305964285,               14.0,               28.0,               20.0,                20.0,
+         24.248711305964285,               14.0,               28.0,               20.0,                20.0;
+
+  double dt{2.};
+  CTRV::StateVector state_vector;
+  state_vector << 1., 2., 3., M_PI/6., M_PI/12.;
+
+  REQUIRE(pm.R(dt, state_vector).isApprox(R_expected));
+}
+
+
+TEST_CASE("CTRV::ProcessModel::Type", "[process_models]")
+{
+  REQUIRE(CTRV::ProcessModel::Type() == EntityType::ProcessModel);
+}
+
+
+TEST_CASE("CTRV::ProcessModel::TypeName", "[process_models]")
+{
+  REQUIRE(std::string(CTRV::ProcessModel::TypeName()) == "PROCESS_MODEL");
+}
+
+
+TEST_CASE("CTRV::ProcessModel::Kind", "[process_models]")
+{
+  REQUIRE(CTRV::ProcessModel::Kind() == ProcessModelKind::CTRV);
+}
+
+
+TEST_CASE("CTRV::ProcessModel::KindName", "[process_models]")
+{
+  REQUIRE(std::string(CTRV::ProcessModel::KindName()) == "CTRV");
+}
+
+
+TEST_CASE("CTRV::ProcessModel::IsLinear", "[process_models]")
+{
+  REQUIRE(CTRV::ProcessModel::IsLinear() == false);
+}
+
+
+TEST_CASE("CTRV::ProcessModel::ControlDims", "[process_models]")
+{
+  REQUIRE(CTRV::ProcessModel::ControlDims() == 5);
+}
+
+
+TEST_CASE("CTRV::ProcessModel::StateDims", "[process_models]")
+{
+  REQUIRE(CTRV::ProcessModel::StateDims() == 5);
 }

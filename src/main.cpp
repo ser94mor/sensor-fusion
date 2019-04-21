@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "fusion/Fusion.hpp"
+#include "definitions.hpp"
+#include "fusion.hpp"
 #include "filters.hpp"
 #include "process_models.hpp"
 
@@ -140,7 +141,6 @@ int main(int argc, char *argv[])
   EKF_CTRV_LIDAR_RADAR_Fusion fusion{ctrv_p_mtx, lidar_mtx, radar_mtx};
 
   uWS::Hub h;
-
 
   vector<VectorXd> estimations;
   vector<VectorXd> ground_truth;
