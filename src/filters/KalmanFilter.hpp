@@ -37,15 +37,15 @@ namespace ser94mor
      * @tparam ProcessModel a class of the process model to use
      * @tparam MeasurementModel a class of measurement model to use; notice that here it is not a template class
      */
-    template<class ProcessModel, class MeasurementModel>
-    class KalmanFilter
+    template<class ProcessModel, class MeasurementModel, template<class, class> class DerivedKalmanFilter>
+    class KalmanFilterBase
     {
     protected:
       using Belief = typename ProcessModel::Belief_type;
       using ControlVector = typename ProcessModel::ControlVector_type;
       using Measurement = typename MeasurementModel::Measurement_type;
-
     public:
+
       /**
        * Prediction step of the Kalman filter. Predicts the object's state in dt time in the future in accordance with
        * LINEAR process model and input control vector.
@@ -60,7 +60,7 @@ namespace ser94mor
       template <bool EnableBool = true>
       static Belief Predict(const Belief& belief_posterior,
                             const ControlVector& ut,
-                            double dt,
+                            double_t dt,
                             const std::enable_if_t<ProcessModel::IsLinear() && EnableBool, ProcessModel>& process_model)
       {
         auto At{process_model.A(dt)};
@@ -90,7 +90,7 @@ namespace ser94mor
         auto mu{belief_prior.mu()};
         auto Sigma{belief_prior.Sigma()};
         auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + measurement_model.Q()).inverse()};
-        auto I{Eigen::Matrix<double, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
+        auto I{Eigen::Matrix<double_t, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
 
         return {
             /* timestamp */               measurement.t(),
@@ -98,6 +98,26 @@ namespace ser94mor
             /* state covariance matrix */ (I - Kt * Ct) * Sigma,
         };
       }
+
+      static Belief
+      PredictUpdate(const Belief& belief, const ControlVector& control_vector, const Measurement& measurement,
+                    const ProcessModel& process_model, const MeasurementModel& measurement_model)
+      {
+        auto dt = measurement.t() - belief.t();
+
+        auto belief_prior{DerivedKalmanFilter<ProcessModel, MeasurementModel>::
+                            Predict(belief, control_vector, dt, process_model)};
+
+        return std::move(DerivedKalmanFilter<ProcessModel, MeasurementModel>::
+                           Update(belief_prior, measurement, measurement_model));
+      }
+    };
+
+
+    template <class ProcessModel, class MeasurementModel>
+    class KalmanFilter : public KalmanFilterBase<ProcessModel, MeasurementModel, KalmanFilter>
+    {
+
     };
 
   }

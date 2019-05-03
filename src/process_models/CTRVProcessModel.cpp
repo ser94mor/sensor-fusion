@@ -36,7 +36,7 @@ namespace ser94mor
 
       }
 
-      StateVector ProcessModel::g(double dt, const ControlVector&, const StateVector& state_vector) const
+      StateVector ProcessModel::g(double_t dt, const ControlVector&, const StateVector& state_vector) const
       {
         StateVector sv_dst{state_vector};
         RWStateVectorView dst{sv_dst};
@@ -61,15 +61,15 @@ namespace ser94mor
         return sv_dst;
       }
 
-      StateTransitionMatrix ProcessModel::G(double dt, const StateVector& state_vector) const
+      StateTransitionMatrix ProcessModel::G(double_t dt, const StateVector& state_vector) const
       {
         ROStateVectorView src{state_vector};
         StateTransitionMatrix stm{state_transition_matrix_prototype_};
 
-        double sin1{std::sin(src.yaw())};
-        double cos1{std::cos(src.yaw())};
+        double_t sin1{std::sin(src.yaw())};
+        double_t cos1{std::cos(src.yaw())};
 
-        double v{src.v()};
+        double_t v{src.v()};
 
         if (std::fabs(src.yaw_rate()) < kEpsilon)
         {
@@ -81,11 +81,11 @@ namespace ser94mor
         }
         else
         {
-          double sin2{std::sin(dt * src.yaw_rate() + src.yaw())};
-          double cos2{std::cos(dt * src.yaw_rate() + src.yaw())};
+          double_t sin2{std::sin(dt * src.yaw_rate() + src.yaw())};
+          double_t cos2{std::cos(dt * src.yaw_rate() + src.yaw())};
 
-          double yaw_rate{src.yaw_rate()};
-          double yaw_rate_2{yaw_rate * yaw_rate};
+          double_t yaw_rate{src.yaw_rate()};
+          double_t yaw_rate_2{yaw_rate * yaw_rate};
 
           stm(0, 2) = (-sin1 + sin2) / yaw_rate;
           stm(0, 3) = v * (-cos1 + cos2) / yaw_rate;
@@ -101,10 +101,10 @@ namespace ser94mor
         return stm;
       }
 
-      ProcessCovarianceMatrix ProcessModel::R(double dt, const StateVector& state_vector) const
+      ProcessCovarianceMatrix ProcessModel::R(double_t dt, const StateVector& state_vector) const
       {
-        double dt_2{dt * dt};
-        Eigen::Matrix<double, ProcessModel::StateDims(), 2> Gt;
+        double_t dt_2{dt * dt};
+        Eigen::Matrix<double_t, ProcessModel::StateDims(), 2> Gt;
 
         ROStateVectorView src{state_vector};
 
@@ -114,6 +114,37 @@ namespace ser94mor
                                            0.0, 0.5 * dt_2,
                                            0.0,         dt;
         return Gt * individual_noise_processes_covariance_matrix_ * Gt.transpose();
+      }
+
+      StateVector ProcessModel::g(double_t dt, const ControlVector& control_vector, const StateVector& state_vector,
+                                  const ProcessNoiseVector& noise_vector) const
+      {
+        auto sv{g(dt, control_vector, state_vector)};
+        RWStateVectorView svv{sv};
+        ROProcessNoiseVectorView pnvv{noise_vector};
+
+        auto dt_2{dt * dt};
+
+        // add noise
+        svv.px()       += 0.5 * dt_2 * std::cos(svv.yaw()) * pnvv.longitudinal_acceleration();
+        svv.py()       += 0.5 * dt_2 * std::sin(svv.yaw()) * pnvv.longitudinal_acceleration();
+        svv.v()        += dt * pnvv.longitudinal_acceleration();
+        svv.yaw()      += 0.5 * dt_2 * pnvv.yaw_acceleration();
+        svv.yaw_rate() += dt * pnvv.yaw_acceleration();
+
+        Utils::NormalizeAngle(&svv.yaw());
+
+        return sv;
+      }
+
+      StateVector ProcessModel::Diff(const StateVector& state_vector_1, const StateVector& state_vector_2) const
+      {
+        StateVector sv{state_vector_1 - state_vector_2};
+        RWStateVectorView svv{sv};
+
+        Utils::NormalizeAngle(&svv.yaw());
+
+        return sv;
       }
 
     }

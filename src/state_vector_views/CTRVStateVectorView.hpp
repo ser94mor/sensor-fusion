@@ -40,7 +40,7 @@ namespace ser94mor
         /**
          * @return X-axis coordinate
          */
-        double px() const override
+        double_t px() const override
         {
           return state_vector_(0);
         }
@@ -48,7 +48,7 @@ namespace ser94mor
         /**
          * @return Y-axis coordinate
          */
-        double py() const override
+        double_t py() const override
         {
           return state_vector_(1);
         }
@@ -56,7 +56,7 @@ namespace ser94mor
         /**
          * @return X-axis velocity
          */
-        double vx() const override
+        double_t vx() const override
         {
           return v() * std::cos(yaw());
         }
@@ -64,7 +64,7 @@ namespace ser94mor
         /**
          * @return Y-axis velocity
          */
-        double vy() const override
+        double_t vy() const override
         {
           return v() * std::sin(yaw());
         }
@@ -72,7 +72,7 @@ namespace ser94mor
         /**
          * @return velocity module
          */
-        double v() const override
+        double_t v() const override
         {
           return state_vector_(2);
         }
@@ -80,7 +80,7 @@ namespace ser94mor
         /**
          * @return yaw rotation angle
          */
-        double yaw() const override
+        double_t yaw() const override
         {
           return state_vector_(3);
         }
@@ -88,7 +88,7 @@ namespace ser94mor
         /**
          * @return angular velocity of yaw rotation
          */
-        double yaw_rate() const override
+        double_t yaw_rate() const override
         {
           return state_vector_(4);
         }
@@ -96,9 +96,9 @@ namespace ser94mor
         /**
          * @return range: radial distance from origin
          */
-        double range() const override
+        double_t range() const override
         {
-          double rho{std::sqrt(px()*px() + py()*py())};
+          double_t rho{std::sqrt(px()*px() + py()*py())};
           return (rho < kEpsilon) ? kEpsilon : rho;
         }
 
@@ -106,7 +106,7 @@ namespace ser94mor
          * @return bearing: angle between range and X-axis
          * (which points into the direction of heading of our car, where sensors are installed)
          */
-        double bearing() const override
+        double_t bearing() const override
         {
           return std::atan2(py(), px());
         }
@@ -114,11 +114,31 @@ namespace ser94mor
         /**
          * @return radial velocity: change of range, i.e., range rate
          */
-        double range_rate() const override
+        double_t range_rate() const override
         {
           return (px()*vx() + py()*vy()) / range();
         }
         
+      };
+
+      class ROProcessNoiseVectorView : ser94mor::sensor_fusion::ROProcessNoiseVectorView<ProcessNoiseVector>
+      {
+      public:
+        explicit ROProcessNoiseVectorView(const ProcessNoiseVector& process_noise_vector)
+        : ser94mor::sensor_fusion::ROProcessNoiseVectorView<ProcessNoiseVector>{process_noise_vector}
+        {
+
+        }
+
+        double_t longitudinal_acceleration() const
+        {
+          return process_noise_vector_(0);
+        }
+
+        double_t yaw_acceleration() const
+        {
+          return process_noise_vector_(1);
+        }
       };
 
       /**
@@ -128,7 +148,6 @@ namespace ser94mor
       class RWStateVectorView : ser94mor::sensor_fusion::RWStateVectorView<StateVector>
       {
       public:
-
         /**
          * Constructor.
          * @param state_vector a state vector
@@ -142,7 +161,7 @@ namespace ser94mor
         /**
          * @return X-axis coordinate
          */
-        double& px()
+        double_t& px()
         {
           return state_vector_modifiable_(0);
         }
@@ -150,7 +169,7 @@ namespace ser94mor
         /**
          * @return Y-axis coordinate
          */
-        double& py()
+        double_t& py()
         {
           return state_vector_modifiable_(1);
         }
@@ -158,7 +177,7 @@ namespace ser94mor
         /**
          * @return velocity module
          */
-        double& v()
+        double_t& v()
         {
           return state_vector_modifiable_(2);
         }
@@ -166,7 +185,7 @@ namespace ser94mor
         /**
          * @return yaw rotation angle
          */
-        double& yaw()
+        double_t& yaw()
         {
           return state_vector_modifiable_(3);
         }
@@ -174,7 +193,7 @@ namespace ser94mor
         /**
          * @return angular velocity of yaw rotation
          */
-        double& yaw_rate()
+        double_t& yaw_rate()
         {
           return state_vector_modifiable_(4);
         }

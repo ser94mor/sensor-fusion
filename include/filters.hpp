@@ -17,3 +17,4 @@
 
 #include "../src/filters/KalmanFilter.hpp"
 #include "../src/filters/ExtendedKalmanFilter.hpp"
+#include "../src/filters/UnscentedKalmanFilter.hpp"

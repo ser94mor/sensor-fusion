@@ -37,12 +37,12 @@ namespace ser94mor
       /**
        * @return X-axis coordinate
        */
-      virtual double px() const = 0;
+      virtual double_t px() const = 0;
 
       /**
        * @return Y-axis coordinate
        */
-      virtual double py() const = 0;
+      virtual double_t py() const = 0;
 
     protected:
       /**

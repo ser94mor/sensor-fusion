@@ -37,7 +37,7 @@ TEST_CASE("CV::ProcessModel::A", "[process_models]")
   IndividualNoiseProcessesCovarianceMatrix mtx;
   mtx << 9.0, 0.0,
          0.0, 9.0;
-  cv_pm.SetIndividualNoiseProcessCovarianceMatrix(mtx);
+  cv_pm.SetIndividualNoiseProcessesCovarianceMatrix(mtx);
 
   Matrix4d A;
   A << 1, 0, 2, 0,
@@ -55,7 +55,7 @@ TEST_CASE("CV::ProcessModel::B", "[process_models]")
   IndividualNoiseProcessesCovarianceMatrix mtx;
   mtx << 9.0, 0.0,
          0.0, 9.0;
-  cv_pm.SetIndividualNoiseProcessCovarianceMatrix(mtx);
+  cv_pm.SetIndividualNoiseProcessesCovarianceMatrix(mtx);
 
   Matrix4d B{Matrix4d::Zero()};
 
@@ -69,7 +69,7 @@ TEST_CASE("CV::ProcessModel::R", "[process_models]")
   IndividualNoiseProcessesCovarianceMatrix mtx1;
   mtx1 << 9.0, 0.0,
           0.0, 9.0;
-  cv_pm1.SetIndividualNoiseProcessCovarianceMatrix(mtx1);
+  cv_pm1.SetIndividualNoiseProcessesCovarianceMatrix(mtx1);
 
   Matrix4d R1;
   R1 << 2.25,  0.0, 4.5, 0.0,
@@ -81,7 +81,7 @@ TEST_CASE("CV::ProcessModel::R", "[process_models]")
   IndividualNoiseProcessesCovarianceMatrix mtx2;
   mtx2 << 3.0, 7.0,
           7.0, 5.0;
-  cv_pm2.SetIndividualNoiseProcessCovarianceMatrix(mtx2);
+  cv_pm2.SetIndividualNoiseProcessesCovarianceMatrix(mtx2);
 
   Matrix4d R2;
   R2 << 12.0, 28.0, 12.0, 28.0,
@@ -152,7 +152,7 @@ TEST_CASE("CTRV::ProcessModel::g", "[process_models]")
 
   CTRV::ControlVector cv{CTRV::ControlVector::Zero()};
 
-  double dt{2.};
+  double_t dt{2.};
 
   CTRV::StateVector sv1_expected;
   sv1_expected << (1. + (18.*(std::sqrt(3.)-1.))/M_PI),
@@ -182,7 +182,7 @@ TEST_CASE("CTRV::ProcessModel::R", "[process_models]")
   IndividualNoiseProcessesCovarianceMatrix mtx;
   mtx << 3.0, 7.0,
          7.0, 5.0;
-  pm.SetIndividualNoiseProcessCovarianceMatrix(mtx);
+  pm.SetIndividualNoiseProcessesCovarianceMatrix(mtx);
 
   CTRV::StateCovarianceMatrix R_expected;
   R_expected <<         9.0, 5.1961524227066311, 10.392304845413264, 24.248711305964285,  24.248711305964285,
@@ -191,7 +191,7 @@ TEST_CASE("CTRV::ProcessModel::R", "[process_models]")
          24.248711305964285,               14.0,               28.0,               20.0,                20.0,
          24.248711305964285,               14.0,               28.0,               20.0,                20.0;
 
-  double dt{2.};
+  double_t dt{2.};
   CTRV::StateVector state_vector;
   state_vector << 1., 2., 3., M_PI/6., M_PI/12.;
 

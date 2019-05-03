@@ -20,7 +20,7 @@
 #include "measurement_models.hpp"
 #include "sensors.hpp"
 #include "filters.hpp"
-#include "../src/fusion/Fusion.hpp"
+#include "fusion.hpp"
 
 #include <catch.hpp>
 

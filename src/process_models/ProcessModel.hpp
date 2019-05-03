@@ -73,15 +73,36 @@ namespace ser94mor
         return ControlVector::SizeAtCompileTime;
       }
 
+      constexpr static int ProcessNoiseDims()
+      {
+        return IndividualNoiseProcessesCovarianceMatrix::RowsAtCompileTime;
+      }
+
       /**
        * Set an individual noise process covariance matrix. It is done explicitly by the user of the process model
        * due to the variadic templates used in this code. ProcessModel needs a default constructor.
        * @param mtx an individual noise process covariance matrix
        */
-      void SetIndividualNoiseProcessCovarianceMatrix(const IndividualNoiseProcessesCovarianceMatrix& mtx)
+      void SetIndividualNoiseProcessesCovarianceMatrix(const IndividualNoiseProcessesCovarianceMatrix& mtx)
       {
         individual_noise_processes_covariance_matrix_ = mtx;
       }
+
+      const IndividualNoiseProcessesCovarianceMatrix& GetIndividualNoiseProcessesCovarianceMatrix() const
+      {
+        return individual_noise_processes_covariance_matrix_;
+      }
+
+      /**
+       * Calculate a difference between two state vectors. Some kinds of state vectors may have a dimensions
+       * that need to be adjusted after the simple vector subtraction operation, such as dimensions representing
+       * angles that has to be within in [-pi, pi].
+       *
+       * @param state_vector_1 the first state vector
+       * @param state_vector_2 the second state vector
+       * @return the difference between the two measurement vectors
+       */
+      virtual StateVector Diff(const StateVector& state_vector_1, const StateVector& state_vector_2) const = 0;
 
     protected:
       IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix_;

@@ -39,7 +39,7 @@ TEST_CASE("KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessMod
   IndividualNoiseProcessesCovarianceMatrix mtx;
   mtx << 3.0, 7.0,
          7.0, 5.0;
-  cv_pm.SetIndividualNoiseProcessCovarianceMatrix(mtx);
+  cv_pm.SetIndividualNoiseProcessesCovarianceMatrix(mtx);
 
   using KF = KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel>>;
   using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
@@ -56,7 +56,7 @@ TEST_CASE("KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessMod
            4., 7., 9., 10;
   BEL belief{0, mu, Sigma};
 
-  double dt{2.};
+  double_t dt{2.};
 
   Vector4d mu_prior;
   mu_prior << 7., 10., 3., 4.;
@@ -126,7 +126,7 @@ TEST_CASE("ExtendedKalmanFilter<CV::ProcessModel, Radar::MeasurementModel<CV::Pr
   IndividualNoiseProcessesCovarianceMatrix mtx;
   mtx << 3.0, 7.0,
          7.0, 5.0;
-  cv_pm.SetIndividualNoiseProcessCovarianceMatrix(mtx);
+  cv_pm.SetIndividualNoiseProcessesCovarianceMatrix(mtx);
 
   using EKF = ExtendedKalmanFilter<CV::ProcessModel, Radar::MeasurementModel<CV::ProcessModel>>;
   using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
@@ -143,7 +143,7 @@ TEST_CASE("ExtendedKalmanFilter<CV::ProcessModel, Radar::MeasurementModel<CV::Pr
            4., 7., 9., 10;
   BEL belief{0, mu, Sigma};
 
-  double dt{2.};
+  double_t dt{2.};
 
   Vector4d mu_prior;
   mu_prior << 7., 10., 3., 4.;
@@ -249,3 +249,58 @@ TEST_CASE("ExtendedKalmanFilter<CV::ProcessModel, Radar::MeasurementModel<CV::Pr
   
   REQUIRE(belief_posterior == belief_posterior_expected);
 }
+
+
+/////////////////////////////
+// UNSCENTED KALMAN FILTER //
+/////////////////////////////
+
+TEST_CASE("UnscentedKalmanFilter<CTRV::ProcessModel, Lidar::MeasurementModel>::PredictUpdate", "[filters]")
+{
+  using UKF = UnscentedKalmanFilter<CTRV::ProcessModel, Lidar::MeasurementModel<CTRV::ProcessModel>>;
+  using BEL = Belief<CTRV::StateVector, CTRV::StateCovarianceMatrix>;
+
+  CTRV::ControlVector control_vector{CTRV::ControlVector::Zero()};
+
+  CTRV::StateVector mu;
+  mu << 1., 2., 3., 4., 5.;
+
+  CTRV::StateCovarianceMatrix Sigma;
+  Sigma << 1., 2., 3., 4., 5.,
+      2., 5., 6., 7., 8.,
+      3., 6., 8., 9., 10.,
+      4., 7., 9., 10., 11.,
+      12., 13., 14., 15., 16.;
+  BEL belief{0, mu, Sigma};
+
+  CTRV::ProcessModel pm;
+  IndividualNoiseProcessesCovarianceMatrix mtx;
+  mtx << 3.0, 7.0,
+      7.0, 5.0;
+  pm.SetIndividualNoiseProcessesCovarianceMatrix(mtx);
+
+  auto belief_prior{UKF::Predict(belief, control_vector, 2., pm)};
+
+  // TODO: write this test
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

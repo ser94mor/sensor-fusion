@@ -31,7 +31,7 @@
   class Measurement : public ser94mor::sensor_fusion::Measurement<MeasurementVector, MeasurementCovarianceMatrix, mmk> \
   { \
   public: \
-    Measurement(double timestamp, const MeasurementVector& measurement_vector) \
+    Measurement(double_t timestamp, const MeasurementVector& measurement_vector) \
     : ser94mor::sensor_fusion::Measurement<MeasurementVector, MeasurementCovarianceMatrix, mmk> \
         {timestamp, measurement_vector} { } \
   }
@@ -56,7 +56,7 @@ namespace ser94mor
       /**
        * @return a measurement timestamp
        */
-      double t() const
+      double_t t() const
       {
         return timestamp_;
       }
@@ -85,14 +85,14 @@ namespace ser94mor
        * @param timestamp a timestamp
        * @param measurement_vector a measurement vector
        */
-      Measurement(double timestamp, const MeasurementVector& measurement_vector)
+      Measurement(double_t timestamp, const MeasurementVector& measurement_vector)
       : timestamp_{timestamp}, measurement_vector_{measurement_vector}
       {
 
       }
 
     private:
-      double timestamp_;
+      double_t timestamp_;
       MeasurementVector measurement_vector_;
     };
 

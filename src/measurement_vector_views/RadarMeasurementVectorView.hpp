@@ -53,7 +53,7 @@ namespace ser94mor
         /**
          * @return X-axis coordinate
          */
-        double px() const override
+        double_t px() const override
         {
           return measurement_vector_(0) * std::cos(measurement_vector_(1));
         }
@@ -61,7 +61,7 @@ namespace ser94mor
         /**
          * @return Y-axis coordinate
          */
-        double py() const override
+        double_t py() const override
         {
           return measurement_vector_(0) * std::sin(measurement_vector_(1));
         }
@@ -69,7 +69,7 @@ namespace ser94mor
         /**
          * @return range: radial distance from origin
          */
-        double range() const
+        double_t range() const
         {
           return measurement_vector_(0);
         }
@@ -78,7 +78,7 @@ namespace ser94mor
          * @return bearing: angle between range and X-axis
          * (which points into the direction of heading of our car, where sensors are installed)
          */
-        double bearing() const
+        double_t bearing() const
         {
           return measurement_vector_(1);
         }
@@ -86,7 +86,7 @@ namespace ser94mor
         /**
          * @return radial velocity: change of range, i.e., range rate
          */
-        double range_rate() const
+        double_t range_rate() const
         {
           return measurement_vector_(2);
         }

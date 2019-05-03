@@ -27,7 +27,7 @@ namespace ser94mor
   namespace sensor_fusion
   {
 
-    constexpr const double kEpsilon{1e-11};
+    constexpr const double_t kEpsilon{1e-11};
 
     enum class EntityType
     {
@@ -75,18 +75,19 @@ namespace ser94mor
       }
     }
 
-    using IndividualNoiseProcessesCovarianceMatrix = Eigen::Matrix<double, 2, 2>;
+    using IndividualNoiseProcessesCovarianceMatrix = Eigen::Matrix<double_t, 2, 2>;
+    using ProcessNoiseVector = Eigen::Matrix<double_t, 2, 1>;
 
 #define PROCESS_MODEL_DEFINITIONS(state_vector_dims, control_vector_dims, is_linear) \
   const int kStateVectorDims{state_vector_dims}; \
   const int kControlVectorDims{control_vector_dims}; \
   const bool kIsLinear{is_linear}; \
-  using StateVector             = Eigen::Matrix<double, kStateVectorDims, 1>; \
-  using StateCovarianceMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>; \
-  using StateTransitionMatrix   = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>; \
-  using ControlVector           = Eigen::Matrix<double, kControlVectorDims, 1>; \
-  using ControlTransitionMatrix = Eigen::Matrix<double, kStateVectorDims, kControlVectorDims>; \
-  using ProcessCovarianceMatrix = Eigen::Matrix<double, kStateVectorDims, kStateVectorDims>
+  using StateVector             = Eigen::Matrix<double_t, kStateVectorDims, 1>; \
+  using StateCovarianceMatrix   = Eigen::Matrix<double_t, kStateVectorDims, kStateVectorDims>; \
+  using StateTransitionMatrix   = Eigen::Matrix<double_t, kStateVectorDims, kStateVectorDims>; \
+  using ControlVector           = Eigen::Matrix<double_t, kControlVectorDims, 1>; \
+  using ControlTransitionMatrix = Eigen::Matrix<double_t, kStateVectorDims, kControlVectorDims>; \
+  using ProcessCovarianceMatrix = Eigen::Matrix<double_t, kStateVectorDims, kStateVectorDims>
     
     namespace CV
     {
@@ -106,8 +107,8 @@ namespace ser94mor
 #define MEASUREMENT_MODEL_DEFINITIONS(measurement_vector_dims, is_linear) \
   const int kMeasurementVectorDims{measurement_vector_dims}; \
   const bool kIsLinear{is_linear}; \
-  using MeasurementVector = Eigen::Matrix<double, kMeasurementVectorDims, 1>; \
-  using MeasurementCovarianceMatrix = Eigen::Matrix<double, kMeasurementVectorDims, kMeasurementVectorDims>
+  using MeasurementVector = Eigen::Matrix<double_t, kMeasurementVectorDims, 1>; \
+  using MeasurementCovarianceMatrix = Eigen::Matrix<double_t, kMeasurementVectorDims, kMeasurementVectorDims>
 
     namespace Lidar
     {

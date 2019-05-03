@@ -21,8 +21,6 @@
 
 #include "KalmanFilter.hpp"
 
-#include <type_traits>
-
 
 namespace ser94mor
 {
@@ -38,15 +36,15 @@ namespace ser94mor
      * @tparam MeasurementModel a class of measurement model to use; notice that here it is not a template class
      */
     template<class ProcessModel, class MeasurementModel>
-    class ExtendedKalmanFilter : public KalmanFilter<ProcessModel, MeasurementModel>
+    class ExtendedKalmanFilter : public KalmanFilterBase<ProcessModel, MeasurementModel, ExtendedKalmanFilter>
     {
     private:
       using Belief = typename ProcessModel::Belief_type;
       using ControlVector = typename ProcessModel::ControlVector_type;
       using Measurement = typename MeasurementModel::Measurement_type;
     public:
-      using KalmanFilter<ProcessModel, MeasurementModel>::Predict;
-      using KalmanFilter<ProcessModel, MeasurementModel>::Update;
+      using KalmanFilterBase<ProcessModel, MeasurementModel, ExtendedKalmanFilter>::Predict;
+      using KalmanFilterBase<ProcessModel, MeasurementModel, ExtendedKalmanFilter>::Update;
 
       /**
        * Prediction step of the Extended Kalman filter. Predicts the object's state in dt time in the future
@@ -65,7 +63,7 @@ namespace ser94mor
       template<bool EnableBool = true>
       static Belief Predict(const Belief& belief_posterior,
                             const ControlVector& ut,
-                            double dt,
+                            double_t dt,
                             const std::enable_if_t<not ProcessModel::IsLinear() && EnableBool, ProcessModel>&
                                 process_model)
       {
@@ -102,7 +100,7 @@ namespace ser94mor
         auto Sigma{belief_prior.Sigma()};
         auto Ht{measurement_model.H(mu)};
         auto Kt{Sigma * Ht.transpose() * (Ht * Sigma * Ht.transpose() + measurement_model.Q()).inverse()};
-        auto I{Eigen::Matrix<double, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
+        auto I{Eigen::Matrix<double_t, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
 
         return {
             /* timestamp */               measurement.t(),

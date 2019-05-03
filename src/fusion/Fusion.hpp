@@ -77,11 +77,8 @@ namespace ser94mor
         }
         else
         {
-          auto dt = measurement.t() - belief_.t();
-
-          auto belief_prior{Filter<ProcessModel, MeasurementModel_type>::
-                            Predict(belief_, ControlVector::Zero(), dt, process_model_)};
-          belief_ = Filter<ProcessModel, MeasurementModel_type>::Update(belief_prior, measurement, measurement_model);
+          belief_ = Filter<ProcessModel, MeasurementModel_type>::
+                      PredictUpdate(belief_, ControlVector::Zero(), measurement, process_model_, measurement_model);
         }
 
         ++processed_measurements_counter_;
@@ -115,7 +112,7 @@ namespace ser94mor
         measurement_models_{}
     {
 
-      process_model_.SetIndividualNoiseProcessCovarianceMatrix(individual_noise_processes_covariance_matrix);
+      process_model_.SetIndividualNoiseProcessesCovarianceMatrix(individual_noise_processes_covariance_matrix);
 
       InitializeMeasurementCovarianceMatrices(
           std::forward_as_tuple(measurement_covariance_matrices...),

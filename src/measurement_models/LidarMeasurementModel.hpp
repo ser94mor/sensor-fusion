@@ -49,7 +49,7 @@ namespace ser94mor
       {
       public:
         using MeasurementMatrix_type =
-          Eigen::Matrix<double, MeasurementModel::MeasurementDims(), MeasurementModel::StateDims()>;
+          Eigen::Matrix<double_t, MeasurementModel::MeasurementDims(), MeasurementModel::StateDims()>;
 
         /**
          * Constructor.

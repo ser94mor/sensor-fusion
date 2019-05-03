@@ -20,8 +20,10 @@
 
 
 #include "definitions.hpp"
+#include "state_vector_views.hpp"
 #include "ProcessModel.hpp"
-#include "../state_vector_views/CTRVStateVectorView.hpp"
+
+#include <Eigen/Dense>
 
 
 namespace ser94mor
@@ -56,20 +58,25 @@ namespace ser94mor
          * @param state_vector a state vector
          * @return a prior state vector, that is, a state vector after the state transition function applied.
          */
-        StateVector g(double dt, const ControlVector& control_vector, const StateVector& state_vector) const;
+        StateVector g(double_t dt, const ControlVector& control_vector, const StateVector& state_vector) const;
+
+        StateVector g(double_t dt, const ControlVector& control_vector,
+                      const StateVector& state_vector, const ProcessNoiseVector& noise_vector) const;
 
         /**
          * @param dt a difference between the current measurement timestamp and the previous measurement timestamp
          * @param state_vector a state vector
          * @return a state transition matrix
          */
-        StateTransitionMatrix G(double dt, const StateVector& state_vector) const;
+        StateTransitionMatrix G(double_t dt, const StateVector& state_vector) const;
 
         /**
          * @param dt a difference between the current measurement timestamp and the previous measurement timestamp
          * @return a process covariance matrix
          */
-        ProcessCovarianceMatrix R(double dt, const StateVector& state_vector) const;
+        ProcessCovarianceMatrix R(double_t dt, const StateVector& state_vector) const;
+
+        StateVector Diff(const StateVector& state_vector_1, const StateVector& state_vector_2) const override;
 
       private:
         StateTransitionMatrix state_transition_matrix_prototype_;

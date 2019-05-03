@@ -41,6 +41,7 @@ using EKF_CV_LIDAR_RADAR_Fusion =
     Fusion<ExtendedKalmanFilter, CV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
 using EKF_CTRV_LIDAR_RADAR_Fusion =
     Fusion<ExtendedKalmanFilter, CTRV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
+using UKF_CTRV_LIDAR_Fusion = Fusion<UnscentedKalmanFilter, CTRV::ProcessModel, Lidar::MeasurementModel>;
 
 using namespace std;
 using namespace Eigen;
@@ -111,7 +112,7 @@ std::string hasData(const std::string &s) {
   return "";
 }
 
-constexpr double us_to_s(std::time_t us)
+constexpr double_t us_to_s(std::time_t us)
 {
   return us / 1000000.0;
 }

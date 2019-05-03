@@ -19,6 +19,9 @@
 #define SENSOR_FUSION_UTILS_HPP
 
 
+#include <cmath>
+
+
 /**
  * Class containing different helper methods.
  */
@@ -30,7 +33,7 @@ public:
    * Normalize angle to be between [-pi, pi].
    * @param angle the pointer to variable containing angle to be normalized.
    */
-  static void NormalizeAngle(double* angle);
+  static void NormalizeAngle(double_t* angle);
 
 };
 

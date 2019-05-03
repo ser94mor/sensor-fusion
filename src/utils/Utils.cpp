@@ -20,7 +20,7 @@
 
 #include <cmath>
 
-void Utils::NormalizeAngle(double* angle)
+void Utils::NormalizeAngle(double_t* angle)
 {
   auto times = std::round( std::fabs( *angle / (2.0 * M_PI) ) );  // for the case when angle is very very large
 

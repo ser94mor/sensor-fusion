@@ -31,7 +31,7 @@ namespace ser94mor
 
       }
 
-      StateTransitionMatrix ProcessModel::A(double dt) const
+      StateTransitionMatrix ProcessModel::A(double_t dt) const
       {
         StateTransitionMatrix state_transition_matrix{state_transition_matrix_prototype_};
         state_transition_matrix(0, 2) = dt;
@@ -39,10 +39,10 @@ namespace ser94mor
         return state_transition_matrix;
       }
 
-      ProcessCovarianceMatrix ProcessModel::R(double dt) const
+      ProcessCovarianceMatrix ProcessModel::R(double_t dt) const
       {
-        Eigen::Matrix<double, ProcessModel::StateDims(), 2> Gt;
-        double dt_2_2 = dt * dt / 2.;
+        Eigen::Matrix<double_t, ProcessModel::StateDims(), 2> Gt;
+        double_t dt_2_2 = dt * dt / 2.;
         Gt << dt_2_2,    0.0,
                  0.0, dt_2_2,
                   dt,    0.0,
@@ -53,6 +53,11 @@ namespace ser94mor
       ControlTransitionMatrix ProcessModel::B() const
       {
         return ControlTransitionMatrix::Zero();
+      }
+
+      StateVector ProcessModel::Diff(const StateVector& state_vector_1, const StateVector& state_vector_2) const
+      {
+        return state_vector_1 - state_vector_2;
       }
 
     }
