@@ -25,7 +25,7 @@
 using namespace ser94mor::sensor_fusion;
 
 
-TEST_CASE("Lidar::MeasurementVectorView", "[measurement_vector_views]")
+TEST_CASE("Lidar::ROMeasurementVectorView", "[measurement_vector_views]")
 {
   Lidar::MeasurementVector mv;
   mv << 2., 1.;
@@ -37,7 +37,7 @@ TEST_CASE("Lidar::MeasurementVectorView", "[measurement_vector_views]")
 }
 
 
-TEST_CASE("Radar::MeasurementVectorView", "[measurement_vector_views]")
+TEST_CASE("Radar::ROMeasurementVectorView", "[measurement_vector_views]")
 {
   Radar::MeasurementVector mv;
   mv << 4., M_PI/6., 2.;
