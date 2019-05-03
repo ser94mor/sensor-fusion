@@ -30,12 +30,14 @@ namespace ser94mor
   {
 
     /**
-     * A template class holding Kalman Filter equations.
+     * A base template class holding Kalman Filter equations.
      * The naming of vectors and matrices are taken from the
      * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
      *
      * @tparam ProcessModel a class of the process model to use
      * @tparam MeasurementModel a class of measurement model to use; notice that here it is not a template class
+     * @tparam DerivedKalmanFilter a concrete sub-template-class of the KalmanFilterBase;
+     *                             it is needed to invoke methods from that class
      */
     template<class ProcessModel, class MeasurementModel, template<class, class> class DerivedKalmanFilter>
     class KalmanFilterBase
@@ -50,24 +52,23 @@ namespace ser94mor
        * Prediction step of the Kalman filter. Predicts the object's state in dt time in the future in accordance with
        * LINEAR process model and input control vector.
        *
-       * @param belief_posterior a current belief of the object's state
+       * @param bel a current belief of the object's state
        * @param ut a control vector
        * @param dt time interval between the previous and current measurements
        * @param process_model an instance of the process model
        *
        * @return a prior belief, that is, after prediction but before incorporating the measurement
        */
-      template <bool EnableBool = true>
-      static Belief Predict(const Belief& belief_posterior,
-                            const ControlVector& ut,
-                            double_t dt,
-                            const std::enable_if_t<ProcessModel::IsLinear() && EnableBool, ProcessModel>& process_model)
+      template <bool enable = true>
+      static auto
+      Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
+      -> std::enable_if_t<ProcessModel::IsLinear() && enable, Belief>
       {
         auto At{process_model.A(dt)};
         return {
-            /* timestamp */               belief_posterior.t() + dt,
-            /* state vector */            At * belief_posterior.mu() + process_model.B() * ut,
-            /* state covariance matrix */ At * belief_posterior.Sigma() * At.transpose() + process_model.R(dt),
+            /* timestamp */               bel.t() + dt,
+            /* state vector */            At * bel.mu() + process_model.B() * ut,
+            /* state covariance matrix */ At * bel.Sigma() * At.transpose() + process_model.R(dt),
         };
       }
 
@@ -75,20 +76,20 @@ namespace ser94mor
        * Update step of the Kalman filter. Incorporates the sensor measurement into the given prior belief.
        * Works only with linear measurement models.
        *
-       * @param belief_prior a belief after the prediction Kalman filter step
+       * @param bel a belief after the prediction Kalman filter step
        * @param measurement a measurement from the sensor
        * @param measurement_model an instance of the measurement model
        *
        * @return a posterior belief, that is, after the incorporation of the measurement
        */
-      template <bool EnableBool = true>
-      static Belief Update(const Belief& belief_prior, const Measurement& measurement,
-                           const std::enable_if_t<MeasurementModel::IsLinear() && EnableBool, MeasurementModel>&
-                               measurement_model)
+      template <bool enable = true>
+      static auto
+      Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
+      -> std::enable_if_t<MeasurementModel::IsLinear() && enable, Belief>
       {
         auto Ct{measurement_model.C()};
-        auto mu{belief_prior.mu()};
-        auto Sigma{belief_prior.Sigma()};
+        auto mu{bel.mu()};
+        auto Sigma{bel.Sigma()};
         auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + measurement_model.Q()).inverse()};
         auto I{Eigen::Matrix<double_t, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
 
@@ -99,21 +100,38 @@ namespace ser94mor
         };
       }
 
+      /**
+       * Combined Predict and Update steps of the derived Kalman filter.
+       * Predicts the object's state in dt time in the future in accordance with the process model
+       * and input control vector and then incorporates the sensor measurement into the belief.
+       *
+       * @param bel a current belief of the object's state
+       * @param ut a control vector
+       * @param measurement a measurement from the sensor
+       * @param process_model an instance of the process model
+       * @param measurement_model an instance of the measurement model
+       * @return a posterior belief, that is, after the prediction and incorporation of the measurement
+       */
       static Belief
-      PredictUpdate(const Belief& belief, const ControlVector& control_vector, const Measurement& measurement,
+      PredictUpdate(const Belief& bel, const ControlVector& ut, const Measurement& measurement,
                     const ProcessModel& process_model, const MeasurementModel& measurement_model)
       {
-        auto dt = measurement.t() - belief.t();
+        auto dt = measurement.t() - bel.t();
 
-        auto belief_prior{DerivedKalmanFilter<ProcessModel, MeasurementModel>::
-                            Predict(belief, control_vector, dt, process_model)};
+        auto belief_prior{DerivedKalmanFilter<ProcessModel, MeasurementModel>::Predict(bel, ut, dt, process_model)};
 
-        return std::move(DerivedKalmanFilter<ProcessModel, MeasurementModel>::
-                           Update(belief_prior, measurement, measurement_model));
+        return DerivedKalmanFilter<ProcessModel, MeasurementModel>::
+                 Update(belief_prior, measurement, measurement_model);
       }
     };
 
 
+    /**
+     * A concrete class representing Kalman filter. All the equations are the same as in its base class.
+     *
+     * @tparam ProcessModel a class of the process model to use
+     * @tparam MeasurementModel a class of measurement model to use; notice that here it is not a template class
+     */
     template <class ProcessModel, class MeasurementModel>
     class KalmanFilter : public KalmanFilterBase<ProcessModel, MeasurementModel, KalmanFilter>
     {
