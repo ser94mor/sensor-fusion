@@ -35,15 +35,15 @@ namespace ser94mor
        * it is a class  that provides a meaningful access to the
        * Lidar measurement vector dimensions.
        */
-      class MeasurementVectorView : ser94mor::sensor_fusion::MeasurementVectorView<MeasurementVector>
+      class ROMeasurementVectorView : ser94mor::sensor_fusion::ROMeasurementVectorView<MeasurementVector>
       {
       public:
         /**
          * Constructor.
          * @param measurement_vector a measurement vector
          */
-        explicit MeasurementVectorView(const MeasurementVector& measurement_vector)
-        : ser94mor::sensor_fusion::MeasurementVectorView<MeasurementVector>{measurement_vector}
+        explicit ROMeasurementVectorView(const MeasurementVector& measurement_vector)
+        : ser94mor::sensor_fusion::ROMeasurementVectorView<MeasurementVector>{measurement_vector}
         {
 
         }
@@ -62,6 +62,36 @@ namespace ser94mor
         double_t py() const
         {
           return measurement_vector_(1);
+        }
+      };
+
+      class RWMeasurementVectorView : ser94mor::sensor_fusion::RWMeasurementVectorView<MeasurementVector>
+      {
+      public:
+        /**
+         * Constructor.
+         * @param measurement_vector a measurement vector
+         */
+        explicit RWMeasurementVectorView(MeasurementVector& measurement_vector)
+        : ser94mor::sensor_fusion::RWMeasurementVectorView<MeasurementVector>{measurement_vector}
+        {
+
+        }
+
+        /**
+         * @return X-axis coordinate
+         */
+        double_t& px()
+        {
+          return measurement_vector_modifiable_(0);
+        }
+
+        /**
+         * @return Y-axis coordinate
+         */
+        double_t& py()
+        {
+          return measurement_vector_modifiable_(1);
         }
       };
 

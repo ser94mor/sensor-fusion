@@ -42,7 +42,7 @@ namespace ser94mor
      * @tparam mmk a kind of a measurement model (from a corresponding enum class)
      * @tparam is_linear flag indicating whether this measurement model is linear or not
      */
-    template<class MeasurementVector, class MeasurementCovarianceMatrix, class MeasurementVectorView,
+    template<class MeasurementVector, class MeasurementCovarianceMatrix, class ROMeasurementVectorView,
              class ProcessModel, MeasurementModelKind mmk, bool is_linear>
     class MeasurementModel : public ModelEntity<EntityType::MeasurementModel, MeasurementModelKind, mmk, is_linear>
     {
@@ -53,7 +53,7 @@ namespace ser94mor
        */
       using Measurement_type = Measurement<MeasurementVector, MeasurementCovarianceMatrix, mmk>;
       using MeasurementVector_type = MeasurementVector;
-      using MeasurementVectorView_type = MeasurementVectorView;
+      using ROMeasurementVectorView_type = ROMeasurementVectorView;
       using MeasurementCovarianceMatrix_type = MeasurementCovarianceMatrix;
 
       using RWStateVectorView_type = typename ProcessModel::RWStateVectorView_type;
@@ -124,7 +124,7 @@ namespace ser94mor
       {
         StateVector_type state_vector{StateVector_type::Zero()};
         RWStateVectorView_type svv{state_vector};
-        MeasurementVectorView_type mvv{measurement.z()};
+        ROMeasurementVectorView_type mvv{measurement.z()};
 
         svv.px() = mvv.px();
         svv.py() = mvv.py();

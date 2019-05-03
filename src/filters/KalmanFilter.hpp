@@ -30,7 +30,7 @@ namespace ser94mor
   {
 
     /**
-     * A base template class holding Kalman Filter equations.
+     * A base template class holding Kalman filter equations.
      * The naming of vectors and matrices are taken from the
      * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
      *
@@ -62,7 +62,7 @@ namespace ser94mor
       template <bool enable = true>
       static auto
       Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
-      -> std::enable_if_t<ProcessModel::IsLinear() && enable, Belief>
+      -> std::enable_if_t<ProcessModel::IsLinear() and enable, Belief>
       {
         auto At{process_model.A(dt)};
         return {
@@ -85,7 +85,7 @@ namespace ser94mor
       template <bool enable = true>
       static auto
       Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
-      -> std::enable_if_t<MeasurementModel::IsLinear() && enable, Belief>
+      -> std::enable_if_t<MeasurementModel::IsLinear() and enable, Belief>
       {
         auto Ct{measurement_model.C()};
         auto mu{bel.mu()};
@@ -104,6 +104,8 @@ namespace ser94mor
        * Combined Predict and Update steps of the derived Kalman filter.
        * Predicts the object's state in dt time in the future in accordance with the process model
        * and input control vector and then incorporates the sensor measurement into the belief.
+       *
+       * Notice that process model and mesurement model can be either linear and non-linear.
        *
        * @param bel a current belief of the object's state
        * @param ut a control vector

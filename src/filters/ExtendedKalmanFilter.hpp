@@ -28,7 +28,7 @@ namespace ser94mor
   {
 
     /**
-     * A template class holding Extended Kalman Filter equations.
+     * A template class holding extended Kalman filter equations.
      * The naming of vectors and matrices are taken from the
      * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
      *
@@ -61,7 +61,7 @@ namespace ser94mor
        * @return a prior belief, that is, after prediction but before incorporating the measurement
        */
       template<bool enable = true>
-      static auto 
+      static auto
       Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
       -> std::enable_if_t<not ProcessModel::IsLinear() and enable, Belief>
       {
@@ -88,7 +88,7 @@ namespace ser94mor
        * @return a posterior belief, that is, after the incorporation of the measurement
        */
       template<bool enable = true>
-      static auto 
+      static auto
       Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
       -> std::enable_if_t<not MeasurementModel::IsLinear() and enable, Belief>
       {

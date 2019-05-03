@@ -31,7 +31,7 @@ namespace ser94mor
      * @tparam MeasurementVector a measurement vector class
      */
     template <class MeasurementVector>
-    class MeasurementVectorView
+    class ROMeasurementVectorView
     {
     public:
       /**
@@ -49,13 +49,30 @@ namespace ser94mor
        * Constructor.
        * @param measurement_vector a measurement vector
        */
-      explicit MeasurementVectorView(const MeasurementVector& measurement_vector)
-          : measurement_vector_{measurement_vector}
+      explicit ROMeasurementVectorView(const MeasurementVector& measurement_vector)
+      : measurement_vector_{measurement_vector}
       {
 
       }
 
       const MeasurementVector& measurement_vector_;
+    };
+
+    template <class MeasurementVector>
+    class RWMeasurementVectorView
+    {
+    protected:
+      /**
+       * Constructor.
+       * @param measurement_vector a measurement vector
+       */
+      explicit RWMeasurementVectorView(MeasurementVector& measurement_vector)
+      : measurement_vector_modifiable_{measurement_vector}
+      {
+
+      }
+
+      MeasurementVector& measurement_vector_modifiable_;
     };
 
   }

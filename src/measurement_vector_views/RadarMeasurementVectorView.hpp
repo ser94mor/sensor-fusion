@@ -37,15 +37,15 @@ namespace ser94mor
        * it is a class  that provides a meaningful access to the
        * Radar measurement vector dimensions.
        */
-      class MeasurementVectorView : ser94mor::sensor_fusion::MeasurementVectorView<MeasurementVector>
+      class ROMeasurementVectorView : ser94mor::sensor_fusion::ROMeasurementVectorView<MeasurementVector>
       {
       public:
         /**
          * Constructor.
          * @param measurement_vector a measurement vector
          */
-        explicit MeasurementVectorView(const MeasurementVector& measurement_vector)
-        : ser94mor::sensor_fusion::MeasurementVectorView<MeasurementVector>{measurement_vector}
+        explicit ROMeasurementVectorView(const MeasurementVector& measurement_vector)
+        : ser94mor::sensor_fusion::ROMeasurementVectorView<MeasurementVector>{measurement_vector}
         {
 
         }
@@ -91,6 +91,46 @@ namespace ser94mor
           return measurement_vector_(2);
         }
 
+      };
+
+
+      class RWMeasurementVectorView : ser94mor::sensor_fusion::RWMeasurementVectorView<MeasurementVector>
+      {
+      public:
+        /**
+         * Constructor.
+         * @param measurement_vector a measurement vector
+         */
+        explicit RWMeasurementVectorView(MeasurementVector& measurement_vector)
+        : ser94mor::sensor_fusion::RWMeasurementVectorView<MeasurementVector>{measurement_vector}
+        {
+
+        }
+
+        /**
+         * @return range: radial distance from origin
+         */
+        double_t& range()
+        {
+          return measurement_vector_modifiable_(0);
+        }
+
+        /**
+         * @return bearing: angle between range and X-axis
+         * (which points into the direction of heading of our car, where sensors are installed)
+         */
+        double_t& bearing()
+        {
+          return measurement_vector_modifiable_(1);
+        }
+
+        /**
+         * @return radial velocity: change of range, i.e., range rate
+         */
+        double_t& range_rate()
+        {
+          return measurement_vector_modifiable_(2);
+        }
       };
 
     }

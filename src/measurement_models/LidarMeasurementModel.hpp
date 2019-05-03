@@ -44,7 +44,7 @@ namespace ser94mor
       template<class ProcessModel>
       class MeasurementModel :
         public ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-                                                         MeasurementVectorView, ProcessModel,
+                                                         ROMeasurementVectorView, ProcessModel,
                                                          MeasurementModelKind::Lidar, kIsLinear>
       {
       public:
@@ -60,7 +60,7 @@ namespace ser94mor
          */
         MeasurementModel()
         : ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-            MeasurementVectorView, ProcessModel, MeasurementModelKind::Lidar, kIsLinear>{},
+            ROMeasurementVectorView, ProcessModel, MeasurementModelKind::Lidar, kIsLinear>{},
           measurement_matrix_{MeasurementMatrix_type::Identity()}
         {
 

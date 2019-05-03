@@ -43,7 +43,7 @@ namespace ser94mor
       template<class ProcessModel>
       class MeasurementModel
       : public ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-                                                         MeasurementVectorView, ProcessModel,
+                                                         ROMeasurementVectorView, ProcessModel,
                                                          MeasurementModelKind::Radar, kIsLinear>
       {
       public:
@@ -58,7 +58,7 @@ namespace ser94mor
          */
         MeasurementModel()
         : ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-                                                    MeasurementVectorView, ProcessModel,
+                                                    ROMeasurementVectorView, ProcessModel,
                                                     MeasurementModelKind::Radar, kIsLinear>{}
         {
 
@@ -162,7 +162,8 @@ namespace ser94mor
                                const MeasurementVector& measurement_vector_2) const
         {
           MeasurementVector diff{measurement_vector_1 - measurement_vector_2};
-          Utils::NormalizeAngle(&diff(1)); // bearing
+          RWMeasurementVectorView mvv{diff};
+          Utils::NormalizeAngle(&mvv.bearing()); // bearing
 
           return diff;
         }

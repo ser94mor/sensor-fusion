@@ -30,7 +30,7 @@ TEST_CASE("Lidar::MeasurementVectorView", "[measurement_vector_views]")
   Lidar::MeasurementVector mv;
   mv << 2., 1.;
 
-  Lidar::MeasurementVectorView mvv{mv};
+  Lidar::ROMeasurementVectorView mvv{mv};
 
   REQUIRE(Approx(2.) == mvv.px());
   REQUIRE(Approx(1.) == mvv.py());
@@ -42,7 +42,7 @@ TEST_CASE("Radar::MeasurementVectorView", "[measurement_vector_views]")
   Radar::MeasurementVector mv;
   mv << 4., M_PI/6., 2.;
 
-  Radar::MeasurementVectorView mvv{mv};
+  Radar::ROMeasurementVectorView mvv{mv};
 
   REQUIRE(Approx(4.) == mvv.range());
   REQUIRE(Approx(M_PI/6.) == mvv.bearing());

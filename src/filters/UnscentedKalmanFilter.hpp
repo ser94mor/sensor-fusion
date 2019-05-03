@@ -22,8 +22,6 @@
 #include "definitions.hpp"
 #include "KalmanFilter.hpp"
 
-#include <Eigen/Dense>
-
 
 namespace ser94mor
 {
@@ -31,7 +29,7 @@ namespace ser94mor
   {
 
     /**
-     * A template class holding Extended Kalman Filter equations.
+     * A template class holding unscented Kalman filter equations.
      * The naming of vectors and matrices are taken from the
      * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
      *
@@ -66,16 +64,14 @@ namespace ser94mor
        *
        * @return a prior belief, that is, after prediction but before incorporating the measurement
        */
-      template<bool EnableBool = true>
-      static Belief Predict(const Belief& belief_posterior,
-                            const ControlVector& ut,
-                            double_t dt,
-                            const std::enable_if_t<not ProcessModel::IsLinear() && EnableBool, ProcessModel>&
-                            process_model)
+      template<bool enable = true>
+      static auto
+      Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
+      -> std::enable_if_t<not ProcessModel::IsLinear() and enable, Belief>
       {
         WeightsVector weights_vector{CalculateWeights()};
 
-        auto Xsig{PredictSigmaPoints(belief_posterior, ut, dt, process_model)};
+        auto Xsig{PredictSigmaPoints(bel, ut, dt, process_model)};
 
         //predicted state mean
         StateVector mu{StateVector::Zero()};
@@ -92,35 +88,65 @@ namespace ser94mor
         }
 
         return {
-            belief_posterior.t() + dt,
-            mu,
-            Sigma,
+            /* timestamp */               bel.t() + dt,
+            /* state vector */            mu,
+            /* state covariance matrix */ Sigma,
         };
       }
 
-
     private:
+      /**
+       * @return TODO
+       */
       constexpr static int AugmentedStateDims()
       {
         return ProcessModel::StateDims() + ProcessModel::ProcessNoiseDims();
       }
 
+      /**
+       * @return TODO
+       */
       constexpr static int CalligraphicXMatrixCols()
       {
         return 2 * AugmentedStateDims() + 1;
       }
 
+      /**
+       * @return TODO
+       */
       constexpr static int SigmaPointSpreadingParameter()
       {
         return 3 - AugmentedStateDims();
       }
 
+      //
+      // Some useful typedefs that are used in unscented Kalman filter methods
+      //
       using AugmentedStateVector = Eigen::Matrix<double_t, AugmentedStateDims(), 1>;
       using AugmentedStateCovarianceMatrix = Eigen::Matrix<double_t, AugmentedStateDims(), AugmentedStateDims()>;
       using AugmentedSigmaPointsMatrix = Eigen::Matrix<double_t, AugmentedStateDims(), CalligraphicXMatrixCols()>;
       using SigmaPointsMatrix = Eigen::Matrix<double_t, ProcessModel::StateDims(), CalligraphicXMatrixCols()>;
       using WeightsVector = Eigen::Matrix<double_t, CalligraphicXMatrixCols(), 1>;
 
+      /**
+       * TODO
+       * @return
+       */
+      constexpr static WeightsVector CalculateWeights()
+      {
+        WeightsVector weights_vector{
+          WeightsVector::Ones() * (0.5 / (SigmaPointSpreadingParameter() + AugmentedStateDims()))};
+        weights_vector(0) = SigmaPointSpreadingParameter() / (SigmaPointSpreadingParameter() + AugmentedStateDims());
+
+        return weights_vector;
+      }
+
+      /**
+       * TODO
+       * @param belief
+       * @param process_model
+       * @return
+       */
       static AugmentedSigmaPointsMatrix
       GenerateAugmentedSigmaPoints(const Belief& belief, const ProcessModel& process_model)
       {
@@ -147,6 +173,14 @@ namespace ser94mor
         return X_aug;
       }
 
+      /**
+       * TODO
+       * @param belief
+       * @param control_vector
+       * @param dt
+       * @param process_model
+       * @return
+       */
       static SigmaPointsMatrix
       PredictSigmaPoints(const Belief& belief, const ControlVector& control_vector, double_t dt,
                          const ProcessModel& process_model)
@@ -164,13 +198,7 @@ namespace ser94mor
         return Xsig;
       }
 
-      constexpr static WeightsVector CalculateWeights()
-      {
-        WeightsVector weights_vector{WeightsVector::Ones() * (0.5 / (SigmaPointSpreadingParameter() + AugmentedStateDims()))};
-        weights_vector(0) = SigmaPointSpreadingParameter() / (SigmaPointSpreadingParameter() + AugmentedStateDims());
 
-        return weights_vector;
-      }
 
     };
 
