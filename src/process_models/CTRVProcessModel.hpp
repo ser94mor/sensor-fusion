@@ -52,7 +52,7 @@ namespace ser94mor
         ProcessModel();
 
         /**
-         * A state transition function.
+         * A state transition function without the noise vector.
          *
          * @param dt a difference between the current measurement timestamp and the previous measurement timestamp
          * @param control_vector a control vector
@@ -61,6 +61,16 @@ namespace ser94mor
          */
         StateVector g(double_t dt, const ControlVector& control_vector, const StateVector& state_vector) const;
 
+        /**
+         * A state transition function with the noise vector. Some filters may require noise terms to be incorporated
+         * into this non-linear state transition function.
+         *
+         * @param dt a difference between the current measurement timestamp and the previous measurement timestamp
+         * @param control_vector a control vector
+         * @param state_vector a state vector
+         * @param noise_vector a noise vector
+         * @return a prior state vector, that is, a state vector after the state transition function applied.
+         */
         StateVector g(double_t dt, const ControlVector& control_vector,
                       const StateVector& state_vector, const ProcessNoiseVector& noise_vector) const;
 

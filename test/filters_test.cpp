@@ -283,24 +283,3 @@ TEST_CASE("UnscentedKalmanFilter<CTRV::ProcessModel, Lidar::MeasurementModel>::P
 
   // TODO: write this test
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
