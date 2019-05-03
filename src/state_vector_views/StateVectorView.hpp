@@ -25,8 +25,10 @@ namespace ser94mor
   {
 
     /**
-     * A base class for read-write wrappers around StateVector for some process model (which is just an Eigen vector)
+     * A base class for read-write wrappers around StateVector for some process model
      * that provides meaningful accessors and setters to the StateVector components.
+     *
+     * @tparam StateVector a class of the state vector
      */
     template <class StateVector>
     class RWStateVectorView
@@ -44,10 +46,11 @@ namespace ser94mor
       StateVector& state_vector_modifiable_;
     };
 
-
     /**
-     * A base class for read-only wrappers around StateVector for some process model (which is just an Eigen vector)
+     * A base class for read-only wrappers around StateVector for some process model
      * that provides meaningful accessors to the StateVector components.
+     *
+     *  @tparam StateVector a class of the state vector
      */
     template <class StateVector>
     class ROStateVectorView
@@ -117,6 +120,12 @@ namespace ser94mor
       const StateVector& state_vector_;
     };
 
+    /**
+     * A base class for read-only wrappers around ProcessNoiseVector for some process model
+     * that provides meaningful accessors to the ProcessNoiseVector components.
+     *
+     *  @tparam ProcessNoiseVector a class of the process noise vector
+     */
     template <class ProcessNoiseVector>
     class ROProcessNoiseVectorView
     {

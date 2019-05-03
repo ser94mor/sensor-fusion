@@ -25,10 +25,10 @@ namespace ser94mor
   {
 
     /**
-     * A base class for so-called measurement vector views, that is, classes that provides a meaningful access to the
-     * measurement vector dimensions.
+     * A base class for read-only wrappers around MeasurementVector for some measurement model
+     * that provides meaningful accessors to the MeasurementVector components.
      *
-     * @tparam MeasurementVector a measurement vector class
+     * @tparam MeasurementVector a class of the measurement vector
      */
     template <class MeasurementVector>
     class ROMeasurementVectorView
@@ -58,6 +58,12 @@ namespace ser94mor
       const MeasurementVector& measurement_vector_;
     };
 
+    /**
+     * A base class for read-write wrappers around MeasurementVector for some measurement model
+     * that provides meaningful accessors and setters to the MeasurementVector components.
+     *
+     * @tparam MeasurementVector a class of the measurement vector
+     */
     template <class MeasurementVector>
     class RWMeasurementVectorView
     {

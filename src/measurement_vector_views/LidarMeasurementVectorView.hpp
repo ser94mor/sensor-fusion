@@ -31,9 +31,8 @@ namespace ser94mor
     {
 
       /**
-       * A measurement vector view for the Lidar measurement vector, that is,
-       * it is a class  that provides a meaningful access to the
-       * Lidar measurement vector dimensions.
+       * A read-only wrapper around MeasurementVector for Lidar measurement model
+       * that provides meaningful accessors to the MeasurementVector components.
        */
       class ROMeasurementVectorView : ser94mor::sensor_fusion::ROMeasurementVectorView<MeasurementVector>
       {
@@ -65,6 +64,10 @@ namespace ser94mor
         }
       };
 
+      /**
+       * A read-write wrapper around MeasurementVector for Lidar measurement model
+       * that provides meaningful accessors and setters to the MeasurementVector components.
+       */
       class RWMeasurementVectorView : ser94mor::sensor_fusion::RWMeasurementVectorView<MeasurementVector>
       {
       public:

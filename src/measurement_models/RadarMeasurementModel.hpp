@@ -150,7 +150,7 @@ namespace ser94mor
         }
 
         /**
-         * Calculate a difference between two measurement vectors. In Radar case, there is a need to "normalize"
+         * Calculate the difference between two measurement vectors. In Radar case, there is a need to "normalize"
          * the bearing dimension because after the vector subtraction the bearing angle may fall out of the [-pi, pi]
          * interval.
          *
@@ -163,7 +163,7 @@ namespace ser94mor
         {
           MeasurementVector diff{measurement_vector_1 - measurement_vector_2};
           RWMeasurementVectorView mvv{diff};
-          Utils::NormalizeAngle(&mvv.bearing()); // bearing
+          Utils::NormalizeAngle(&mvv.bearing());
 
           return diff;
         }

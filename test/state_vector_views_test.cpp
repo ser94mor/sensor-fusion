@@ -123,6 +123,18 @@ TEST_CASE("CTRV::ROStateVectorView", "[state_vector_views]")
 }
 
 
+TEST_CASE("CTRV::ROProcessNoiseVectorView", "[state_vector_views]")
+{
+  CTRV::ProcessNoiseVector pnv;
+  pnv << 1., 2.;
+
+  CTRV::ROProcessNoiseVectorView pnvv{pnv};
+
+  REQUIRE(Approx(1.) == pnvv.longitudinal_acceleration());
+  REQUIRE(Approx(2.) == pnvv.yaw_acceleration());
+}
+
+
 TEST_CASE("CTRV::RWStateVectorView", "[state_vector_views]")
 {
   CTRV::StateVector sv;

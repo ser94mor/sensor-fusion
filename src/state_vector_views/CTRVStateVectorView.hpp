@@ -20,7 +20,7 @@ namespace ser94mor
     {
 
       /**
-       * A read-only wrapper around StateVector for CTRV process model (which is just an Eigen vector)
+       * A read-only wrapper around StateVector for CTRV process model
        * that provides meaningful accessors to the StateVector components.
        */
       class ROStateVectorView : ser94mor::sensor_fusion::ROStateVectorView<StateVector>
@@ -121,28 +121,8 @@ namespace ser94mor
         
       };
 
-      class ROProcessNoiseVectorView : ser94mor::sensor_fusion::ROProcessNoiseVectorView<ProcessNoiseVector>
-      {
-      public:
-        explicit ROProcessNoiseVectorView(const ProcessNoiseVector& process_noise_vector)
-        : ser94mor::sensor_fusion::ROProcessNoiseVectorView<ProcessNoiseVector>{process_noise_vector}
-        {
-
-        }
-
-        double_t longitudinal_acceleration() const
-        {
-          return process_noise_vector_(0);
-        }
-
-        double_t yaw_acceleration() const
-        {
-          return process_noise_vector_(1);
-        }
-      };
-
       /**
-       * A read-write wrapper around StateVector for CTRV process model (which is just an Eigen vector)
+       * A read-write wrapper around StateVector for CTRV process model
        * that provides meaningful accessors and setters to the StateVector components.
        */
       class RWStateVectorView : ser94mor::sensor_fusion::RWStateVectorView<StateVector>
@@ -198,6 +178,40 @@ namespace ser94mor
           return state_vector_modifiable_(4);
         }
         
+      };
+
+      /**
+       * A read-only wrapper around ProcessNoiseVector for CTRV process model
+       * that provides meaningful accessors to the ProcessNoiseVector components.
+       */
+      class ROProcessNoiseVectorView : ser94mor::sensor_fusion::ROProcessNoiseVectorView<ProcessNoiseVector>
+      {
+      public:
+        /**
+         * Constructor.
+         * @param process_noise_vector a process noise vector
+         */
+        explicit ROProcessNoiseVectorView(const ProcessNoiseVector& process_noise_vector)
+        : ser94mor::sensor_fusion::ROProcessNoiseVectorView<ProcessNoiseVector>{process_noise_vector}
+        {
+
+        }
+
+        /**
+         * @return a longitudinal acceleration
+         */
+        double_t longitudinal_acceleration() const
+        {
+          return process_noise_vector_(0);
+        }
+
+        /**
+         * @return a yaw acceleration
+         */
+        double_t yaw_acceleration() const
+        {
+          return process_noise_vector_(1);
+        }
       };
 
     }
