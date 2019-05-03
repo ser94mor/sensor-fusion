@@ -53,27 +53,24 @@ namespace ser94mor
        * Notice that for linear process models the compiler will choose the corresponding method from the
        * base class (KalmanFilter) which works with linear process models.
        *
-       * @param belief_posterior a current belief of the object's state
+       * @param bel a current belief of the object's state
        * @param ut a control vector
        * @param dt time interval between the previous and current measurements
        * @param process_model an instance of the process model
        *
        * @return a prior belief, that is, after prediction but before incorporating the measurement
        */
-      template<bool EnableBool = true>
-      static Belief Predict(const Belief& belief_posterior,
-                            const ControlVector& ut,
-                            double_t dt,
-                            const std::enable_if_t<not ProcessModel::IsLinear() && EnableBool, ProcessModel>&
-                                process_model)
+      template<bool enable = true>
+      static auto 
+      Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
+      -> std::enable_if_t<not ProcessModel::IsLinear() and enable, Belief>
       {
-        auto mu{belief_posterior.mu()};
+        auto mu{bel.mu()};
         auto Gt{process_model.G(dt, mu)};
         return {
-            /* timestamp */               belief_posterior.t() + dt,
+            /* timestamp */               bel.t() + dt,
             /* state vector */            process_model.g(dt, ut, mu),
-            /* state covariance matrix */ Gt * belief_posterior.Sigma() * Gt.transpose()
-                                          + process_model.R(dt, mu),
+            /* state covariance matrix */ Gt * bel.Sigma() * Gt.transpose() + process_model.R(dt, mu),
         };
       }
 
@@ -84,20 +81,19 @@ namespace ser94mor
        * Notice that for linear measurement models the compiler will choose the corresponding method from the
        * base class (KalmanFilter) which works with linear measurement models.
        *
-       * @param belief_prior a belief after the prediction Extended Kalman filter step
+       * @param bel a belief after the prediction Extended Kalman filter step
        * @param measurement a measurement from the sensor
        * @param measurement_model an instance of the measurement model
        *
        * @return a posterior belief, that is, after the incorporation of the measurement
        */
-      template<bool EnableBool = true>
-      static Belief Update(const Belief& belief_prior,
-                           const Measurement& measurement,
-                           const std::enable_if_t<not MeasurementModel::IsLinear() && EnableBool,
-                           MeasurementModel>& measurement_model)
+      template<bool enable = true>
+      static auto 
+      Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
+      -> std::enable_if_t<not MeasurementModel::IsLinear() and enable, Belief>
       {
-        auto mu{belief_prior.mu()};
-        auto Sigma{belief_prior.Sigma()};
+        auto mu{bel.mu()};
+        auto Sigma{bel.Sigma()};
         auto Ht{measurement_model.H(mu)};
         auto Kt{Sigma * Ht.transpose() * (Ht * Sigma * Ht.transpose() + measurement_model.Q()).inverse()};
         auto I{Eigen::Matrix<double_t, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
