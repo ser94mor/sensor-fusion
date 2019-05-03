@@ -24,29 +24,110 @@
 
 using namespace ser94mor::sensor_fusion;
 
+///////////
+// LIDAR //
+///////////
 
-TEST_CASE("Lidar::MeasurementVectorView", "[measurement_vector_views]")
+TEST_CASE("Lidar::ROMeasurementVectorView", "[measurement_vector_views]")
 {
   Lidar::MeasurementVector mv;
   mv << 2., 1.;
 
-  Lidar::MeasurementVectorView mvv{mv};
+  Lidar::ROMeasurementVectorView mvv{mv};
 
   REQUIRE(Approx(2.) == mvv.px());
   REQUIRE(Approx(1.) == mvv.py());
 }
 
+TEST_CASE("Lidar::RWMeasurementVectorView", "[measurement_vector_views]")
+{
+  Lidar::MeasurementVector mv;
+  mv << 2., 1.;
 
-TEST_CASE("Radar::MeasurementVectorView", "[measurement_vector_views]")
+  Lidar::RWMeasurementVectorView mvv{mv};
+
+  //=====
+
+  REQUIRE(mvv.px() == Approx(2.));
+  REQUIRE(mvv.py() == Approx(1.));
+
+  //=====
+
+  mvv.px() = 3.;
+  REQUIRE(mvv.px() == Approx(3.));
+  REQUIRE(mvv.py() == Approx(1.));
+
+  //=====
+
+  mvv.py() = 4.;
+  REQUIRE(mvv.px() == Approx(3.));
+  REQUIRE(mvv.py() == Approx(4.));
+
+  //=====
+
+  Lidar::MeasurementVector mv_expected;
+  mv_expected << 3., 4.;
+
+  REQUIRE(mv.isApprox(mv_expected));
+}
+
+
+///////////
+// RADAR //
+///////////
+
+TEST_CASE("Radar::ROMeasurementVectorView", "[measurement_vector_views]")
 {
   Radar::MeasurementVector mv;
   mv << 4., M_PI/6., 2.;
 
-  Radar::MeasurementVectorView mvv{mv};
+  Radar::ROMeasurementVectorView mvv{mv};
 
   REQUIRE(Approx(4.) == mvv.range());
   REQUIRE(Approx(M_PI/6.) == mvv.bearing());
   REQUIRE(Approx(2.) == mvv.range_rate());
   REQUIRE(Approx(2.*std::sqrt(3.)) == mvv.px());
   REQUIRE(Approx(2.) == mvv.py());
+}
+
+TEST_CASE("Radar::RWMeasurementVectorView", "[measurement_vector_views]")
+{
+  Radar::MeasurementVector mv;
+  mv << 2., M_PI_4, 3.;
+
+  Radar::RWMeasurementVectorView mvv{mv};
+
+  //=====
+
+  REQUIRE(mvv.range() == Approx(2.));
+  REQUIRE(mvv.bearing() == Approx(M_PI_4));
+  REQUIRE(mvv.range_rate() == Approx(3.));
+
+  //=====
+
+  mvv.range() = 10.;
+  REQUIRE(mvv.range() == Approx(10.));
+  REQUIRE(mvv.bearing() == Approx(M_PI_4));
+  REQUIRE(mvv.range_rate() == Approx(3.));
+
+  //=====
+
+  mvv.bearing() = M_PI_2;
+  REQUIRE(mvv.range() == Approx(10.));
+  REQUIRE(mvv.bearing() == Approx(M_PI_2));
+  REQUIRE(mvv.range_rate() == Approx(3.));
+
+  //=====
+
+  mvv.range_rate() = 20.;
+  REQUIRE(mvv.range() == Approx(10.));
+  REQUIRE(mvv.bearing() == Approx(M_PI_2));
+  REQUIRE(mvv.range_rate() == Approx(20.));
+
+  //=====
+
+  Radar::MeasurementVector mv_expected;
+  mv_expected << 10., M_PI_2, 20.;
+
+  REQUIRE(mv.isApprox(mv_expected));
 }

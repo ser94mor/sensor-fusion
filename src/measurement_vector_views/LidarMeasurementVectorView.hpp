@@ -31,19 +31,18 @@ namespace ser94mor
     {
 
       /**
-       * A measurement vector view for the Lidar measurement vector, that is,
-       * it is a class  that provides a meaningful access to the
-       * Lidar measurement vector dimensions.
+       * A read-only wrapper around MeasurementVector for Lidar measurement model
+       * that provides meaningful accessors to the MeasurementVector components.
        */
-      class MeasurementVectorView : ser94mor::sensor_fusion::MeasurementVectorView<MeasurementVector>
+      class ROMeasurementVectorView : ser94mor::sensor_fusion::ROMeasurementVectorView<MeasurementVector>
       {
       public:
         /**
          * Constructor.
          * @param measurement_vector a measurement vector
          */
-        explicit MeasurementVectorView(const MeasurementVector& measurement_vector)
-        : ser94mor::sensor_fusion::MeasurementVectorView<MeasurementVector>{measurement_vector}
+        explicit ROMeasurementVectorView(const MeasurementVector& measurement_vector)
+        : ser94mor::sensor_fusion::ROMeasurementVectorView<MeasurementVector>{measurement_vector}
         {
 
         }
@@ -51,7 +50,7 @@ namespace ser94mor
         /**
          * @return X-axis coordinate
          */
-        double px() const
+        double_t px() const
         {
           return measurement_vector_(0);
         }
@@ -59,9 +58,43 @@ namespace ser94mor
         /**
          * @return Y-axis coordinate
          */
-        double py() const
+        double_t py() const
         {
           return measurement_vector_(1);
+        }
+      };
+
+      /**
+       * A read-write wrapper around MeasurementVector for Lidar measurement model
+       * that provides meaningful accessors and setters to the MeasurementVector components.
+       */
+      class RWMeasurementVectorView : ser94mor::sensor_fusion::RWMeasurementVectorView<MeasurementVector>
+      {
+      public:
+        /**
+         * Constructor.
+         * @param measurement_vector a measurement vector
+         */
+        explicit RWMeasurementVectorView(MeasurementVector& measurement_vector)
+        : ser94mor::sensor_fusion::RWMeasurementVectorView<MeasurementVector>{measurement_vector}
+        {
+
+        }
+
+        /**
+         * @return X-axis coordinate
+         */
+        double_t& px()
+        {
+          return measurement_vector_modifiable_(0);
+        }
+
+        /**
+         * @return Y-axis coordinate
+         */
+        double_t& py()
+        {
+          return measurement_vector_modifiable_(1);
         }
       };
 

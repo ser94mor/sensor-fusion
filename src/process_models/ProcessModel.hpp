@@ -41,7 +41,7 @@ namespace ser94mor
      * @tparam pmk a process model kind
      * @tparam is_linear a flag indicating whether the process model is linear or not
      */
-    template<class StateVector, class StateCovarianceMatrix, class ControlVector,
+    template<class StateVector, class StateCovarianceMatrix, class ControlVector, class ProcessNoiseCovarianceMatrix,
              class ROStateVectorView, class RWStateVectorView, ProcessModelKind pmk, bool is_linear>
     class ProcessModel : public ModelEntity<EntityType::ProcessModel, ProcessModelKind, pmk, is_linear>
     {
@@ -54,6 +54,7 @@ namespace ser94mor
       using StateVector_type = StateVector;
       using StateCovarianceMatrix_type = StateCovarianceMatrix;
       using ControlVector_type = ControlVector;
+      using ProcessNoiseCovarianceMatrix_type = ProcessNoiseCovarianceMatrix;
       using RWStateVectorView_type = RWStateVectorView;
       using ROStateVectorView_type = ROStateVectorView;
 
@@ -73,18 +74,39 @@ namespace ser94mor
         return ControlVector::SizeAtCompileTime;
       }
 
-      /**
-       * Set an individual noise process covariance matrix. It is done explicitly by the user of the process model
-       * due to the variadic templates used in this code. ProcessModel needs a default constructor.
-       * @param mtx an individual noise process covariance matrix
-       */
-      void SetIndividualNoiseProcessCovarianceMatrix(const IndividualNoiseProcessesCovarianceMatrix& mtx)
+      constexpr static int ProcessNoiseDims()
       {
-        individual_noise_processes_covariance_matrix_ = mtx;
+        return ProcessNoiseCovarianceMatrix::RowsAtCompileTime;
       }
 
+      /**
+       * Set a process noise covariance matrix. It is done explicitly by the user of the process model
+       * due to the variadic templates used in this code. ProcessModel needs a default constructor.
+       * @param mtx a process noise covariance matrix
+       */
+      void SetProcessNoiseCovarianceMatrix(const ProcessNoiseCovarianceMatrix& mtx)
+      {
+        process_noise_covariance_matrix_ = mtx;
+      }
+
+      const ProcessNoiseCovarianceMatrix& GetProcessNoiseCovarianceMatrix() const
+      {
+        return process_noise_covariance_matrix_;
+      }
+
+      /**
+       * Calculate a difference between two state vectors. Some kinds of state vectors may have a dimensions
+       * that need to be adjusted after the simple vector subtraction operation, such as dimensions representing
+       * angles that has to be within in [-pi, pi].
+       *
+       * @param state_vector_1 the first state vector
+       * @param state_vector_2 the second state vector
+       * @return the difference between the two measurement vectors
+       */
+      virtual StateVector Diff(const StateVector& state_vector_1, const StateVector& state_vector_2) const = 0;
+
     protected:
-      IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix_;
+      ProcessNoiseCovarianceMatrix process_noise_covariance_matrix_;
     };
 
   }

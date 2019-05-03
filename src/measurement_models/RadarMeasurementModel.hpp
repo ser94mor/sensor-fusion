@@ -43,12 +43,12 @@ namespace ser94mor
       template<class ProcessModel>
       class MeasurementModel
       : public ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-                                                         MeasurementVectorView, ProcessModel,
+                                                         ROMeasurementVectorView, ProcessModel,
                                                          MeasurementModelKind::Radar, kIsLinear>
       {
       public:
         using MeasurementMatrix_type =
-          Eigen::Matrix<double, MeasurementModel::MeasurementDims(), MeasurementModel::StateDims()>;
+          Eigen::Matrix<double_t, MeasurementModel::MeasurementDims(), MeasurementModel::StateDims()>;
         using StateVector_type = typename ProcessModel::StateVector_type;
         using ROStateVectorView_type = typename ProcessModel::ROStateVectorView_type;
 
@@ -58,7 +58,7 @@ namespace ser94mor
          */
         MeasurementModel()
         : ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-                                                    MeasurementVectorView, ProcessModel,
+                                                    ROMeasurementVectorView, ProcessModel,
                                                     MeasurementModelKind::Radar, kIsLinear>{}
         {
 
@@ -150,7 +150,7 @@ namespace ser94mor
         }
 
         /**
-         * Calculate a difference between two measurement vectors. In Radar case, there is a need to "normalize"
+         * Calculate the difference between two measurement vectors. In Radar case, there is a need to "normalize"
          * the bearing dimension because after the vector subtraction the bearing angle may fall out of the [-pi, pi]
          * interval.
          *
@@ -162,7 +162,8 @@ namespace ser94mor
                                const MeasurementVector& measurement_vector_2) const
         {
           MeasurementVector diff{measurement_vector_1 - measurement_vector_2};
-          Utils::NormalizeAngle(&diff(1)); // bearing
+          RWMeasurementVectorView mvv{diff};
+          Utils::NormalizeAngle(&mvv.bearing());
 
           return diff;
         }

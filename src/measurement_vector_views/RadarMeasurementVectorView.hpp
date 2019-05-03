@@ -33,19 +33,18 @@ namespace ser94mor
     {
 
       /**
-       * A measurement vector view for the Radar measurement vector, that is,
-       * it is a class  that provides a meaningful access to the
-       * Radar measurement vector dimensions.
+       * A read-only wrapper around MeasurementVector for Radar measurement model
+       * that provides meaningful accessors to the MeasurementVector components.
        */
-      class MeasurementVectorView : ser94mor::sensor_fusion::MeasurementVectorView<MeasurementVector>
+      class ROMeasurementVectorView : ser94mor::sensor_fusion::ROMeasurementVectorView<MeasurementVector>
       {
       public:
         /**
          * Constructor.
          * @param measurement_vector a measurement vector
          */
-        explicit MeasurementVectorView(const MeasurementVector& measurement_vector)
-        : ser94mor::sensor_fusion::MeasurementVectorView<MeasurementVector>{measurement_vector}
+        explicit ROMeasurementVectorView(const MeasurementVector& measurement_vector)
+        : ser94mor::sensor_fusion::ROMeasurementVectorView<MeasurementVector>{measurement_vector}
         {
 
         }
@@ -53,7 +52,7 @@ namespace ser94mor
         /**
          * @return X-axis coordinate
          */
-        double px() const override
+        double_t px() const override
         {
           return measurement_vector_(0) * std::cos(measurement_vector_(1));
         }
@@ -61,7 +60,7 @@ namespace ser94mor
         /**
          * @return Y-axis coordinate
          */
-        double py() const override
+        double_t py() const override
         {
           return measurement_vector_(0) * std::sin(measurement_vector_(1));
         }
@@ -69,7 +68,7 @@ namespace ser94mor
         /**
          * @return range: radial distance from origin
          */
-        double range() const
+        double_t range() const
         {
           return measurement_vector_(0);
         }
@@ -78,7 +77,7 @@ namespace ser94mor
          * @return bearing: angle between range and X-axis
          * (which points into the direction of heading of our car, where sensors are installed)
          */
-        double bearing() const
+        double_t bearing() const
         {
           return measurement_vector_(1);
         }
@@ -86,11 +85,55 @@ namespace ser94mor
         /**
          * @return radial velocity: change of range, i.e., range rate
          */
-        double range_rate() const
+        double_t range_rate() const
         {
           return measurement_vector_(2);
         }
 
+      };
+
+
+      /**
+       * A read-write wrapper around MeasurementVector for Radar measurement model
+       * that provides meaningful accessors and setters to the MeasurementVector components.
+       */
+      class RWMeasurementVectorView : ser94mor::sensor_fusion::RWMeasurementVectorView<MeasurementVector>
+      {
+      public:
+        /**
+         * Constructor.
+         * @param measurement_vector a measurement vector
+         */
+        explicit RWMeasurementVectorView(MeasurementVector& measurement_vector)
+        : ser94mor::sensor_fusion::RWMeasurementVectorView<MeasurementVector>{measurement_vector}
+        {
+
+        }
+
+        /**
+         * @return range: radial distance from origin
+         */
+        double_t& range()
+        {
+          return measurement_vector_modifiable_(0);
+        }
+
+        /**
+         * @return bearing: angle between range and X-axis
+         * (which points into the direction of heading of our car, where sensors are installed)
+         */
+        double_t& bearing()
+        {
+          return measurement_vector_modifiable_(1);
+        }
+
+        /**
+         * @return radial velocity: change of range, i.e., range rate
+         */
+        double_t& range_rate()
+        {
+          return measurement_vector_modifiable_(2);
+        }
       };
 
     }

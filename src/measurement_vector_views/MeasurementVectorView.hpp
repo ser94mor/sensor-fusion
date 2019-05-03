@@ -25,37 +25,60 @@ namespace ser94mor
   {
 
     /**
-     * A base class for so-called measurement vector views, that is, classes that provides a meaningful access to the
-     * measurement vector dimensions.
+     * A base class for read-only wrappers around MeasurementVector for some measurement model
+     * that provides meaningful accessors to the MeasurementVector components.
      *
-     * @tparam MeasurementVector a measurement vector class
+     * @tparam MeasurementVector a class of the measurement vector
      */
     template <class MeasurementVector>
-    class MeasurementVectorView
+    class ROMeasurementVectorView
     {
     public:
       /**
        * @return X-axis coordinate
        */
-      virtual double px() const = 0;
+      virtual double_t px() const = 0;
 
       /**
        * @return Y-axis coordinate
        */
-      virtual double py() const = 0;
+      virtual double_t py() const = 0;
 
     protected:
       /**
        * Constructor.
        * @param measurement_vector a measurement vector
        */
-      explicit MeasurementVectorView(const MeasurementVector& measurement_vector)
-          : measurement_vector_{measurement_vector}
+      explicit ROMeasurementVectorView(const MeasurementVector& measurement_vector)
+      : measurement_vector_{measurement_vector}
       {
 
       }
 
       const MeasurementVector& measurement_vector_;
+    };
+
+    /**
+     * A base class for read-write wrappers around MeasurementVector for some measurement model
+     * that provides meaningful accessors and setters to the MeasurementVector components.
+     *
+     * @tparam MeasurementVector a class of the measurement vector
+     */
+    template <class MeasurementVector>
+    class RWMeasurementVectorView
+    {
+    protected:
+      /**
+       * Constructor.
+       * @param measurement_vector a measurement vector
+       */
+      explicit RWMeasurementVectorView(MeasurementVector& measurement_vector)
+      : measurement_vector_modifiable_{measurement_vector}
+      {
+
+      }
+
+      MeasurementVector& measurement_vector_modifiable_;
     };
 
   }

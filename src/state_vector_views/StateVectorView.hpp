@@ -25,8 +25,10 @@ namespace ser94mor
   {
 
     /**
-     * A base class for read-write wrappers around StateVector for some process model (which is just an Eigen vector)
+     * A base class for read-write wrappers around StateVector for some process model
      * that provides meaningful accessors and setters to the StateVector components.
+     *
+     * @tparam StateVector a class of the state vector
      */
     template <class StateVector>
     class RWStateVectorView
@@ -44,10 +46,11 @@ namespace ser94mor
       StateVector& state_vector_modifiable_;
     };
 
-
     /**
-     * A base class for read-only wrappers around StateVector for some process model (which is just an Eigen vector)
+     * A base class for read-only wrappers around StateVector for some process model
      * that provides meaningful accessors to the StateVector components.
+     *
+     *  @tparam StateVector a class of the state vector
      */
     template <class StateVector>
     class ROStateVectorView
@@ -56,53 +59,53 @@ namespace ser94mor
       /**
        * @return X-axis coordinate
        */
-      virtual double px() const = 0;
+      virtual double_t px() const = 0;
 
       /**
        * @return Y-axis coordinate
        */
-      virtual double py() const = 0;
+      virtual double_t py() const = 0;
 
       /**
        * @return X-axis velocity
        */
-      virtual double vx() const = 0;
+      virtual double_t vx() const = 0;
 
       /**
        * @return Y-axis velocity
        */
-      virtual double vy() const = 0;
+      virtual double_t vy() const = 0;
 
       /**
        * @return velocity module
        */
-      virtual double v() const = 0;
+      virtual double_t v() const = 0;
 
       /**
        * @return yaw rotation angle
        */
-      virtual double yaw() const = 0;
+      virtual double_t yaw() const = 0;
 
       /**
        * @return angular velocity of yaw rotation
        */
-      virtual double yaw_rate() const = 0;
+      virtual double_t yaw_rate() const = 0;
 
       /**
        * @return range: radial distance from origin
        */
-      virtual double range() const = 0;
+      virtual double_t range() const = 0;
 
       /**
        * @return bearing: angle between range and X-axis
        * (which points into the direction of heading of our car, where sensors are installed)
        */
-      virtual double bearing() const = 0;
+      virtual double_t bearing() const = 0;
 
       /**
        * @return radial velocity: change of range, i.e., range rate
        */
-      virtual double range_rate() const = 0;
+      virtual double_t range_rate() const = 0;
 
     protected:
       /**
@@ -115,6 +118,29 @@ namespace ser94mor
       }
 
       const StateVector& state_vector_;
+    };
+
+    /**
+     * A base class for read-only wrappers around ProcessNoiseVector for some process model
+     * that provides meaningful accessors to the ProcessNoiseVector components.
+     *
+     *  @tparam ProcessNoiseVector a class of the process noise vector
+     */
+    template <class ProcessNoiseVector>
+    class ROProcessNoiseVectorView
+    {
+    protected:
+      /**
+       * Constructor.
+       * @param process_noise_vector a process noise vector
+       */
+      explicit ROProcessNoiseVectorView(const ProcessNoiseVector& process_noise_vector)
+      : process_noise_vector_{process_noise_vector}
+      {
+
+      }
+
+      const ProcessNoiseVector& process_noise_vector_;
     };
 
   }
