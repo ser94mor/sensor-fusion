@@ -51,7 +51,7 @@ namespace ser94mor
        * in accordance with NON-LINEAR process model and input control vector.
        *
        * Notice that for linear process models the compiler will choose the corresponding method from the
-       * base class (KalmanFilter) which works with linear process models.
+       * base class (KalmanFilterBase) which works with linear process models.
        *
        * @param bel a current belief of the object's state
        * @param ut a control vector

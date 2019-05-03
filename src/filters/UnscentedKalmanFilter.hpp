@@ -51,15 +51,15 @@ namespace ser94mor
       using KalmanFilterBase<ProcessModel, MeasurementModel, UnscentedKalmanFilter>::Update;
 
       /**
-       * Prediction step of the Extended Kalman filter. Predicts the object's state in dt time in the future
+       * Prediction step of the Unscented Kalman filter. Predicts the object's state in dt time in the future
        * in accordance with NON-LINEAR process model and input control vector.
        *
        * Notice that for linear process models the compiler will choose the corresponding method from the
-       * base class (KalmanFilter) which works with linear process models.
+       * base class (KalmanFilterBase) which works with linear process models.
        *
-       * @param belief_posterior a current belief of the object's state
+       * @param bel a current belief of the object's state
        * @param ut a control vector
-       * @param dt time interval between the previous and current measurements
+       * @param dt a time interval between the previous and current measurements
        * @param process_model an instance of the process model
        *
        * @return a prior belief, that is, after prediction but before incorporating the measurement
@@ -69,22 +69,23 @@ namespace ser94mor
       Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
       -> std::enable_if_t<not ProcessModel::IsLinear() and enable, Belief>
       {
-        WeightsVector weights_vector{CalculateWeights()};
+        WeightsVector w{Weights()};
 
-        auto Xsig{PredictSigmaPoints(bel, ut, dt, process_model)};
+        auto Chi{PredictSigmaPoints(bel, ut, dt, process_model)};
 
-        //predicted state mean
+        // predict state vector
         StateVector mu{StateVector::Zero()};
-        for (int i = 0; i < CalligraphicXMatrixCols(); ++i)
+        for (int i = 0; i < SigmaPointsNumber(); ++i)
         {
-          mu += weights_vector(i) * Xsig.col(i);
+          mu += w(i) * Chi.col(i);
         }
 
-        //predicted state covariance matrix
+        // predict state covariance matrix
         StateCovarianceMatrix Sigma{StateCovarianceMatrix::Zero()};
-        for (int i = 0; i < CalligraphicXMatrixCols(); ++i) {  //iterate over sigma points
-          auto diff{process_model.Diff(Xsig.col(i), mu)};
-          Sigma += weights_vector(i) * diff * diff.transpose();
+        for (int i = 0; i < SigmaPointsNumber(); ++i)
+        {
+          auto diff{process_model.Diff(Chi.col(i), mu)};
+          Sigma += w(i) * diff * diff.transpose();
         }
 
         return {
@@ -96,7 +97,7 @@ namespace ser94mor
 
     private:
       /**
-       * @return TODO
+       * @return a number of dimensions in the augmented state vector
        */
       constexpr static int AugmentedStateDims()
       {
@@ -104,101 +105,102 @@ namespace ser94mor
       }
 
       /**
-       * @return TODO
+       * @return a number of sigmapoints to generate
        */
-      constexpr static int CalligraphicXMatrixCols()
+      constexpr static int SigmaPointsNumber()
       {
         return 2 * AugmentedStateDims() + 1;
       }
 
       /**
-       * @return TODO
+       * @return a sigma points spreading parameter (lambda)
        */
-      constexpr static int SigmaPointSpreadingParameter()
+      constexpr static double_t SigmaPointSpreadingParameter()
       {
-        return 3 - AugmentedStateDims();
+        // the value is chosen in accordance with a well known heuristics
+        return 3.0 - AugmentedStateDims();
       }
 
-      //
-      // Some useful typedefs that are used in unscented Kalman filter methods
-      //
+      /**
+       * Some useful typedefs that are used in unscented Kalman filter methods.
+       */
       using AugmentedStateVector = Eigen::Matrix<double_t, AugmentedStateDims(), 1>;
       using AugmentedStateCovarianceMatrix = Eigen::Matrix<double_t, AugmentedStateDims(), AugmentedStateDims()>;
-      using AugmentedSigmaPointsMatrix = Eigen::Matrix<double_t, AugmentedStateDims(), CalligraphicXMatrixCols()>;
-      using SigmaPointsMatrix = Eigen::Matrix<double_t, ProcessModel::StateDims(), CalligraphicXMatrixCols()>;
-      using WeightsVector = Eigen::Matrix<double_t, CalligraphicXMatrixCols(), 1>;
+      using AugmentedSigmaPointsMatrix = Eigen::Matrix<double_t, AugmentedStateDims(), SigmaPointsNumber()>;
+      using SigmaPointsMatrix = Eigen::Matrix<double_t, ProcessModel::StateDims(), SigmaPointsNumber()>;
+      using WeightsVector = Eigen::Matrix<double_t, SigmaPointsNumber(), 1>;
 
       /**
-       * TODO
-       * @return
+       * @return a sigma points weights
        */
-      constexpr static WeightsVector CalculateWeights()
+      constexpr static WeightsVector Weights()
       {
-        WeightsVector weights_vector{
-          WeightsVector::Ones() * (0.5 / (SigmaPointSpreadingParameter() + AugmentedStateDims()))};
-        weights_vector(0) = SigmaPointSpreadingParameter() / (SigmaPointSpreadingParameter() + AugmentedStateDims());
+        WeightsVector w{WeightsVector::Ones() * (0.5 / (SigmaPointSpreadingParameter() + AugmentedStateDims()))};
+        w(0) = SigmaPointSpreadingParameter() / (SigmaPointSpreadingParameter() + AugmentedStateDims());
 
-        return weights_vector;
+        return w;
       }
 
       /**
-       * TODO
-       * @param belief
-       * @param process_model
-       * @return
+       * Generate an augmented sigma points matrix based on the current belief.
+       *
+       * @param bel a current belief
+       * @param process_model an instance of process model
+       * @return an augmented sigma points matrix
        */
       static AugmentedSigmaPointsMatrix
-      GenerateAugmentedSigmaPoints(const Belief& belief, const ProcessModel& process_model)
+      GenerateAugmentedSigmaPointsMatrix(const Belief& bel, const ProcessModel& process_model)
       {
+        // an augmented state vector
         AugmentedStateVector mu_aug{AugmentedStateVector::Zero()};
-        mu_aug.head(ProcessModel::StateDims()) = belief.mu();
+        mu_aug.head(ProcessModel::StateDims()) = bel.mu();
 
+        // an augmented state covariance matrix
         AugmentedStateCovarianceMatrix Sigma_aug{AugmentedStateCovarianceMatrix::Zero()};
-        Sigma_aug.topLeftCorner(ProcessModel::StateDims(),ProcessModel::StateDims()) = belief.Sigma();
+        Sigma_aug.topLeftCorner(ProcessModel::StateDims(), ProcessModel::StateDims()) = bel.Sigma();
         Sigma_aug.bottomRightCorner(ProcessModel::ProcessNoiseDims(), ProcessModel::ProcessNoiseDims())
           = process_model.GetProcessNoiseCovarianceMatrix();
 
-        // create square root matrix
+        // calculate square root matrix out of an augmeneted state covariance matrix
         AugmentedStateCovarianceMatrix L{Sigma_aug.llt().matrixL()};
 
-        AugmentedSigmaPointsMatrix X_aug;
-        X_aug.col(0)  = mu_aug;
+        // initialize columns (i.e., sigma points) of the augmented sigma points matrix
+        AugmentedSigmaPointsMatrix Chi_aug;
+        Chi_aug.col(0) = mu_aug;
         for (int i = 0; i < AugmentedStateDims(); ++i)
         {
-          X_aug.col(i+1) = mu_aug + std::sqrt(SigmaPointSpreadingParameter() + AugmentedStateDims()) * L.col(i);
-          X_aug.col(i+1+AugmentedStateDims()) =
+          Chi_aug.col(i+1) = mu_aug + std::sqrt(SigmaPointSpreadingParameter() + AugmentedStateDims()) * L.col(i);
+          Chi_aug.col(i+1+AugmentedStateDims()) =
               mu_aug - std::sqrt(SigmaPointSpreadingParameter() + AugmentedStateDims()) * L.col(i);
         }
 
-        return X_aug;
+        return Chi_aug;
       }
 
       /**
-       * TODO
-       * @param belief
-       * @param control_vector
-       * @param dt
-       * @param process_model
-       * @return
+       * Predict step applied to each sigma point, that is, the non-linear transformation in accordance with the
+       * process model is applied to each sigma point as if it were a state vector.
+       *
+       * @param bel a current belief
+       * @param ut a control vector
+       * @param dt a time interval between the previous and current measurements
+       * @param process_model an instance of the process model
+       * @return a sigma points matrix
        */
       static SigmaPointsMatrix
-      PredictSigmaPoints(const Belief& belief, const ControlVector& control_vector, double_t dt,
-                         const ProcessModel& process_model)
+      PredictSigmaPoints(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
       {
-        AugmentedSigmaPointsMatrix Xsig_aug{GenerateAugmentedSigmaPoints(belief, process_model)};
+        AugmentedSigmaPointsMatrix Chi_aug{GenerateAugmentedSigmaPointsMatrix(bel, process_model)};
 
-        SigmaPointsMatrix Xsig;
-
-        //predict sigma points
-        for (int i = 0; i < CalligraphicXMatrixCols(); ++i)
+        // predict sigma points
+        SigmaPointsMatrix Chi;
+        for (int i = 0; i < SigmaPointsNumber(); ++i)
         {
-          Xsig.col(i) = process_model.g(dt, control_vector, Xsig_aug.col(i).head(5), Xsig_aug.col(i).tail(2));
+          Chi.col(i) = process_model.g(dt, ut, Chi_aug.col(i).head(5), Chi_aug.col(i).tail(2));
         }
 
-        return Xsig;
+        return Chi;
       }
-
-
 
     };
 
