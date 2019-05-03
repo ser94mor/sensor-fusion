@@ -98,15 +98,6 @@ namespace ser94mor
         };
       }
 
-      static Belief
-      PredictUpdate(const Belief& belief, const ControlVector& control_vector, const Measurement& measurement,
-                    const ProcessModel& process_model, const MeasurementModel& measurement_model)
-      {
-        auto dt = measurement.t() - belief.t();
-        WeightsVector weights_vector{CalculateWeights()};
-
-      }
-
 
     private:
       constexpr static int AugmentedStateDims()
@@ -139,7 +130,7 @@ namespace ser94mor
         AugmentedStateCovarianceMatrix Sigma_aug{AugmentedStateCovarianceMatrix::Zero()};
         Sigma_aug.topLeftCorner(ProcessModel::StateDims(),ProcessModel::StateDims()) = belief.Sigma();
         Sigma_aug.bottomRightCorner(ProcessModel::ProcessNoiseDims(), ProcessModel::ProcessNoiseDims())
-          = process_model.GetIndividualNoiseProcessesCovarianceMatrix();
+          = process_model.GetProcessNoiseCovarianceMatrix();
 
         // create square root matrix
         AugmentedStateCovarianceMatrix L{Sigma_aug.llt().matrixL()};

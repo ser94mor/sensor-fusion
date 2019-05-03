@@ -47,7 +47,7 @@ namespace ser94mor
                  0.0, dt_2_2,
                   dt,    0.0,
                  0.0,     dt;
-        return Gt * individual_noise_processes_covariance_matrix_ * Gt.transpose();
+        return Gt * process_noise_covariance_matrix_ * Gt.transpose();
       }
 
       ControlTransitionMatrix ProcessModel::B() const

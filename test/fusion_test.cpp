@@ -32,7 +32,7 @@ TEST_CASE("Fusion::ProcessMeasurement", "[fusion]")
 {
   using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
 
-  IndividualNoiseProcessesCovarianceMatrix p_mtx;
+  CV::ProcessNoiseCovarianceMatrix p_mtx;
   p_mtx << 3.0, 7.0,
            7.0, 5.0;
 

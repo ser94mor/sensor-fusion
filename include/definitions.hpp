@@ -75,28 +75,28 @@ namespace ser94mor
       }
     }
 
-    using IndividualNoiseProcessesCovarianceMatrix = Eigen::Matrix<double_t, 2, 2>;
-    using ProcessNoiseVector = Eigen::Matrix<double_t, 2, 1>;
-
-#define PROCESS_MODEL_DEFINITIONS(state_vector_dims, control_vector_dims, is_linear) \
+#define PROCESS_MODEL_DEFINITIONS(state_vector_dims, control_vector_dims, process_noise_vector_dims, is_linear) \
   const int kStateVectorDims{state_vector_dims}; \
   const int kControlVectorDims{control_vector_dims}; \
+  const int kProcessNoiseVectorDims{process_noise_vector_dims}; \
   const bool kIsLinear{is_linear}; \
-  using StateVector             = Eigen::Matrix<double_t, kStateVectorDims, 1>; \
-  using StateCovarianceMatrix   = Eigen::Matrix<double_t, kStateVectorDims, kStateVectorDims>; \
-  using StateTransitionMatrix   = Eigen::Matrix<double_t, kStateVectorDims, kStateVectorDims>; \
-  using ControlVector           = Eigen::Matrix<double_t, kControlVectorDims, 1>; \
-  using ControlTransitionMatrix = Eigen::Matrix<double_t, kStateVectorDims, kControlVectorDims>; \
-  using ProcessCovarianceMatrix = Eigen::Matrix<double_t, kStateVectorDims, kStateVectorDims>
+  using StateVector                  = Eigen::Matrix<double_t, kStateVectorDims, 1>; \
+  using StateCovarianceMatrix        = Eigen::Matrix<double_t, kStateVectorDims, kStateVectorDims>; \
+  using StateTransitionMatrix        = Eigen::Matrix<double_t, kStateVectorDims, kStateVectorDims>; \
+  using ControlVector                = Eigen::Matrix<double_t, kControlVectorDims, 1>; \
+  using ControlTransitionMatrix      = Eigen::Matrix<double_t, kStateVectorDims, kControlVectorDims>; \
+  using ProcessCovarianceMatrix      = Eigen::Matrix<double_t, kStateVectorDims, kStateVectorDims>; \
+  using ProcessNoiseVector           = Eigen::Matrix<double_t, kProcessNoiseVectorDims, 1>; \
+  using ProcessNoiseCovarianceMatrix = Eigen::Matrix<double_t, kProcessNoiseVectorDims, kProcessNoiseVectorDims>
     
     namespace CV
     {
-      PROCESS_MODEL_DEFINITIONS(4, 4, true);
+      PROCESS_MODEL_DEFINITIONS(4, 4, 2, true);
     }
 
     namespace CTRV
     {
-      PROCESS_MODEL_DEFINITIONS(5, 5, false);
+      PROCESS_MODEL_DEFINITIONS(5, 5, 2, false);
     }
 
 

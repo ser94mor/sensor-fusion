@@ -40,7 +40,8 @@ namespace ser94mor
        * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
        */
       class ProcessModel
-      : public ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector,
+      : public ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector, 
+                                                     ProcessNoiseCovarianceMatrix,
                                                      ROStateVectorView, RWStateVectorView,
                                                      ProcessModelKind::CV, kIsLinear>
       {

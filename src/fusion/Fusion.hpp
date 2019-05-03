@@ -47,10 +47,10 @@ namespace ser94mor
     public:
       /**
        * Constructor.
-       * @param individual_noise_processes_covariance_matrix an individual noise processes covariance matrix
+       * @param process_noise_covariance_matrix an process noise covariance matrix
        * @param measurement_covariance_matrices
        */
-      Fusion(IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix,
+      Fusion(typename ProcessModel::ProcessNoiseCovarianceMatrix_type process_noise_covariance_matrix,
              typename MeasurementModel<ProcessModel>::MeasurementCovarianceMatrix_type...
              measurement_covariance_matrices);
 
@@ -103,7 +103,7 @@ namespace ser94mor
     template<template<class, class> class Filter, class ProcessModel,
         template<class> class... MeasurementModel>
     Fusion<Filter, ProcessModel, MeasurementModel...>::
-      Fusion(IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix,
+      Fusion(typename ProcessModel::ProcessNoiseCovarianceMatrix_type process_noise_covariance_matrix,
              typename MeasurementModel<ProcessModel>::MeasurementCovarianceMatrix_type...
              measurement_covariance_matrices) :
         processed_measurements_counter_{0},
@@ -112,7 +112,7 @@ namespace ser94mor
         measurement_models_{}
     {
 
-      process_model_.SetIndividualNoiseProcessesCovarianceMatrix(individual_noise_processes_covariance_matrix);
+      process_model_.SetProcessNoiseCovarianceMatrix(process_noise_covariance_matrix);
 
       InitializeMeasurementCovarianceMatrices(
           std::forward_as_tuple(measurement_covariance_matrices...),

@@ -34,10 +34,10 @@ using namespace Eigen;
 TEST_CASE("CV::ProcessModel::A", "[process_models]")
 {
   CV::ProcessModel cv_pm;
-  IndividualNoiseProcessesCovarianceMatrix mtx;
+  CV::ProcessNoiseCovarianceMatrix mtx;
   mtx << 9.0, 0.0,
          0.0, 9.0;
-  cv_pm.SetIndividualNoiseProcessesCovarianceMatrix(mtx);
+  cv_pm.SetProcessNoiseCovarianceMatrix(mtx);
 
   Matrix4d A;
   A << 1, 0, 2, 0,
@@ -52,10 +52,10 @@ TEST_CASE("CV::ProcessModel::A", "[process_models]")
 TEST_CASE("CV::ProcessModel::B", "[process_models]")
 {
   CV::ProcessModel cv_pm;
-  IndividualNoiseProcessesCovarianceMatrix mtx;
+  CV::ProcessNoiseCovarianceMatrix mtx;
   mtx << 9.0, 0.0,
          0.0, 9.0;
-  cv_pm.SetIndividualNoiseProcessesCovarianceMatrix(mtx);
+  cv_pm.SetProcessNoiseCovarianceMatrix(mtx);
 
   Matrix4d B{Matrix4d::Zero()};
 
@@ -66,10 +66,10 @@ TEST_CASE("CV::ProcessModel::B", "[process_models]")
 TEST_CASE("CV::ProcessModel::R", "[process_models]")
 {
   CV::ProcessModel cv_pm1;
-  IndividualNoiseProcessesCovarianceMatrix mtx1;
+  CV::ProcessNoiseCovarianceMatrix mtx1;
   mtx1 << 9.0, 0.0,
           0.0, 9.0;
-  cv_pm1.SetIndividualNoiseProcessesCovarianceMatrix(mtx1);
+  cv_pm1.SetProcessNoiseCovarianceMatrix(mtx1);
 
   Matrix4d R1;
   R1 << 2.25,  0.0, 4.5, 0.0,
@@ -78,10 +78,10 @@ TEST_CASE("CV::ProcessModel::R", "[process_models]")
         0.0,  4.5, 0.0, 9.0;
 
   CV::ProcessModel cv_pm2;
-  IndividualNoiseProcessesCovarianceMatrix mtx2;
+  CV::ProcessNoiseCovarianceMatrix mtx2;
   mtx2 << 3.0, 7.0,
           7.0, 5.0;
-  cv_pm2.SetIndividualNoiseProcessesCovarianceMatrix(mtx2);
+  cv_pm2.SetProcessNoiseCovarianceMatrix(mtx2);
 
   Matrix4d R2;
   R2 << 12.0, 28.0, 12.0, 28.0,
@@ -179,10 +179,10 @@ TEST_CASE("CTRV::ProcessModel::G", "[process_model]")
 TEST_CASE("CTRV::ProcessModel::R", "[process_models]")
 {
   CTRV::ProcessModel pm;
-  IndividualNoiseProcessesCovarianceMatrix mtx;
+  CTRV::ProcessNoiseCovarianceMatrix mtx;
   mtx << 3.0, 7.0,
          7.0, 5.0;
-  pm.SetIndividualNoiseProcessesCovarianceMatrix(mtx);
+  pm.SetProcessNoiseCovarianceMatrix(mtx);
 
   CTRV::StateCovarianceMatrix R_expected;
   R_expected <<         9.0, 5.1961524227066311, 10.392304845413264, 24.248711305964285,  24.248711305964285,

@@ -122,11 +122,11 @@ int main(int argc, char *argv[])
 {
   openlog(argv[0], LOG_PID, LOG_USER);
 
-  IndividualNoiseProcessesCovarianceMatrix cv_p_mtx;
+  CTRV::ProcessNoiseCovarianceMatrix cv_p_mtx;
   cv_p_mtx << 9.0, 0.0,
               0.0, 9.0;
 
-  IndividualNoiseProcessesCovarianceMatrix ctrv_p_mtx;
+  CTRV::ProcessNoiseCovarianceMatrix ctrv_p_mtx;
   ctrv_p_mtx << 0.126025,  0.0,
                      0.0, 0.16;
 
@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
                 0.0, 0.0009,  0.0,
                 0.0,    0.0, 0.09;
 
-  EKF_CTRV_LIDAR_RADAR_Fusion fusion{ctrv_p_mtx, lidar_mtx, radar_mtx};
+  UKF_CTRV_LIDAR_Fusion fusion{ctrv_p_mtx, lidar_mtx};
 
   uWS::Hub h;
 

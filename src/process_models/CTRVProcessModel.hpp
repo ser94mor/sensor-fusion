@@ -41,6 +41,7 @@ namespace ser94mor
        */
       class ProcessModel
       : public ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector,
+                                                     ProcessNoiseCovarianceMatrix,
                                                      ROStateVectorView, RWStateVectorView,
                                                      ProcessModelKind::CTRV, kIsLinear>
       {

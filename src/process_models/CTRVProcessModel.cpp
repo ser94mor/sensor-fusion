@@ -113,7 +113,7 @@ namespace ser94mor
                                             dt,        0.0,
                                            0.0, 0.5 * dt_2,
                                            0.0,         dt;
-        return Gt * individual_noise_processes_covariance_matrix_ * Gt.transpose();
+        return Gt * process_noise_covariance_matrix_ * Gt.transpose();
       }
 
       StateVector ProcessModel::g(double_t dt, const ControlVector& control_vector, const StateVector& state_vector,

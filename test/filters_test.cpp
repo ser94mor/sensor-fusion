@@ -36,10 +36,10 @@ using namespace ser94mor::sensor_fusion;
 TEST_CASE("KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel>>::Predict", "[filters]")
 {
   CV::ProcessModel cv_pm;
-  IndividualNoiseProcessesCovarianceMatrix mtx;
+  CV::ProcessNoiseCovarianceMatrix mtx;
   mtx << 3.0, 7.0,
          7.0, 5.0;
-  cv_pm.SetIndividualNoiseProcessesCovarianceMatrix(mtx);
+  cv_pm.SetProcessNoiseCovarianceMatrix(mtx);
 
   using KF = KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel>>;
   using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
@@ -123,10 +123,10 @@ TEST_CASE("KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessMod
 TEST_CASE("ExtendedKalmanFilter<CV::ProcessModel, Radar::MeasurementModel<CV::ProcessModel>>::Predict", "[filters]")
 {
   CV::ProcessModel cv_pm;
-  IndividualNoiseProcessesCovarianceMatrix mtx;
+  CV::ProcessNoiseCovarianceMatrix mtx;
   mtx << 3.0, 7.0,
          7.0, 5.0;
-  cv_pm.SetIndividualNoiseProcessesCovarianceMatrix(mtx);
+  cv_pm.SetProcessNoiseCovarianceMatrix(mtx);
 
   using EKF = ExtendedKalmanFilter<CV::ProcessModel, Radar::MeasurementModel<CV::ProcessModel>>;
   using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
@@ -274,10 +274,10 @@ TEST_CASE("UnscentedKalmanFilter<CTRV::ProcessModel, Lidar::MeasurementModel>::P
   BEL belief{0, mu, Sigma};
 
   CTRV::ProcessModel pm;
-  IndividualNoiseProcessesCovarianceMatrix mtx;
+  CTRV::ProcessNoiseCovarianceMatrix mtx;
   mtx << 3.0, 7.0,
       7.0, 5.0;
-  pm.SetIndividualNoiseProcessesCovarianceMatrix(mtx);
+  pm.SetProcessNoiseCovarianceMatrix(mtx);
 
   auto belief_prior{UKF::Predict(belief, control_vector, 2., pm)};
 

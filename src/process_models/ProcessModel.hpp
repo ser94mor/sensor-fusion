@@ -41,7 +41,7 @@ namespace ser94mor
      * @tparam pmk a process model kind
      * @tparam is_linear a flag indicating whether the process model is linear or not
      */
-    template<class StateVector, class StateCovarianceMatrix, class ControlVector,
+    template<class StateVector, class StateCovarianceMatrix, class ControlVector, class ProcessNoiseCovarianceMatrix,
              class ROStateVectorView, class RWStateVectorView, ProcessModelKind pmk, bool is_linear>
     class ProcessModel : public ModelEntity<EntityType::ProcessModel, ProcessModelKind, pmk, is_linear>
     {
@@ -54,6 +54,7 @@ namespace ser94mor
       using StateVector_type = StateVector;
       using StateCovarianceMatrix_type = StateCovarianceMatrix;
       using ControlVector_type = ControlVector;
+      using ProcessNoiseCovarianceMatrix_type = ProcessNoiseCovarianceMatrix;
       using RWStateVectorView_type = RWStateVectorView;
       using ROStateVectorView_type = ROStateVectorView;
 
@@ -75,22 +76,22 @@ namespace ser94mor
 
       constexpr static int ProcessNoiseDims()
       {
-        return IndividualNoiseProcessesCovarianceMatrix::RowsAtCompileTime;
+        return ProcessNoiseCovarianceMatrix::RowsAtCompileTime;
       }
 
       /**
-       * Set an individual noise process covariance matrix. It is done explicitly by the user of the process model
+       * Set a process noise covariance matrix. It is done explicitly by the user of the process model
        * due to the variadic templates used in this code. ProcessModel needs a default constructor.
-       * @param mtx an individual noise process covariance matrix
+       * @param mtx a process noise covariance matrix
        */
-      void SetIndividualNoiseProcessesCovarianceMatrix(const IndividualNoiseProcessesCovarianceMatrix& mtx)
+      void SetProcessNoiseCovarianceMatrix(const ProcessNoiseCovarianceMatrix& mtx)
       {
-        individual_noise_processes_covariance_matrix_ = mtx;
+        process_noise_covariance_matrix_ = mtx;
       }
 
-      const IndividualNoiseProcessesCovarianceMatrix& GetIndividualNoiseProcessesCovarianceMatrix() const
+      const ProcessNoiseCovarianceMatrix& GetProcessNoiseCovarianceMatrix() const
       {
-        return individual_noise_processes_covariance_matrix_;
+        return process_noise_covariance_matrix_;
       }
 
       /**
@@ -105,7 +106,7 @@ namespace ser94mor
       virtual StateVector Diff(const StateVector& state_vector_1, const StateVector& state_vector_2) const = 0;
 
     protected:
-      IndividualNoiseProcessesCovarianceMatrix individual_noise_processes_covariance_matrix_;
+      ProcessNoiseCovarianceMatrix process_noise_covariance_matrix_;
     };
 
   }
