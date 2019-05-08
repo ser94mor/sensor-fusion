@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
                 0.0, 0.0009,  0.0,
                 0.0,    0.0, 0.09;
 
-  UKF_CTRV_LIDAR_Fusion fusion{ctrv_p_mtx, lidar_mtx};
+  UKF_CTRV_LIDAR_RADAR_Fusion fusion{ctrv_p_mtx, lidar_mtx, radar_mtx};
 
   uWS::Hub h;
 

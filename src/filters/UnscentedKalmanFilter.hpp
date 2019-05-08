@@ -90,9 +90,13 @@ namespace ser94mor
           SigmaPointsMatrix<AugmentedStateDims(), SigmaPointsNumber(AugmentedStateDims())>;
       using AugmentedPriorSigmaPointsMatrix =
           SigmaPointsMatrix<ProcessModel::StateDims(), SigmaPointsNumber(AugmentedStateDims())>;
+      using OrdinarySigmaPointsMatrix =
+          SigmaPointsMatrix<ProcessModel::StateDims(), SigmaPointsNumber(ProcessModel::StateDims())>;
 
       template <int sigma_points_number>
       using MeasurementSigmaPointsMatrix = SigmaPointsMatrix<MeasurementModel::MeasurementDims(), sigma_points_number>;
+      using OrdinaryMeasurementSigmaPointsMatrix =
+          MeasurementSigmaPointsMatrix<SigmaPointsNumber(ProcessModel::StateDims())>;
 
       template <int sigma_points_number>
       using WeightsVector = Eigen::Matrix<double_t, sigma_points_number, 1>;
@@ -172,33 +176,93 @@ namespace ser94mor
        *
        * @return a posterior belief, that is, after the incorporation of the measurement
        */
+      template<bool enable = true>
+      static auto
+      Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
+      -> std::enable_if_t<not MeasurementModel::IsLinear() and enable, Belief>
+      {
+        constexpr auto state_dims{ProcessModel::StateDims()};
+        constexpr auto sigma_points_num{SigmaPointsNumber(state_dims)};
+
+        WeightsVector<sigma_points_num> w{Weights<state_dims, sigma_points_num>()};
+
+        OrdinaryStateVector mu{bel.mu()};
+        OrdinaryStateCovarianceMatrix Sigma{bel.Sigma()};
+
+        OrdinarySigmaPointsMatrix Chi{GenerateSigmaPointsMatrix<state_dims, sigma_points_num>(mu, Sigma)};
+
+        MeasurementSigmaPointsMatrix<sigma_points_num>
+          Zeta{ApplyMeasurementFunctionToEachSigmaPoint<state_dims, sigma_points_num>(Chi, measurement_model)};
+
+        MeasurementVector z{MeasurementVector::Zero()};
+        for (int i=0; i < sigma_points_num; ++i)
+        {
+          z += w(i) * Zeta.col(i);
+        }
+
+        MeasurementCovarianceMatrix S{measurement_model.Q()};
+        OrdinaryMeasurementSigmaPointsMatrix Zeta_z_diff;
+        for (int i = 0; i < sigma_points_num; ++i)
+        {
+          Zeta_z_diff.col(i) = measurement_model.Diff(Zeta.col(i), z);
+          S += w(i) * Zeta_z_diff.col(i) * Zeta_z_diff.col(i).transpose();
+        }
+
+        CrossCorrelationMatrix Sigma_x_z{CrossCorrelationMatrix::Zero()};
+        for (int i = 0; i < sigma_points_num; ++i)
+        {
+          OrdinaryStateVector sigma_point{Chi.col(i)};
+          OrdinaryStateVector mu_diff{ProcessModel::Subtract(sigma_point, mu)};
+
+          Sigma_x_z += w(i) * mu_diff * Zeta_z_diff.col(i).transpose();
+        }
+
+        auto Kt{Sigma_x_z * S.inverse()};
+
+        return {
+          /* timestamp */               measurement.t(),
+          /* state vector */            mu + Kt * (measurement.z() - z),
+          /* state covariance matrix */ bel.Sigma() - Kt * S * Kt.transpose(),
+        };
+      }
+
 //      template<bool enable = true>
 //      static auto
 //      Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
 //      -> std::enable_if_t<not MeasurementModel::IsLinear() and enable, Belief>
 //      {
-//        StateVector mu{bel.mu()};
-//        WeightsVector w{Weights()};
-//        MeasurementSigmaPointsMatrix Zeta{ApplyMeasurementFunctionToEachSigmaPoint(Chi, measurement_model)};
+//        constexpr auto state_dims{ProcessModel::StateDims()};
+//        constexpr auto sigma_points_num{SigmaPointsNumber(AugmentedStateDims())};
+//
+//        WeightsVector<sigma_points_num> w{Weights<state_dims, sigma_points_num>()};
+//
+//        OrdinaryStateVector mu{bel.mu()};
+//        OrdinaryStateCovarianceMatrix Sigma{bel.Sigma()};
+//
+//        SigmaPointsMatrix<state_dims, sigma_points_num> Chi{GenerateSigmaPointsMatrix<state_dims, sigma_points_num>(mu, Sigma)};
+//
+//        MeasurementSigmaPointsMatrix<sigma_points_num>
+//            Zeta{ApplyMeasurementFunctionToEachSigmaPoint<state_dims, sigma_points_num>(Chi, measurement_model)};
 //
 //        MeasurementVector z{MeasurementVector::Zero()};
-//        for (int i=0; i < SigmaPointsNumber(); ++i)
+//        for (int i=0; i < sigma_points_num; ++i)
 //        {
 //          z += w(i) * Zeta.col(i);
 //        }
 //
 //        MeasurementCovarianceMatrix S{measurement_model.Q()};
-//        MeasurementSigmaPointsMatrix Zeta_z_diff;
-//        for (int i = 0; i < SigmaPointsNumber(); ++i)
+//        MeasurementSigmaPointsMatrix<sigma_points_num> Zeta_z_diff;
+//        for (int i = 0; i < sigma_points_num; ++i)
 //        {
 //          Zeta_z_diff.col(i) = measurement_model.Diff(Zeta.col(i), z);
 //          S += w(i) * Zeta_z_diff.col(i) * Zeta_z_diff.col(i).transpose();
 //        }
 //
 //        CrossCorrelationMatrix Sigma_x_z{CrossCorrelationMatrix::Zero()};
-//        for (int i = 0; i < SigmaPointsNumber(); ++i)
+//        for (int i = 0; i < sigma_points_num; ++i)
 //        {
-//          StateVector mu_diff{ProcessModel::Subtract(Chi.col(i), mu)};
+//          OrdinaryStateVector sigma_point{Chi.col(i)};
+//          OrdinaryStateVector mu_diff{ProcessModel::Subtract(sigma_point, mu)};
 //
 //          Sigma_x_z += w(i) * mu_diff * Zeta_z_diff.col(i).transpose();
 //        }
@@ -206,9 +270,9 @@ namespace ser94mor
 //        auto Kt{Sigma_x_z * S.inverse()};
 //
 //        return {
-//          /* timestamp */               measurement.t(),
-//          /* state vector */            mu + Kt * (measurement.z() - z),
-//          /* state covariance matrix */ bel.Sigma() - Kt * S * Kt.transpose(),
+//            /* timestamp */               measurement.t(),
+//            /* state vector */            mu + Kt * (measurement.z() - z),
+//            /* state covariance matrix */ bel.Sigma() - Kt * S * Kt.transpose(),
 //        };
 //      }
 
@@ -254,6 +318,9 @@ namespace ser94mor
           StateVector<state_dims> tmp{std::sqrt(lambda + state_dims) * L.col(i)};
           Chi.col(i+1) = ProcessModel::Add(mu, tmp);
           Chi.col(i+1+state_dims) = ProcessModel::Subtract(mu, tmp);
+          //auto tmp{std::sqrt(lambda + state_dims) * L.col(i)};
+          //Chi.col(i+1) = mu + tmp;
+          //Chi.col(i+1+state_dims) = mu - tmp;
         }
 
         return Chi;
@@ -314,16 +381,18 @@ namespace ser94mor
         return Chi;
       }
 
-//      static MeasurementSigmaPointsMatrix
-//      ApplyMeasurementFunctionToEachSigmaPoint(const SigmaPointsMatrix& Chi, const MeasurementModel& measurement_model)
-//      {
-//        MeasurementSigmaPointsMatrix Zeta;
-//        for (int i = 0; i < SigmaPointsNumber(); ++i)
-//        {
-//          Zeta.col(i) = measurement_model.h(Chi.col(i));
-//        }
-//        return Zeta;
-//      }
+      template <int state_dims, int sigma_points_num>
+      static MeasurementSigmaPointsMatrix<sigma_points_num>
+      ApplyMeasurementFunctionToEachSigmaPoint(const SigmaPointsMatrix<state_dims, sigma_points_num>& Chi,
+                                               const MeasurementModel& measurement_model)
+      {
+        MeasurementSigmaPointsMatrix<sigma_points_num> Zeta;
+        for (int i = 0; i < sigma_points_num; ++i)
+        {
+          Zeta.col(i) = measurement_model.h(Chi.col(i));
+        }
+        return Zeta;
+      }
 
     };
 
