@@ -87,7 +87,29 @@ namespace ser94mor
          */
         ProcessCovarianceMatrix R(double_t dt, const StateVector& state_vector) const;
 
-        StateVector Diff(const StateVector& state_vector_1, const StateVector& state_vector_2) const override;
+        template <class StateVector_type>
+        static auto Subtract(const StateVector_type& state_vector_1, const StateVector_type& state_vector_2)
+        -> std::enable_if_t<StateVector_type::SizeAtCompileTime >= StateDims(), StateVector_type>
+        {
+          StateVector_type sv{state_vector_1 - state_vector_2};
+          RWStateVectorViewBase<StateVector_type> svv{sv};
+
+          Utils::NormalizeAngle(&svv.yaw());
+
+          return sv;
+        }
+
+        template <class StateVector_type>
+        static auto Add(const StateVector_type& state_vector_1, const StateVector_type& state_vector_2)
+        -> std::enable_if_t<StateVector_type::SizeAtCompileTime >= StateDims(), StateVector_type>
+        {
+          StateVector_type sv{state_vector_1 + state_vector_2};
+          RWStateVectorViewBase<StateVector_type> svv{sv};
+
+          Utils::NormalizeAngle(&svv.yaw());
+
+          return sv;
+        }
 
       private:
         StateTransitionMatrix state_transition_matrix_prototype_;

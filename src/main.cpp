@@ -42,6 +42,8 @@ using EKF_CV_LIDAR_RADAR_Fusion =
 using EKF_CTRV_LIDAR_RADAR_Fusion =
     Fusion<ExtendedKalmanFilter, CTRV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
 using UKF_CTRV_LIDAR_Fusion = Fusion<UnscentedKalmanFilter, CTRV::ProcessModel, Lidar::MeasurementModel>;
+using UKF_CTRV_LIDAR_RADAR_Fusion = 
+    Fusion<UnscentedKalmanFilter, CTRV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
 
 using namespace std;
 using namespace Eigen;
