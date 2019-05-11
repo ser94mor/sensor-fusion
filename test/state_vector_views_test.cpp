@@ -199,3 +199,69 @@ TEST_CASE("CTRV::RWStateVectorView", "[state_vector_views]")
 
   REQUIRE(sv.isApprox(sv_expected));
 }
+
+TEST_CASE("CTRV::RWStateVectorViewBase", "[state_vector_views]")
+{
+  using StateVector_type = Eigen::Matrix<double_t, CTRV::kStateVectorDims + CTRV::kProcessNoiseVectorDims, 1>;
+  StateVector_type sv;
+  sv << 1., 2., 3., M_PI/6., M_PI/12., 11., 15.;
+  CTRV::RWStateVectorViewBase<StateVector_type> svv{sv};
+
+  //=====
+
+  REQUIRE(Approx(1.) == svv.px());
+  REQUIRE(Approx(2.) == svv.py());
+  REQUIRE(Approx(3.) == svv.v());
+  REQUIRE(Approx(M_PI/6.) == svv.yaw());
+  REQUIRE(Approx(M_PI/12.) == svv.yaw_rate());
+
+  //=====
+
+  svv.px() = 10.;
+  REQUIRE(Approx(10.) == svv.px());
+  REQUIRE(Approx(2.) == svv.py());
+  REQUIRE(Approx(3.) == svv.v());
+  REQUIRE(Approx(M_PI/6.) == svv.yaw());
+  REQUIRE(Approx(M_PI/12.) == svv.yaw_rate());
+
+  //=====
+
+  svv.py() = 11.;
+  REQUIRE(Approx(10.) == svv.px());
+  REQUIRE(Approx(11.) == svv.py());
+  REQUIRE(Approx(3.) == svv.v());
+  REQUIRE(Approx(M_PI/6.) == svv.yaw());
+  REQUIRE(Approx(M_PI/12.) == svv.yaw_rate());
+
+  //=====
+
+  svv.v() = 12.;
+  REQUIRE(Approx(10.) == svv.px());
+  REQUIRE(Approx(11.) == svv.py());
+  REQUIRE(Approx(12.) == svv.v());
+  REQUIRE(Approx(M_PI/6.) == svv.yaw());
+  REQUIRE(Approx(M_PI/12.) == svv.yaw_rate());
+
+  //=====
+
+  svv.yaw() = M_PI/3.;
+  REQUIRE(Approx(10.) == svv.px());
+  REQUIRE(Approx(11.) == svv.py());
+  REQUIRE(Approx(12.) == svv.v());
+  REQUIRE(Approx(M_PI/3.) == svv.yaw());
+  REQUIRE(Approx(M_PI/12.) == svv.yaw_rate());
+
+  //=====
+
+  svv.yaw_rate() = M_PI;
+  REQUIRE(Approx(10.) == svv.px());
+  REQUIRE(Approx(11.) == svv.py());
+  REQUIRE(Approx(12.) == svv.v());
+  REQUIRE(Approx(M_PI/3.) == svv.yaw());
+  REQUIRE(Approx(M_PI) == svv.yaw_rate());
+
+  StateVector_type sv_expected;
+  sv_expected << 10., 11., 12., M_PI/3., M_PI, 11., 15.;
+
+  REQUIRE(sv.isApprox(sv_expected));
+}

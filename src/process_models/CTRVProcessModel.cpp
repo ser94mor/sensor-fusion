@@ -56,8 +56,6 @@ namespace ser94mor
           dst.yaw() += src.yaw_rate()*dt;
         }
 
-        Utils::NormalizeAngle(&dst.yaw());
-
         return sv_dst;
       }
 
@@ -131,18 +129,6 @@ namespace ser94mor
         svv.v()        += dt * pnvv.longitudinal_acceleration();
         svv.yaw()      += 0.5 * dt_2 * pnvv.yaw_acceleration();
         svv.yaw_rate() += dt * pnvv.yaw_acceleration();
-
-        Utils::NormalizeAngle(&svv.yaw());
-
-        return sv;
-      }
-
-      StateVector ProcessModel::Diff(const StateVector& state_vector_1, const StateVector& state_vector_2) const
-      {
-        StateVector sv{state_vector_1 - state_vector_2};
-        RWStateVectorView svv{sv};
-
-        Utils::NormalizeAngle(&svv.yaw());
 
         return sv;
       }

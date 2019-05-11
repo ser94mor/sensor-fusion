@@ -122,18 +122,21 @@ namespace ser94mor
       };
 
       /**
-       * A read-write wrapper around StateVector for CTRV process model
-       * that provides meaningful accessors and setters to the StateVector components.
-       */
-      class RWStateVectorView : ser94mor::sensor_fusion::RWStateVectorView<StateVector>
+       * A read-write wrapper around vector which first dimensions match those in the StateVector and
+       * provides meaningful accessors and setters to those components.
+       *
+       * @tparam StateVector_type a class of a state vector
+      */
+      template<class StateVector_type>
+      class RWStateVectorViewBase : ser94mor::sensor_fusion::RWStateVectorView<StateVector_type>
       {
       public:
         /**
          * Constructor.
          * @param state_vector a state vector
          */
-        explicit RWStateVectorView(StateVector& state_vector)
-        : ser94mor::sensor_fusion::RWStateVectorView<StateVector>{state_vector}
+        explicit RWStateVectorViewBase(StateVector_type& state_vector)
+        : ser94mor::sensor_fusion::RWStateVectorView<StateVector_type>{state_vector}
         {
 
         }
@@ -143,7 +146,7 @@ namespace ser94mor
          */
         double_t& px()
         {
-          return state_vector_modifiable_(0);
+          return this->state_vector_modifiable_(0);
         }
 
         /**
@@ -151,7 +154,7 @@ namespace ser94mor
          */
         double_t& py()
         {
-          return state_vector_modifiable_(1);
+          return this->state_vector_modifiable_(1);
         }
 
         /**
@@ -159,7 +162,7 @@ namespace ser94mor
          */
         double_t& v()
         {
-          return state_vector_modifiable_(2);
+          return this->state_vector_modifiable_(2);
         }
 
         /**
@@ -167,7 +170,7 @@ namespace ser94mor
          */
         double_t& yaw()
         {
-          return state_vector_modifiable_(3);
+          return this->state_vector_modifiable_(3);
         }
 
         /**
@@ -175,9 +178,26 @@ namespace ser94mor
          */
         double_t& yaw_rate()
         {
-          return state_vector_modifiable_(4);
+          return this->state_vector_modifiable_(4);
         }
         
+      };
+
+      /**
+       * A read-write wrapper around StateVector for CTRV process model
+       * that provides meaningful accessors and setters to the StateVector components.
+       */
+      class RWStateVectorView : public RWStateVectorViewBase<StateVector>
+      {
+      public:
+        /**
+         * Constructor.
+         * @param state_vector a state vector
+         */
+        explicit RWStateVectorView(StateVector& state_vector) : RWStateVectorViewBase<StateVector>{state_vector}
+        {
+
+        }
       };
 
       /**

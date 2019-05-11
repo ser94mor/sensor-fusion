@@ -99,9 +99,9 @@ namespace ser94mor
         auto I{Eigen::Matrix<double_t, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
 
         return {
-            /* timestamp */               measurement.t(),
-            /* state vector */            mu + Kt * measurement_model.Diff(measurement.z(), measurement_model.h(mu)),
-            /* state covariance matrix */ (I - Kt * Ht) * Sigma,
+          /* timestamp */               measurement.t(),
+          /* state vector */            mu + Kt * measurement_model.Diff(measurement.z(), measurement_model.h(mu)),
+          /* state covariance matrix */ (I - Kt * Ht) * Sigma,
         };
       }
 

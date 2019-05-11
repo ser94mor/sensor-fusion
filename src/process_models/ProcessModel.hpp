@@ -74,6 +74,9 @@ namespace ser94mor
         return ControlVector::SizeAtCompileTime;
       }
 
+      /**
+       * @return a number of dimensions in the process noise vector
+       */
       constexpr static int ProcessNoiseDims()
       {
         return ProcessNoiseCovarianceMatrix::RowsAtCompileTime;
@@ -89,21 +92,14 @@ namespace ser94mor
         process_noise_covariance_matrix_ = mtx;
       }
 
+      /**
+       * Get a process noise covariance matrix.
+       * @return a process noise covariance matirx.
+       */
       const ProcessNoiseCovarianceMatrix& GetProcessNoiseCovarianceMatrix() const
       {
         return process_noise_covariance_matrix_;
       }
-
-      /**
-       * Calculate a difference between two state vectors. Some kinds of state vectors may have a dimensions
-       * that need to be adjusted after the simple vector subtraction operation, such as dimensions representing
-       * angles that has to be within in [-pi, pi].
-       *
-       * @param state_vector_1 the first state vector
-       * @param state_vector_2 the second state vector
-       * @return the difference between the two measurement vectors
-       */
-      virtual StateVector Diff(const StateVector& state_vector_1, const StateVector& state_vector_2) const = 0;
 
     protected:
       ProcessNoiseCovarianceMatrix process_noise_covariance_matrix_;

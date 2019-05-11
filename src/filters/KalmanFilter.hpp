@@ -120,10 +120,9 @@ namespace ser94mor
       {
         auto dt = measurement.t() - bel.t();
 
-        auto belief_prior{DerivedKalmanFilter<ProcessModel, MeasurementModel>::Predict(bel, ut, dt, process_model)};
+        auto bel_prior{DerivedKalmanFilter<ProcessModel, MeasurementModel>::Predict(bel, ut, dt, process_model)};
 
-        return DerivedKalmanFilter<ProcessModel, MeasurementModel>::
-                 Update(belief_prior, measurement, measurement_model);
+        return DerivedKalmanFilter<ProcessModel, MeasurementModel>::Update(bel_prior, measurement, measurement_model);
       }
     };
 

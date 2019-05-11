@@ -87,7 +87,49 @@ namespace ser94mor
          */
         ProcessCovarianceMatrix R(double_t dt, const StateVector& state_vector) const;
 
-        StateVector Diff(const StateVector& state_vector_1, const StateVector& state_vector_2) const override;
+        /**
+         * Subtract one state vector from another.
+         * Dimension representing yaw angle that is normalized to be within the [-pi, pi] range.
+         *
+         * @tparam StateVector_type a type of a state vector (ordinary or augmented, that is, that has more dimensions)
+         * @param state_vector_1 a state vector to subtract from
+         * @param state_vector_2 a state vector which to subtract
+         *
+         * @return a difference between two state vectors with normalized yaw angle
+         */
+        template <class StateVector_type>
+        static auto Subtract(const StateVector_type& state_vector_1, const StateVector_type& state_vector_2)
+        -> std::enable_if_t<StateVector_type::SizeAtCompileTime >= StateDims(), StateVector_type>
+        {
+          StateVector_type sv{state_vector_1 - state_vector_2};
+          RWStateVectorViewBase<StateVector_type> svv{sv};
+
+          Utils::NormalizeAngle(&svv.yaw());
+
+          return sv;
+        }
+
+        /**
+         * Sums two vectors.
+         * Dimension representing yaw angle that is normalized to be within the [-pi, pi] range.
+         *
+         * @tparam StateVector_type a type of a state vector (ordinary or augmented, that is, that has more dimensions)
+         * @param state_vector_1 a first state vector
+         * @param state_vector_2 a second state vector
+         *
+         * @return a sum of two state vectors with normalized yaw angle
+         */
+        template <class StateVector_type>
+        static auto Add(const StateVector_type& state_vector_1, const StateVector_type& state_vector_2)
+        -> std::enable_if_t<StateVector_type::SizeAtCompileTime >= StateDims(), StateVector_type>
+        {
+          StateVector_type sv{state_vector_1 + state_vector_2};
+          RWStateVectorViewBase<StateVector_type> svv{sv};
+
+          Utils::NormalizeAngle(&svv.yaw());
+
+          return sv;
+        }
 
       private:
         StateTransitionMatrix state_transition_matrix_prototype_;

@@ -255,9 +255,9 @@ TEST_CASE("ExtendedKalmanFilter<CV::ProcessModel, Radar::MeasurementModel<CV::Pr
 // UNSCENTED KALMAN FILTER //
 /////////////////////////////
 
-TEST_CASE("UnscentedKalmanFilter<CTRV::ProcessModel, Lidar::MeasurementModel>::PredictUpdate", "[filters]")
+TEST_CASE("UnscentedKalmanFilter<CTRV::ProcessModel, Radar::MeasurementModel>::Predict", "[filters]")
 {
-  using UKF = UnscentedKalmanFilter<CTRV::ProcessModel, Lidar::MeasurementModel<CTRV::ProcessModel>>;
+  using UKF = UnscentedKalmanFilter<CTRV::ProcessModel, Radar::MeasurementModel<CTRV::ProcessModel>>;
   using BEL = Belief<CTRV::StateVector, CTRV::StateCovarianceMatrix>;
 
   CTRV::ControlVector control_vector{CTRV::ControlVector::Zero()};
@@ -278,8 +278,24 @@ TEST_CASE("UnscentedKalmanFilter<CTRV::ProcessModel, Lidar::MeasurementModel>::P
   mtx << 3.0, 7.0,
       7.0, 5.0;
   pm.SetProcessNoiseCovarianceMatrix(mtx);
+  
+  Radar::MeasurementVector mv;
+  mv << 1., M_PI_2, 2.;
+  Radar::Measurement radar_meas{2, mv};
+
+  Radar::MeasurementCovarianceMatrix radar_mtx;
+  radar_mtx << 6., 5., 4.,
+      4., 3., 2.,
+      1., 3., 5.;
+  Radar::MeasurementModel<CTRV::ProcessModel> radar_mm;
+  radar_mm.SetMeasurementCovarianceMatrix(radar_mtx);
 
   auto belief_prior{UKF::Predict(belief, control_vector, 2., pm)};
 
+  // TODO: write this test
+}
+
+TEST_CASE("UnscentedKalmanFilter<CTRV::ProcessModel, Radar::MeasurementModel>::Update", "[filters]")
+{
   // TODO: write this test
 }
