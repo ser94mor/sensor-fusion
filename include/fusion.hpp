@@ -33,7 +33,7 @@ namespace ser94mor
     ///////////////////////////////////////////
 
     //
-    // (!) Notice that only feasible definitions are provided. For example, EKF_CV_LIDAR_Fusion is infeasible
+    // (!) Notice that only reasonable definitions are provided. For example, EKF_CV_LIDAR_Fusion is not a reasonable
     // definition, since it boils down to the KF_CV_LIDAR_Fusion case.
     //
 

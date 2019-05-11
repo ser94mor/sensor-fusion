@@ -40,12 +40,6 @@ namespace ser94mor
     class UnscentedKalmanFilter : public KalmanFilterBase<ProcessModel, MeasurementModel, UnscentedKalmanFilter>
     {
     private:
-      using Belief = typename ProcessModel::Belief_type;
-      using ControlVector = typename ProcessModel::ControlVector_type;
-      using Measurement = typename MeasurementModel::Measurement_type;
-      using MeasurementVector = typename MeasurementModel::MeasurementVector_type;
-      using MeasurementCovarianceMatrix = typename MeasurementModel::MeasurementCovarianceMatrix_type;
-
       /**
       * @return a number of dimensions in the augmented state vector
       */
@@ -55,6 +49,7 @@ namespace ser94mor
       }
 
       /**
+       * @param state_dims a number of dimensions in a state vector
        * @return a number of sigma points to generate for a state vector
        */
       constexpr static int SigmaPointsNumber(int state_dims)
@@ -63,6 +58,7 @@ namespace ser94mor
       }
 
       /**
+       * @param state_dims a number of dimensions in a state vector
        * @return a sigma points spreading parameter (lambda) for augmented state vector
        */
       constexpr static double_t SigmaPointSpreadingParameter(int state_dims)
@@ -74,6 +70,12 @@ namespace ser94mor
       /**
        * Some useful typedefs that are used in unscented Kalman filter methods.
        */
+      using Belief = typename ProcessModel::Belief_type;
+      using ControlVector = typename ProcessModel::ControlVector_type;
+      using Measurement = typename MeasurementModel::Measurement_type;
+      using MeasurementVector = typename MeasurementModel::MeasurementVector_type;
+      using MeasurementCovarianceMatrix = typename MeasurementModel::MeasurementCovarianceMatrix_type;
+
       template <int state_dims>
       using StateVector = Eigen::Matrix<double_t, state_dims, 1>;
       using OrdinaryStateVector = StateVector<ProcessModel::StateDims()>;
@@ -84,8 +86,8 @@ namespace ser94mor
       using OrdinaryStateCovarianceMatrix = StateCovarianceMatrix<ProcessModel::StateDims()>;
       using AugmentedStateCovarianceMatrix = StateCovarianceMatrix<AugmentedStateDims()>;
 
-      template <int state_dims, int sigma_points_number>
-      using SigmaPointsMatrix = Eigen::Matrix<double_t, state_dims, sigma_points_number>;
+      template <int state_dims, int sigma_points_num>
+      using SigmaPointsMatrix = Eigen::Matrix<double_t, state_dims, sigma_points_num>;
       using AugmentedSigmaPointsMatrix =
           SigmaPointsMatrix<AugmentedStateDims(), SigmaPointsNumber(AugmentedStateDims())>;
       using AugmentedPriorSigmaPointsMatrix =
@@ -93,147 +95,26 @@ namespace ser94mor
       using OrdinarySigmaPointsMatrix =
           SigmaPointsMatrix<ProcessModel::StateDims(), SigmaPointsNumber(ProcessModel::StateDims())>;
 
-      template <int sigma_points_number>
-      using MeasurementSigmaPointsMatrix = SigmaPointsMatrix<MeasurementModel::MeasurementDims(), sigma_points_number>;
+      template <int sigma_points_num>
+      using MeasurementSigmaPointsMatrix = SigmaPointsMatrix<MeasurementModel::MeasurementDims(), sigma_points_num>;
       using AugmentedMeasurementSigmaPointsMatrix =
           MeasurementSigmaPointsMatrix<SigmaPointsNumber(AugmentedStateDims())>;
       using OrdinaryMeasurementSigmaPointsMatrix =
           MeasurementSigmaPointsMatrix<SigmaPointsNumber(ProcessModel::StateDims())>;
 
-      template <int sigma_points_number>
-      using WeightsVector = Eigen::Matrix<double_t, sigma_points_number, 1>;
-
+      template <int sigma_points_num>
+      using WeightsVector = Eigen::Matrix<double_t, sigma_points_num, 1>;
 
       using CrossCorrelationMatrix =
-      Eigen::Matrix<double_t, ProcessModel::StateDims(), MeasurementModel::MeasurementDims()>;
+          Eigen::Matrix<double_t, ProcessModel::StateDims(), MeasurementModel::MeasurementDims()>;
 
-    public:
-      using KalmanFilterBase<ProcessModel, MeasurementModel, UnscentedKalmanFilter>::Predict;
-      using KalmanFilterBase<ProcessModel, MeasurementModel, UnscentedKalmanFilter>::Update;
-
-      /**
-       * Prediction step of the Unscented Kalman filter. Predicts the object's state in dt time in the future
-       * in accordance with NON-LINEAR process model and input control vector.
-       *
-       * Notice that for linear process models the compiler will choose the corresponding method from the
-       * base class (KalmanFilterBase) which works with linear process models.
-       *
-       * @param bel a current belief of the object's state
-       * @param ut a control vector
-       * @param dt a time interval between the previous and current measurements
-       * @param process_model an instance of the process model
-       *
-       * @return a prior belief, that is, after prediction but before incorporating the measurement
-       */
-      template<bool enable = true>
-      static auto
-      Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
-      -> std::enable_if_t<not ProcessModel::IsLinear() and enable, Belief>
-      {
-        constexpr int aug_state_dims{AugmentedStateDims()};
-        constexpr int sigma_points_num{SigmaPointsNumber(aug_state_dims)};
-
-        WeightsVector<sigma_points_num> w{Weights<aug_state_dims, sigma_points_num>()};
-
-        AugmentedPriorSigmaPointsMatrix Chi{PredictSigmaPoints(bel, ut, dt, process_model)};
-
-        // predict state vector
-        OrdinaryStateVector mu_prior{OrdinaryStateVector::Zero()};
-        for (int i = 0; i < sigma_points_num; ++i)
-        {
-          mu_prior += w(i) * Chi.col(i);
-        }
-
-        // Predict the state covariance matrix.
-        // Notice that the process noise is accounted in the generation of the augmented sigma points,
-        // since it has a non-linear effect. This is different from the formula for the UKF presented in
-        // "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
-        // where it is suggested to add R process covariance matrix in this step. Here we use different approach
-        // due to the specifics of some non-linear process models, such as CTRV.
-        OrdinaryStateCovarianceMatrix Sigma_prior{OrdinaryStateCovarianceMatrix::Zero()};
-        for (int i = 0; i < sigma_points_num; ++i)
-        {
-          OrdinaryStateVector sigma_point{Chi.col(i)};
-          auto diff{process_model.Subtract(sigma_point, mu_prior)};
-          Sigma_prior += w(i) * diff * diff.transpose();
-        }
-
-        return {
-            /* timestamp */               bel.t() + dt,
-            /* state vector */            mu_prior,
-            /* state covariance matrix */ Sigma_prior,
-        };
-      }
-
-      /**
-       * Update step of the Unscented Kalman filter. Incorporates the sensor measurement into the given prior belief.
-       * Works only with NON-LINEAR measurement models.
-       *
-       * Notice that for linear measurement models the compiler will choose the corresponding method from the
-       * base class (KalmanFilterBase) which works with linear measurement models.
-       *
-       * @param bel a belief after the prediction Extended Kalman filter step
-       * @param measurement a measurement from the sensor
-       * @param measurement_model an instance of the measurement model
-       *
-       * @return a posterior belief, that is, after the incorporation of the measurement
-       */
-      template<bool enable = true>
-      static auto
-      Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
-      -> std::enable_if_t<not MeasurementModel::IsLinear() and enable, Belief>
-      {
-        constexpr auto state_dims{ProcessModel::StateDims()};
-        constexpr auto sigma_points_num{SigmaPointsNumber(state_dims)};
-
-        WeightsVector<sigma_points_num> w{Weights<state_dims, sigma_points_num>()};
-
-        OrdinaryStateVector mu{bel.mu()};
-        OrdinaryStateCovarianceMatrix Sigma{bel.Sigma()};
-
-        OrdinarySigmaPointsMatrix Chi{GenerateSigmaPointsMatrix<state_dims, sigma_points_num>(mu, Sigma)};
-
-        MeasurementSigmaPointsMatrix<sigma_points_num>
-          Zeta{ApplyMeasurementFunctionToEachSigmaPoint<state_dims, sigma_points_num>(Chi, measurement_model)};
-
-        MeasurementVector z{MeasurementVector::Zero()};
-        for (int i=0; i < sigma_points_num; ++i)
-        {
-          z += w(i) * Zeta.col(i);
-        }
-
-        MeasurementCovarianceMatrix S{measurement_model.Q()};
-        OrdinaryMeasurementSigmaPointsMatrix Zeta_z_diff;
-        for (int i = 0; i < sigma_points_num; ++i)
-        {
-          Zeta_z_diff.col(i) = measurement_model.Diff(Zeta.col(i), z);
-          S += w(i) * Zeta_z_diff.col(i) * Zeta_z_diff.col(i).transpose();
-        }
-
-        CrossCorrelationMatrix Sigma_x_z{CrossCorrelationMatrix::Zero()};
-        for (int i = 0; i < sigma_points_num; ++i)
-        {
-          OrdinaryStateVector sigma_point{Chi.col(i)};
-          OrdinaryStateVector mu_diff{ProcessModel::Subtract(sigma_point, mu)};
-
-          Sigma_x_z += w(i) * mu_diff * Zeta_z_diff.col(i).transpose();
-        }
-
-        auto Kt{Sigma_x_z * S.inverse()};
-
-        return {
-          /* timestamp */               measurement.t(),
-          /* state vector */            mu + Kt * measurement_model.Diff(measurement.z(), z),
-          /* state covariance matrix */ bel.Sigma() - Kt * S * Kt.transpose(),
-        };
-      }
-
-    private:
-      /**
-       * @return a sigma points weights
-       */
+       /**
+        * @tparam state_dims a number os dimentions in a state vector
+        * @tparam sigma_points_num a number of sigma points
+        * @return a sigma points weights
+        */
       template <int state_dims, int sigma_points_num>
-      constexpr static WeightsVector<sigma_points_num> Weights()
+      static WeightsVector<sigma_points_num> Weights()
       {
         double_t lambda{SigmaPointSpreadingParameter(state_dims)};
         WeightsVector<sigma_points_num> w{WeightsVector<sigma_points_num>::Constant(0.5 / (lambda + state_dims))};
@@ -330,6 +211,19 @@ namespace ser94mor
         return Chi;
       }
 
+      /**
+       * Apply non-linear measurement function to each sigma point.
+       *
+       * @tparam state_dims a number of dimensions in a state vector
+       * @tparam sigma_points_num a number of sigma points
+       *
+       * @param Chi a matrix containing sigma points
+       * @param measurement_model an instance of measurement model
+       *
+       * @return a matrix where the number of rows equals to the number of dimension in a measurement vector and
+       *         a number of columns is equal to the number of sigma points generated previously, that is,
+       *         it is similar to the number of columns in the @param Chi matrix.
+       */
       template <int state_dims, int sigma_points_num>
       static MeasurementSigmaPointsMatrix<sigma_points_num>
       ApplyMeasurementFunctionToEachSigmaPoint(const SigmaPointsMatrix<state_dims, sigma_points_num>& Chi,
@@ -343,6 +237,124 @@ namespace ser94mor
         return Zeta;
       }
 
+    public:
+      using KalmanFilterBase<ProcessModel, MeasurementModel, UnscentedKalmanFilter>::Predict;
+      using KalmanFilterBase<ProcessModel, MeasurementModel, UnscentedKalmanFilter>::Update;
+
+      /**
+       * Prediction step of the Unscented Kalman filter. Predicts the object's state in dt time in the future
+       * in accordance with NON-LINEAR process model and input control vector.
+       *
+       * Notice that for linear process models the compiler will choose the corresponding method from the
+       * base class (KalmanFilterBase) which works with linear process models.
+       *
+       * @param bel a current belief of the object's state
+       * @param ut a control vector
+       * @param dt a time interval between the previous and current measurements
+       * @param process_model an instance of the process model
+       *
+       * @return a prior belief, that is, after prediction but before incorporating the measurement
+       */
+      template<bool enable = true>
+      static auto
+      Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
+      -> std::enable_if_t<not ProcessModel::IsLinear() and enable, Belief>
+      {
+        constexpr int aug_state_dims{AugmentedStateDims()};
+        constexpr int sigma_points_num{SigmaPointsNumber(aug_state_dims)};
+
+        WeightsVector<sigma_points_num> w{Weights<aug_state_dims, sigma_points_num>()};
+
+        AugmentedPriorSigmaPointsMatrix Chi{PredictSigmaPoints(bel, ut, dt, process_model)};
+
+        // predict state vector
+        OrdinaryStateVector mu_prior{OrdinaryStateVector::Zero()};
+        for (int i = 0; i < sigma_points_num; ++i)
+        {
+          mu_prior += w(i) * Chi.col(i);
+        }
+
+        // Predict the state covariance matrix.
+        // Notice that the process noise is accounted in the generation of the augmented sigma points,
+        // since it has a non-linear effect. This is different from the formula for the UKF presented in
+        // "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
+        // where it is suggested to add R process covariance matrix in this step. Here we use different approach
+        // due to the specifics of some non-linear process models, such as CTRV.
+        OrdinaryStateCovarianceMatrix Sigma_prior{OrdinaryStateCovarianceMatrix::Zero()};
+        for (int i = 0; i < sigma_points_num; ++i)
+        {
+          OrdinaryStateVector sigma_point{Chi.col(i)};
+          auto diff{process_model.Subtract(sigma_point, mu_prior)};
+          Sigma_prior += w(i) * diff * diff.transpose();
+        }
+
+        return {
+            /* timestamp */               bel.t() + dt,
+            /* state vector */            mu_prior,
+            /* state covariance matrix */ Sigma_prior,
+        };
+      }
+
+      /**
+       * Update step of the Unscented Kalman filter. Incorporates the sensor measurement into the given prior belief.
+       * Works only with NON-LINEAR measurement models.
+       *
+       * Notice that for linear measurement models the compiler will choose the corresponding method from the
+       * base class (KalmanFilterBase) which works with linear measurement models.
+       *
+       * @param bel a belief after the prediction Extended Kalman filter step
+       * @param measurement a measurement from the sensor
+       * @param measurement_model an instance of the measurement model
+       *
+       * @return a posterior belief, that is, after the incorporation of the measurement
+       */
+      template<bool enable = true>
+      static auto
+      Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
+      -> std::enable_if_t<not MeasurementModel::IsLinear() and enable, Belief>
+      {
+        constexpr auto state_dims{ProcessModel::StateDims()};
+        constexpr auto sigma_points_num{SigmaPointsNumber(state_dims)};
+
+        WeightsVector<sigma_points_num> w{Weights<state_dims, sigma_points_num>()};
+
+        OrdinaryStateVector mu{bel.mu()};
+        OrdinaryStateCovarianceMatrix Sigma{bel.Sigma()};
+
+        OrdinarySigmaPointsMatrix Chi{GenerateSigmaPointsMatrix<state_dims, sigma_points_num>(mu, Sigma)};
+
+        MeasurementSigmaPointsMatrix<sigma_points_num>
+          Zeta{ApplyMeasurementFunctionToEachSigmaPoint<state_dims, sigma_points_num>(Chi, measurement_model)};
+
+        MeasurementVector z{MeasurementVector::Zero()};
+        for (int i=0; i < sigma_points_num; ++i)
+        {
+          z += w(i) * Zeta.col(i);
+        }
+
+        // here the measurement noise is additive
+        MeasurementCovarianceMatrix S{measurement_model.Q()};
+        CrossCorrelationMatrix Sigma_x_z{CrossCorrelationMatrix::Zero()};
+        for (int i = 0; i < sigma_points_num; ++i)
+        {
+          auto z_diff{measurement_model.Diff(Zeta.col(i), z)};
+          S += w(i) * z_diff * z_diff.transpose();
+
+          OrdinaryStateVector sigma_point{Chi.col(i)};
+          OrdinaryStateVector mu_diff{ProcessModel::Subtract(sigma_point, mu)};
+
+          Sigma_x_z += w(i) * mu_diff * z_diff.transpose();
+        }
+
+
+        auto Kt{Sigma_x_z * S.inverse()};
+
+        return {
+          /* timestamp */               measurement.t(),
+          /* state vector */            mu + Kt * measurement_model.Diff(measurement.z(), z),
+          /* state covariance matrix */ bel.Sigma() - Kt * S * Kt.transpose(),
+        };
+      }
     };
 
   }
