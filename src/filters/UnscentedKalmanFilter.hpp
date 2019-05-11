@@ -346,7 +346,6 @@ namespace ser94mor
           Sigma_x_z += w(i) * mu_diff * z_diff.transpose();
         }
 
-
         auto Kt{Sigma_x_z * S.inverse()};
 
         return {

@@ -122,10 +122,11 @@ namespace ser94mor
       };
 
       /**
-       * A read-write wrapper around StateVector for CTRV process model
-       * that provides meaningful accessors and setters to some kind of state vectors components t
-       * hat are treated as StateVector.
-       */
+       * A read-write wrapper around vector which first dimensions match those in the StateVector and
+       * provides meaningful accessors and setters to those components.
+       *
+       * @tparam StateVector_type a class of a state vector
+      */
       template<class StateVector_type>
       class RWStateVectorViewBase : ser94mor::sensor_fusion::RWStateVectorView<StateVector_type>
       {
@@ -182,6 +183,10 @@ namespace ser94mor
         
       };
 
+      /**
+       * A read-write wrapper around StateVector for CTRV process model
+       * that provides meaningful accessors and setters to the StateVector components.
+       */
       class RWStateVectorView : public RWStateVectorViewBase<StateVector>
       {
       public:

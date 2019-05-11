@@ -68,8 +68,24 @@ namespace ser94mor
          */
         ProcessCovarianceMatrix R(double_t dt) const;
 
+        /**
+         * Subtract one state vector from another.
+         *
+         * @param state_vector_1 a state vector to subtract from
+         * @param state_vector_2 a state vector which to subtract
+         *
+         * @return a difference between two state vectors
+         */
         static StateVector Subtract(const StateVector& state_vector_1, const StateVector& state_vector_2);
 
+        /**
+         * Sums two vectors.
+         *
+         * @param state_vector_1 a first state vector
+         * @param state_vector_2 a second state vector
+         *
+         * @return a sum of two state vectors
+         */
         static StateVector Add(const StateVector_type& state_vector_1, const StateVector_type& state_vector_2);
 
       private:

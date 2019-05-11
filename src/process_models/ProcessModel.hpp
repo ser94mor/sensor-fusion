@@ -74,6 +74,9 @@ namespace ser94mor
         return ControlVector::SizeAtCompileTime;
       }
 
+      /**
+       * @return a number of dimensions in the process noise vector
+       */
       constexpr static int ProcessNoiseDims()
       {
         return ProcessNoiseCovarianceMatrix::RowsAtCompileTime;
@@ -89,6 +92,10 @@ namespace ser94mor
         process_noise_covariance_matrix_ = mtx;
       }
 
+      /**
+       * Get a process noise covariance matrix.
+       * @return a process noise covariance matirx.
+       */
       const ProcessNoiseCovarianceMatrix& GetProcessNoiseCovarianceMatrix() const
       {
         return process_noise_covariance_matrix_;
