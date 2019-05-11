@@ -46,10 +46,6 @@ namespace ser94mor
     class Belief
     {
     public:
-      using StateVector_type = StateVector;
-      using StateCovarianceMatrix_type = StateCovarianceMatrix;
-
-
       /**
        * Belief's timestamp.
        * @return timestamp

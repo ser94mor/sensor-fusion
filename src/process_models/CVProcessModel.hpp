@@ -70,12 +70,7 @@ namespace ser94mor
 
         static StateVector Subtract(const StateVector& state_vector_1, const StateVector& state_vector_2);
 
-        template <class StateVector_type>
-        static auto Add(const StateVector_type& state_vector_1, const StateVector_type& state_vector_2)
-        -> std::enable_if_t<StateVector_type::SizeAtCompileTime >= StateDims(), StateVector_type>
-        {
-          return state_vector_1 + state_vector_2;
-        }
+        static StateVector Add(const StateVector_type& state_vector_1, const StateVector_type& state_vector_2);
 
       private:
         StateTransitionMatrix state_transition_matrix_prototype_;

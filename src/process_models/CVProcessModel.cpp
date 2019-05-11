@@ -60,6 +60,11 @@ namespace ser94mor
         return state_vector_1 - state_vector_2;
       }
 
+      StateVector ProcessModel::Add(const StateVector& state_vector_1, const StateVector& state_vector_2)
+      {
+        return state_vector_1 + state_vector_2;
+      }
+
     }
   }
 }

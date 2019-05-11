@@ -35,16 +35,6 @@
 
 using namespace ser94mor::sensor_fusion;
 
-using KF_CV_LIDAR_Fusion = Fusion<KalmanFilter, CV::ProcessModel, Lidar::MeasurementModel>;
-using EKF_CV_RADAR_Fusion = Fusion<ExtendedKalmanFilter, CV::ProcessModel, Radar::MeasurementModel>;
-using EKF_CV_LIDAR_RADAR_Fusion = 
-    Fusion<ExtendedKalmanFilter, CV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
-using EKF_CTRV_LIDAR_RADAR_Fusion =
-    Fusion<ExtendedKalmanFilter, CTRV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
-using UKF_CTRV_LIDAR_Fusion = Fusion<UnscentedKalmanFilter, CTRV::ProcessModel, Lidar::MeasurementModel>;
-using UKF_CTRV_RADAR_Fusion = Fusion<UnscentedKalmanFilter, CTRV::ProcessModel, Radar::MeasurementModel>;
-using UKF_CTRV_LIDAR_RADAR_Fusion = 
-    Fusion<UnscentedKalmanFilter, CTRV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
 
 using namespace std;
 using namespace Eigen;
@@ -121,7 +111,7 @@ constexpr double_t us_to_s(std::time_t us)
 }
 
 
-int main(int argc, char *argv[])
+int main(int, char* argv[])
 {
   openlog(argv[0], LOG_PID, LOG_USER);
 
@@ -150,7 +140,8 @@ int main(int argc, char *argv[])
   vector<VectorXd> ground_truth;
 
 
-  h.onMessage([&fusion,&estimations,&ground_truth](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+  h.onMessage(
+      [&fusion,&estimations,&ground_truth](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -225,7 +216,7 @@ int main(int argc, char *argv[])
 
             auto belief{fusion.ProcessMeasurement(measurement)};
 
-            auto sv{belief.mu()};
+            const auto& sv{belief.mu()};
             CTRV::ROStateVectorView state_vector_view{sv};
             estimate(0) = state_vector_view.px();
             estimate(1) = state_vector_view.py();
@@ -238,7 +229,7 @@ int main(int argc, char *argv[])
 
             auto belief{fusion.ProcessMeasurement(measurement)};
 
-            auto sv{belief.mu()};
+            const auto& sv{belief.mu()};
             CTRV::ROStateVectorView state_vector_view{sv};
             estimate(0) = state_vector_view.px();
             estimate(1) = state_vector_view.py();
@@ -276,7 +267,7 @@ int main(int argc, char *argv[])
 
   // We don't need this since we're not using HTTP but if it's removed the program
   // doesn't compile :-(
-  h.onHttpRequest([](uWS::HttpResponse *res, uWS::HttpRequest req, char *data, size_t, size_t) {
+  h.onHttpRequest([](uWS::HttpResponse *res, uWS::HttpRequest req, char*, size_t, size_t) {
     const std::string s = "<h1>Hello world!</h1>";
     if (req.getUrl().valueLength == 1)
     {
@@ -289,11 +280,11 @@ int main(int argc, char *argv[])
     }
   });
 
-  h.onConnection([&h](uWS::WebSocket<uWS::SERVER> ws, uWS::HttpRequest req) {
+  h.onConnection([](uWS::WebSocket<uWS::SERVER>, uWS::HttpRequest) {
     std::cout << "Connected!!!" << std::endl;
   });
 
-  h.onDisconnection([&h](uWS::WebSocket<uWS::SERVER> ws, int code, char *message, size_t length) {
+  h.onDisconnection([](uWS::WebSocket<uWS::SERVER> ws, int, char*, size_t) {
     ws.close();
     std::cout << "Disconnected" << std::endl;
   });

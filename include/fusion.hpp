@@ -16,3 +16,48 @@
  */
 
 #include "../src/fusion/Fusion.hpp"
+
+#ifndef SENSOR_FUSION_FUSION_HEADER_HPP
+#define SENSOR_FUSION_FUSION_HEADER_HPP
+
+#include "filters.hpp"
+#include "process_models.hpp"
+#include "measurement_models.hpp"
+
+namespace ser94mor
+{
+  namespace sensor_fusion
+  {
+    ///////////////////////////////////////////
+    // Definitions of sensor fusion classes. //
+    ///////////////////////////////////////////
+
+    //
+    // (!) Notice that only feasible definitions are provided. For example, EKF_CV_LIDAR_Fusion is infeasible
+    // definition, since it boils down to the KF_CV_LIDAR_Fusion case.
+    //
+
+    // Kalman filter
+    using KF_CV_LIDAR_Fusion = Fusion<KalmanFilter, CV::ProcessModel, Lidar::MeasurementModel>;
+
+    // Extended Kalman filter
+    using EKF_CV_RADAR_Fusion = Fusion<ExtendedKalmanFilter, CV::ProcessModel, Radar::MeasurementModel>;
+    using EKF_CV_LIDAR_RADAR_Fusion =
+        Fusion<ExtendedKalmanFilter, CV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
+    using EKF_CTRV_LIDAR_Fusion = Fusion<ExtendedKalmanFilter, CTRV::ProcessModel, Lidar::MeasurementModel>;
+    using EKF_CTRV_RADAR_Fusion = Fusion<ExtendedKalmanFilter, CTRV::ProcessModel, Radar::MeasurementModel>;
+    using EKF_CTRV_LIDAR_RADAR_Fusion =
+        Fusion<ExtendedKalmanFilter, CTRV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
+
+    // Unscented Kalman filter
+    using UKF_CV_RADAR_Fusion = Fusion<UnscentedKalmanFilter, CV::ProcessModel, Radar::MeasurementModel>;
+    using UKF_CV_LIDAR_RADAR_Fusion =
+        Fusion<UnscentedKalmanFilter, CV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
+    using UKF_CTRV_LIDAR_Fusion = Fusion<UnscentedKalmanFilter, CTRV::ProcessModel, Lidar::MeasurementModel>;
+    using UKF_CTRV_RADAR_Fusion = Fusion<UnscentedKalmanFilter, CTRV::ProcessModel, Radar::MeasurementModel>;
+    using UKF_CTRV_LIDAR_RADAR_Fusion =
+        Fusion<UnscentedKalmanFilter, CTRV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
+
+  }
+}
+#endif // SENSOR_FUSION_FUSION_HEADER_HPP
