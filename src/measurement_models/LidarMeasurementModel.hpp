@@ -45,7 +45,7 @@ namespace ser94mor
       class MeasurementModel :
         public ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
                                                          ROMeasurementVectorView, ProcessModel,
-                                                         MeasurementModelKind::Lidar, kIsLinear>
+                                                         MMKind::Lidar, kIsLinear>
       {
       public:
         using MeasurementMatrix_type =
@@ -60,7 +60,7 @@ namespace ser94mor
          */
         MeasurementModel()
         : ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-            ROMeasurementVectorView, ProcessModel, MeasurementModelKind::Lidar, kIsLinear>{},
+            ROMeasurementVectorView, ProcessModel, MMKind::Lidar, kIsLinear>{},
           measurement_matrix_{MeasurementMatrix_type::Identity()}
         {
 
@@ -81,8 +81,8 @@ namespace ser94mor
          * @param measurement_vector_2 the second measurement vector
          * @return the difference between the two measurement vectors
          */
-        MeasurementVector Diff(const MeasurementVector& measurement_vector_1,
-                               const MeasurementVector& measurement_vector_2) const override
+        static MeasurementVector Diff(const MeasurementVector& measurement_vector_1,
+                                      const MeasurementVector& measurement_vector_2)
         {
           return (measurement_vector_1 - measurement_vector_2);
         }

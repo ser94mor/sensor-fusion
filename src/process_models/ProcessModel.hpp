@@ -25,6 +25,7 @@
 
 #include <ctime>
 
+
 namespace ser94mor
 {
   namespace sensor_fusion
@@ -42,8 +43,8 @@ namespace ser94mor
      * @tparam is_linear a flag indicating whether the process model is linear or not
      */
     template<class StateVector, class StateCovarianceMatrix, class ControlVector, class ProcessNoiseCovarianceMatrix,
-             class ROStateVectorView, class RWStateVectorView, ProcessModelKind pmk, bool is_linear>
-    class ProcessModel : public ModelEntity<EntityType::ProcessModel, ProcessModelKind, pmk, is_linear>
+             class ROStateVectorView, class RWStateVectorView, PMKind pmk, bool is_linear>
+    class ProcessModel : public ModelEntity<EntityType::ProcessModel, PMKind, pmk, is_linear>
     {
     public:
       /**
@@ -63,7 +64,7 @@ namespace ser94mor
        */
       constexpr static int StateDims()
       {
-        return StateVector::SizeAtCompileTime;
+        return static_cast<int>(StateVector::SizeAtCompileTime);
       }
 
       /**
@@ -71,7 +72,7 @@ namespace ser94mor
        */
       constexpr static int ControlDims()
       {
-        return ControlVector::SizeAtCompileTime;
+        return static_cast<int>(ControlVector::SizeAtCompileTime);
       }
 
       /**
@@ -79,7 +80,7 @@ namespace ser94mor
        */
       constexpr static int ProcessNoiseDims()
       {
-        return ProcessNoiseCovarianceMatrix::RowsAtCompileTime;
+        return static_cast<int>(ProcessNoiseCovarianceMatrix::RowsAtCompileTime);
       }
 
       /**

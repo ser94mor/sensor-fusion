@@ -28,7 +28,10 @@ namespace ser94mor
     namespace CV
     {
 
-      BELIEF_DEFINITION();
+      class Belief : public ser94mor::sensor_fusion::Belief<StateVector, StateCovarianceMatrix>
+      {
+
+      };
 
     }
   }

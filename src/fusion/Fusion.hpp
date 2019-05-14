@@ -50,8 +50,8 @@ namespace ser94mor
        * @param process_noise_covariance_matrix an process noise covariance matrix
        * @param measurement_covariance_matrices
        */
-      Fusion(typename ProcessModel::ProcessNoiseCovarianceMatrix_type process_noise_covariance_matrix,
-             typename MeasurementModel<ProcessModel>::MeasurementCovarianceMatrix_type...
+      Fusion(const typename ProcessModel::ProcessNoiseCovarianceMatrix_type process_noise_covariance_matrix,
+             const typename MeasurementModel<ProcessModel>::MeasurementCovarianceMatrix_type...
              measurement_covariance_matrices);
 
       template <class Measurement>
@@ -85,7 +85,7 @@ namespace ser94mor
       }
 
       template<class Measurement_type, class MeasurementModel_type>
-      auto ProcessMeasurement(Measurement_type&, MeasurementModel_type&)
+      static auto ProcessMeasurement(Measurement_type&, MeasurementModel_type&)
       -> std::enable_if_t<Measurement_type::MeasurementModelKind() != MeasurementModel_type::Kind(), void>
       {
         // Do nothing.
@@ -103,8 +103,8 @@ namespace ser94mor
     template<template<class, class> class Filter, class ProcessModel,
         template<class> class... MeasurementModel>
     Fusion<Filter, ProcessModel, MeasurementModel...>::
-      Fusion(typename ProcessModel::ProcessNoiseCovarianceMatrix_type process_noise_covariance_matrix,
-             typename MeasurementModel<ProcessModel>::MeasurementCovarianceMatrix_type...
+      Fusion(const typename ProcessModel::ProcessNoiseCovarianceMatrix_type process_noise_covariance_matrix,
+             const typename MeasurementModel<ProcessModel>::MeasurementCovarianceMatrix_type...
              measurement_covariance_matrices) :
         processed_measurements_counter_{0},
         belief_{0, {}, {}},

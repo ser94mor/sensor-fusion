@@ -15,5 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef SENSOR_FUSION_STATE_VECTOR_VIEWS_HEADER_HPP
+#define SENSOR_FUSION_STATE_VECTOR_VIEWS_HEADER_HPP
+
 #include "../src/state_vector_views/CVStateVectorView.hpp"
 #include "../src/state_vector_views/CTRVStateVectorView.hpp"
+
+#endif // SENSOR_FUSION_STATE_VECTOR_VIEWS_HEADER_HPP

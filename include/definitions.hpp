@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_DEFINITIONS_HPP
-#define SENSOR_FUSION_DEFINITIONS_HPP
+#ifndef SENSOR_FUSION_DEFINITIONS_HEADER_HPP
+#define SENSOR_FUSION_DEFINITIONS_HEADER_HPP
 
 
 #include <Eigen/Dense>
@@ -38,17 +38,29 @@ namespace ser94mor
 
     constexpr const char* EntityNameByType(EntityType et)
     {
+      const char* ret{nullptr};
       switch (et)
       {
         case EntityType::ProcessModel:
-          return "PROCESS_MODEL";
+        {
+          ret = "PROCESS_MODEL";
+          break;
+        }
         case EntityType::MeasurementModel:
-          return "MEASUREMENT_MODEL";
+        {
+          ret = "MEASUREMENT_MODEL";
+          break;
+        }
         case EntityType::Sensor:
-          return "SENSOR";
+        {
+          ret = "SENSOR";
+          break;
+        }
         default:
-          return "!!!___UNDEFINED_ENTITY_TYPE___!!!";
+          throw std::logic_error("undefined entity type");
       }
+
+      return ret;
     }
 
 
@@ -56,23 +68,31 @@ namespace ser94mor
     // PROCESS MODELS //
     ////////////////////
 
-    enum class ProcessModelKind
+    enum class PMKind
     {
       CV = 0,
       CTRV = 1,
     };
 
-    constexpr const char* NameByKind(ProcessModelKind pmk)
+    constexpr const char* NameByKind(PMKind pmk)
     {
+      const char* ret{nullptr};
       switch (pmk)
       {
-        case ProcessModelKind::CV:
-          return "CV";
-        case ProcessModelKind::CTRV:
-          return "CTRV";
+        case PMKind::CV:
+        {
+          ret = "CV";
+          break;
+        }
+        case PMKind::CTRV:
+        {
+          ret = "CTRV";
+          break;
+        }
         default:
-          return "!!!___UNDEFINED_PROCESS_MODEL_KIND___!!!";
+          throw std::logic_error("undefined process model kind");
       }
+      return ret;
     }
 
 #define PROCESS_MODEL_DEFINITIONS(state_vector_dims, control_vector_dims, process_noise_vector_dims, is_linear) \
@@ -120,23 +140,32 @@ namespace ser94mor
       MEASUREMENT_MODEL_DEFINITIONS(3, false);
     }
 
-    enum class MeasurementModelKind
+    enum class MMKind
     {
       Lidar = 0,
       Radar = 1,
     };
 
-    constexpr const char* NameByKind(MeasurementModelKind mm)
+    constexpr const char* NameByKind(MMKind mm)
     {
+      const char* ret{nullptr};
       switch (mm)
       {
-        case MeasurementModelKind::Lidar:
-          return "LIDAR";
-        case MeasurementModelKind::Radar:
-          return "RADAR";
+        case MMKind::Lidar:
+        {
+          ret = "LIDAR";
+          break;
+        }
+        case MMKind::Radar:
+        {
+          ret = "RADAR";
+          break;
+        }
         default:
-          return "!!!___UNDEFINED_MEASUREMENT_MODEL___!!!";
+          throw std::logic_error("undefined measurement model kind");
       }
+
+      return ret;
     }
 
 
@@ -152,15 +181,24 @@ namespace ser94mor
 
     constexpr const char* NameByKind(SensorKind sk)
     {
+      const char* ret{nullptr};
       switch (sk)
       {
         case SensorKind::Lidar:
-          return "LIDAR";
+        {
+          ret = "LIDAR";
+          break;
+        }
         case SensorKind::Radar:
-          return "RADAR";
+        {
+          ret = "RADAR";
+          break;
+        }
         default:
-          return "!!!___UNDEFINED_SENSOR___!!!";
+          throw std::logic_error("undefined sensor kind");
       }
+
+      return ret;
     }
 
 
@@ -225,4 +263,4 @@ namespace ser94mor
 }
 
 
-#endif //SENSOR_FUSION_DEFINITIONS_HPP
+#endif //SENSOR_FUSION_DEFINITIONS_HEADER_HPP

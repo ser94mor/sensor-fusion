@@ -15,5 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef SENSOR_FUSION_MEASUREMENT_VECTOR_VIEWS_HEADER_HPP
+#define SENSOR_FUSION_MEASUREMENT_VECTOR_VIEWS_HEADER_HPP
+
 #include "../src/measurement_vector_views/RadarMeasurementVectorView.hpp"
 #include "../src/measurement_vector_views/LidarMeasurementVectorView.hpp"
+
+#endif // SENSOR_FUSION_MEASUREMENT_VECTOR_VIEWS_HEADER_HPP

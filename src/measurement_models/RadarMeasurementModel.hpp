@@ -44,7 +44,7 @@ namespace ser94mor
       class MeasurementModel
       : public ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
                                                          ROMeasurementVectorView, ProcessModel,
-                                                         MeasurementModelKind::Radar, kIsLinear>
+                                                         MMKind::Radar, kIsLinear>
       {
       public:
         using MeasurementMatrix_type =
@@ -59,7 +59,7 @@ namespace ser94mor
         MeasurementModel()
         : ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
                                                     ROMeasurementVectorView, ProcessModel,
-                                                    MeasurementModelKind::Radar, kIsLinear>{}
+                                                    MMKind::Radar, kIsLinear>{}
         {
 
         }
@@ -101,7 +101,7 @@ namespace ser94mor
           MeasurementMatrix_type measurement_matrix{MeasurementMatrix_type::Zero()};
           switch (ProcessModel::Kind())
           {
-            case ProcessModelKind::CV:
+            case PMKind::CV:
             {
               auto tmp3{svv.vx()*svv.py()-svv.vy()*svv.px()};
 
@@ -119,7 +119,7 @@ namespace ser94mor
               break;
             }
 
-            case ProcessModelKind::CTRV:
+            case PMKind::CTRV:
             {
               auto sin{std::sin(svv.yaw())};
               auto cos{std::cos(svv.yaw())};
@@ -158,11 +158,11 @@ namespace ser94mor
          * @param measurement_vector_2 the second measurement vector
          * @return the difference between the two measurement vectors
          */
-        MeasurementVector Diff(const MeasurementVector& measurement_vector_1,
-                               const MeasurementVector& measurement_vector_2) const
+        static MeasurementVector Diff(const MeasurementVector& measurement_vector_1,
+                                      const MeasurementVector& measurement_vector_2)
         {
           MeasurementVector diff{measurement_vector_1 - measurement_vector_2};
-          RWMeasurementVectorView mvv{diff};
+          const RWMeasurementVectorView mvv{diff};
           Utils::NormalizeAngle(&mvv.bearing());
 
           return diff;

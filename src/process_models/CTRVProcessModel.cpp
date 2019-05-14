@@ -31,12 +31,16 @@ namespace ser94mor
     namespace CTRV
     {
 
-      ProcessModel::ProcessModel() : state_transition_matrix_prototype_{StateTransitionMatrix::Identity()}
+      ProcessModel::ProcessModel()
+      : ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector,
+                                              ProcessNoiseCovarianceMatrix, ROStateVectorView, RWStateVectorView,
+                                              PMKind::CTRV, kIsLinear>{},
+        state_transition_matrix_prototype_{StateTransitionMatrix::Identity()}
       {
 
       }
 
-      StateVector ProcessModel::g(double_t dt, const ControlVector&, const StateVector& state_vector) const
+      StateVector ProcessModel::g(double_t dt, const ControlVector&, const StateVector& state_vector)
       {
         StateVector sv_dst{state_vector};
         RWStateVectorView dst{sv_dst};
@@ -64,10 +68,9 @@ namespace ser94mor
         ROStateVectorView src{state_vector};
         StateTransitionMatrix stm{state_transition_matrix_prototype_};
 
+        double_t v{src.v()};
         double_t sin1{std::sin(src.yaw())};
         double_t cos1{std::cos(src.yaw())};
-
-        double_t v{src.v()};
 
         if (std::fabs(src.yaw_rate()) < kEpsilon)
         {
@@ -115,7 +118,7 @@ namespace ser94mor
       }
 
       StateVector ProcessModel::g(double_t dt, const ControlVector& control_vector, const StateVector& state_vector,
-                                  const ProcessNoiseVector& noise_vector) const
+                                  const ProcessNoiseVector& noise_vector)
       {
         auto sv{g(dt, control_vector, state_vector)};
         RWStateVectorView svv{sv};

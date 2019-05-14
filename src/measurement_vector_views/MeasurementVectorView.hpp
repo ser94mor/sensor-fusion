@@ -55,6 +55,9 @@ namespace ser94mor
 
       }
 
+      virtual ~ROMeasurementVectorView() = default;
+
+
       const MeasurementVector& measurement_vector_;
     };
 

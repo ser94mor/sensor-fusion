@@ -50,7 +50,7 @@ namespace ser94mor
         /**
          * @return X-axis coordinate
          */
-        double_t px() const
+        virtual double_t px() const override
         {
           return measurement_vector_(0);
         }
@@ -58,7 +58,7 @@ namespace ser94mor
         /**
          * @return Y-axis coordinate
          */
-        double_t py() const
+        virtual double_t py() const override
         {
           return measurement_vector_(1);
         }
@@ -84,7 +84,7 @@ namespace ser94mor
         /**
          * @return X-axis coordinate
          */
-        double_t& px()
+        double_t& px() const
         {
           return measurement_vector_modifiable_(0);
         }
@@ -92,7 +92,7 @@ namespace ser94mor
         /**
          * @return Y-axis coordinate
          */
-        double_t& py()
+        double_t& py() const
         {
           return measurement_vector_modifiable_(1);
         }

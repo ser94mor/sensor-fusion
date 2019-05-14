@@ -117,6 +117,8 @@ namespace ser94mor
 
       }
 
+      virtual ~ROStateVectorView() = default;
+
       const StateVector& state_vector_;
     };
 

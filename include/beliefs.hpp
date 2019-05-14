@@ -15,6 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef SENSOR_FUSION_BELIEFS_HEADER_HPP
+#define SENSOR_FUSION_BELIEFS_HEADER_HPP
+
 #include "../src/beliefs/Belief.hpp"
 #include "../src/beliefs/CVBelief.hpp"
 #include "../src/beliefs/CTRVBelief.hpp"
+
+#endif // SENSOR_FUSION_BELIEFS_HEADER_HPP

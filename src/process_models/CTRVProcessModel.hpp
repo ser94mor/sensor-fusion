@@ -43,7 +43,7 @@ namespace ser94mor
       : public ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector,
                                                      ProcessNoiseCovarianceMatrix,
                                                      ROStateVectorView, RWStateVectorView,
-                                                     ProcessModelKind::CTRV, kIsLinear>
+                                                     PMKind::CTRV, kIsLinear>
       {
       public:
         /**
@@ -59,7 +59,7 @@ namespace ser94mor
          * @param state_vector a state vector
          * @return a prior state vector, that is, a state vector after the state transition function applied.
          */
-        StateVector g(double_t dt, const ControlVector& control_vector, const StateVector& state_vector) const;
+        static StateVector g(double_t dt, const ControlVector& control_vector, const StateVector& state_vector);
 
         /**
          * A state transition function with the noise vector. Some filters may require noise terms to be incorporated
@@ -71,8 +71,9 @@ namespace ser94mor
          * @param noise_vector a noise vector
          * @return a prior state vector, that is, a state vector after the state transition function applied.
          */
-        StateVector g(double_t dt, const ControlVector& control_vector,
-                      const StateVector& state_vector, const ProcessNoiseVector& noise_vector) const;
+        static StateVector
+        g(double_t dt, const ControlVector& control_vector,
+          const StateVector& state_vector, const ProcessNoiseVector& noise_vector);
 
         /**
          * @param dt a difference between the current measurement timestamp and the previous measurement timestamp

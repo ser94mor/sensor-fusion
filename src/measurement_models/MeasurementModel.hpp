@@ -43,8 +43,8 @@ namespace ser94mor
      * @tparam is_linear flag indicating whether this measurement model is linear or not
      */
     template<class MeasurementVector, class MeasurementCovarianceMatrix, class ROMeasurementVectorView,
-             class ProcessModel, MeasurementModelKind mmk, bool is_linear>
-    class MeasurementModel : public ModelEntity<EntityType::MeasurementModel, MeasurementModelKind, mmk, is_linear>
+             class ProcessModel, MMKind mmk, bool is_linear>
+    class MeasurementModel : public ModelEntity<EntityType::MeasurementModel, MMKind, mmk, is_linear>
     {
     public:
       /**
@@ -66,7 +66,7 @@ namespace ser94mor
        */
       constexpr static int MeasurementDims()
       {
-        return MeasurementVector::SizeAtCompileTime;
+        return static_cast<int>(MeasurementVector::SizeAtCompileTime);
       }
 
       /**
@@ -86,18 +86,6 @@ namespace ser94mor
       {
         return measurement_covariance_matrix_;
       }
-
-      /**
-       * Calculate a difference between two measurement vectors. Some kinds of measurement vectors may have a dimensions
-       * that need to be adjusted after the simple vector subtraction operation, such as dimensions representing
-       * angles that has to be within in [-pi, pi].
-       *
-       * @param measurement_vector_1 the first measurement vector
-       * @param measurement_vector_2 the second measurement vector
-       * @return the difference between the two measurement vectors
-       */
-      virtual MeasurementVector Diff(const MeasurementVector& measurement_vector_1,
-                                     const MeasurementVector& measurement_vector_2) const = 0;
 
       /**
        * Set measurement covariance matrix. It is done explicitly by the user of measurement model
@@ -123,18 +111,18 @@ namespace ser94mor
       static Belief_type GetInitialBeliefBasedOn(const Measurement_type& measurement)
       {
         StateVector_type state_vector{StateVector_type::Zero()};
-        RWStateVectorView_type svv{state_vector};
-        ROMeasurementVectorView_type mvv{measurement.z()};
+        const RWStateVectorView_type svv{state_vector};
+        const ROMeasurementVectorView_type mvv{measurement.z()};
 
         svv.px() = mvv.px();
         svv.py() = mvv.py();
 
-        typename ProcessModel::StateCovarianceMatrix_type
+        const typename ProcessModel::StateCovarianceMatrix_type
           state_covariance_matrix{ProcessModel::StateCovarianceMatrix_type::Identity()};
         return Belief_type{measurement.t(), state_vector, state_covariance_matrix};
       }
 
-    protected:
+    private:
       MeasurementCovarianceMatrix measurement_covariance_matrix_;
     };
 

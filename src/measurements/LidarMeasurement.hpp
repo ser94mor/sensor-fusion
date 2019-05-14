@@ -30,7 +30,20 @@ namespace ser94mor
     namespace Lidar
     {
 
-      MEASUREMENT_DEFINITION(ser94mor::sensor_fusion::MeasurementModelKind::Lidar);
+      using MeasurementBase =
+          ser94mor::sensor_fusion::Measurement<MeasurementVector, MeasurementCovarianceMatrix, MMKind::Lidar>;
+
+      class Measurement : public MeasurementBase
+      {
+      public:
+
+        Measurement(double_t timestamp, const MeasurementVector& measurement_vector)
+        : MeasurementBase{timestamp, measurement_vector}
+        {
+
+        }
+
+      };
 
     }
   }

@@ -15,4 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef SENSOR_FUSION_UTILS_HEADER_HPP
+#define SENSOR_FUSION_UTILS_HEADER_HPP
+
 #include "../src/utils/Utils.hpp"
+
+#endif // SENSOR_FUSION_UTILS_HEADER_HPP

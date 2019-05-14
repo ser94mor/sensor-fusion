@@ -15,5 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef SENSOR_FUSION_MEASUREMENT_MODELS_HEADER_HPP
+#define SENSOR_FUSION_MEASUREMENT_MODELS_HEADER_HPP
+
 #include "../src/measurement_models/LidarMeasurementModel.hpp"
 #include "../src/measurement_models/RadarMeasurementModel.hpp"
+
+#endif // SENSOR_FUSION_MEASUREMENT_MODELS_HEADER_HPP

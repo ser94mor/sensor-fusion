@@ -26,7 +26,11 @@ namespace ser94mor
     namespace CV
     {
 
-      ProcessModel::ProcessModel() : state_transition_matrix_prototype_{StateTransitionMatrix::Identity()}
+      ProcessModel::ProcessModel()
+      : ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector,
+                                              ProcessNoiseCovarianceMatrix, ROStateVectorView, RWStateVectorView,
+                                              PMKind::CV, kIsLinear>{},
+        state_transition_matrix_prototype_{StateTransitionMatrix::Identity()}
       {
 
       }
@@ -42,7 +46,7 @@ namespace ser94mor
       ProcessCovarianceMatrix ProcessModel::R(double_t dt) const
       {
         Eigen::Matrix<double_t, ProcessModel::StateDims(), 2> Gt;
-        double_t dt_2_2 = dt * dt / 2.;
+        const double_t dt_2_2 = dt * dt / 2.;
         Gt << dt_2_2,    0.0,
                  0.0, dt_2_2,
                   dt,    0.0,
@@ -50,7 +54,7 @@ namespace ser94mor
         return Gt * process_noise_covariance_matrix_ * Gt.transpose();
       }
 
-      ControlTransitionMatrix ProcessModel::B() const
+      ControlTransitionMatrix ProcessModel::B()
       {
         return ControlTransitionMatrix::Zero();
       }

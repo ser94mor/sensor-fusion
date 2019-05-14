@@ -87,11 +87,11 @@ namespace ser94mor
       Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
       -> std::enable_if_t<MeasurementModel::IsLinear() and enable, Belief>
       {
-        auto Ct{measurement_model.C()};
-        auto mu{bel.mu()};
-        auto Sigma{bel.Sigma()};
-        auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + measurement_model.Q()).inverse()};
-        auto I{Eigen::Matrix<double_t, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
+        const auto Ct{measurement_model.C()};
+        const auto mu{bel.mu()};
+        const auto Sigma{bel.Sigma()};
+        const auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + measurement_model.Q()).inverse()};
+        const auto I{Eigen::Matrix<double_t, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
 
         return {
             /* timestamp */               measurement.t(),
@@ -118,9 +118,9 @@ namespace ser94mor
       PredictUpdate(const Belief& bel, const ControlVector& ut, const Measurement& measurement,
                     const ProcessModel& process_model, const MeasurementModel& measurement_model)
       {
-        auto dt = measurement.t() - bel.t();
+        const auto dt = measurement.t() - bel.t();
 
-        auto bel_prior{DerivedKalmanFilter<ProcessModel, MeasurementModel>::Predict(bel, ut, dt, process_model)};
+        const auto bel_prior{DerivedKalmanFilter<ProcessModel, MeasurementModel>::Predict(bel, ut, dt, process_model)};
 
         return DerivedKalmanFilter<ProcessModel, MeasurementModel>::Update(bel_prior, measurement, measurement_model);
       }

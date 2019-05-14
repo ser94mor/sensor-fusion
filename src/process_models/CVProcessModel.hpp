@@ -43,7 +43,7 @@ namespace ser94mor
       : public ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector, 
                                                      ProcessNoiseCovarianceMatrix,
                                                      ROStateVectorView, RWStateVectorView,
-                                                     ProcessModelKind::CV, kIsLinear>
+                                                     PMKind::CV, kIsLinear>
       {
       public:
         /**
@@ -60,7 +60,7 @@ namespace ser94mor
         /**
          * @return a control transition matrix
          */
-        ControlTransitionMatrix B() const;
+        static ControlTransitionMatrix B();
 
         /**
          * @param dt a difference between the current measurement timestamp and the previous measurement timestamp
