@@ -88,17 +88,23 @@ namespace ser94mor
 
       Belief& operator=(const Belief& belief)
       {
-        timestamp_ = belief.timestamp_;
-        state_vector_ = belief.state_vector_;
-        state_covariance_matrix_ = belief.state_covariance_matrix_;
+        if (&belief != this)
+        {
+          timestamp_ = belief.timestamp_;
+          state_vector_ = belief.state_vector_;
+          state_covariance_matrix_ = belief.state_covariance_matrix_;
+        }
         return *this;
       }
 
       Belief& operator=(Belief&& belief) noexcept
       {
-        timestamp_ = belief.timestamp_;
-        state_vector_ = std::move(belief.state_vector_);
-        state_covariance_matrix_ = std::move(belief.state_covariance_matrix_);
+        if (&belief != this)
+        {
+          timestamp_ = belief.timestamp_;
+          state_vector_ = std::move(belief.state_vector_);
+          state_covariance_matrix_ = std::move(belief.state_covariance_matrix_);
+        }
         return *this;
       }
 

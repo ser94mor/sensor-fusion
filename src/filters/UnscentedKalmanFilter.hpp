@@ -72,6 +72,8 @@ namespace ser94mor
       /**
        * Some useful typedefs that are used in unscented Kalman filter methods.
        */
+      using KF = KalmanFilter<ProcessModel, MeasurementModel>;
+
       using Belief = typename ProcessModel::Belief_type;
       using ControlVector = typename ProcessModel::ControlVector_type;
       using Measurement = typename MeasurementModel::Measurement_type;
@@ -347,19 +349,14 @@ namespace ser94mor
       }
 
     public:
-      using KalmanFilterBase<ProcessModel, MeasurementModel, UnscentedKalmanFilter>::Predict;
-      using KalmanFilterBase<ProcessModel, MeasurementModel, UnscentedKalmanFilter>::Update;
-
       /**
-       * Prediction step of the Unscented Kalman filter. Predicts the object's state in dt time in the future
+       * Prediction step of the Unscented Kalman filter for non-linear process model.
+       * Predicts the object's state in dt time in the future
        * in accordance with NON-LINEAR process model and input control vector.
-       *
-       * Notice that for linear process models the compiler will choose the corresponding method from the
-       * base class (KalmanFilterBase) which works with linear process models.
        *
        * @param bel a current belief of the object's state
        * @param ut a control vector
-       * @param dt a time interval between the previous and current measurements
+       * @param dt time interval between the previous and current measurements
        * @param process_model an instance of the process model
        *
        * @return a prior belief, that is, after prediction but before incorporating the measurement
@@ -373,13 +370,33 @@ namespace ser94mor
       }
 
       /**
-       * Update step of the Unscented Kalman filter. Incorporates the sensor measurement into the given prior belief.
+       * Prediction step of the Unscented Kalman filter for linear process model.
+       * Predicts the object's state in dt time in the future
+       * in accordance with LINEAR process model and input control vector.
+       *
+       * Notice that we use here a simple Kalman filter's Predict equations.
+       *
+       * @param bel a current belief of the object's state
+       * @param ut a control vector
+       * @param dt time interval between the previous and current measurements
+       * @param process_model an instance of the process model
+       *
+       * @return a prior belief, that is, after prediction but before incorporating the measurement
+       */
+      template<bool enable = true>
+      static auto
+      Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
+      -> std::enable_if_t<ProcessModel::IsLinear() and enable, Belief>
+      {
+        return KF::Predict(bel, ut, dt, process_model);
+      }
+
+      /**
+       * Update step of the Unscented Kalman filter for non-linear measurement model.
+       * Incorporates the sensor measurement into the given prior belief.
        * Works only with NON-LINEAR measurement models.
        *
-       * Notice that for linear measurement models the compiler will choose the corresponding method from the
-       * base class (KalmanFilterBase) which works with linear measurement models.
-       *
-       * @param bel a belief after the prediction step of the Unscented Kalman filter
+       * @param bel a belief after the prediction Extended Kalman filter step
        * @param measurement a measurement from the sensor
        * @param measurement_model an instance of the measurement model
        *
@@ -397,6 +414,27 @@ namespace ser94mor
         OrdinarySigmaPointsMatrix Chi{GenerateSigmaPointsMatrix<state_dims, sigma_points_num>(bel.mu(), bel.Sigma())};
 
         return UpdateNonLinear<sigma_points_num>(bel, Chi, w, measurement, measurement_model);
+      }
+
+      /**
+       * Update step of the Unscented Kalman filter for linear measurement model.
+       * Incorporates the sensor measurement into the given prior belief.
+       * Works only with LINEAR measurement models.
+       *
+       * Notice that we use here a simple Kalman filter's Update equations.
+       *
+       * @param bel a belief after the prediction Extended Kalman filter step
+       * @param measurement a measurement from the sensor
+       * @param measurement_model an instance of the measurement model
+       *
+       * @return a posterior belief, that is, after the incorporation of the measurement
+       */
+      template<bool enable = true>
+      static auto
+      Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
+      -> std::enable_if_t<MeasurementModel::IsLinear() and enable, Belief>
+      {
+        return KF::Update(bel, measurement, measurement_model);
       }
 
       /**

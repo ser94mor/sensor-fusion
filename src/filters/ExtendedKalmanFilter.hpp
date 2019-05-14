@@ -39,19 +39,16 @@ namespace ser94mor
     class ExtendedKalmanFilter : public KalmanFilterBase<ProcessModel, MeasurementModel, ExtendedKalmanFilter>
     {
     private:
+      using KF = KalmanFilter<ProcessModel, MeasurementModel>;
       using Belief = typename ProcessModel::Belief_type;
       using ControlVector = typename ProcessModel::ControlVector_type;
       using Measurement = typename MeasurementModel::Measurement_type;
-    public:
-      using KalmanFilterBase<ProcessModel, MeasurementModel, ExtendedKalmanFilter>::Predict;
-      using KalmanFilterBase<ProcessModel, MeasurementModel, ExtendedKalmanFilter>::Update;
 
+    public:
       /**
-       * Prediction step of the Extended Kalman filter. Predicts the object's state in dt time in the future
+       * Prediction step of the Extended Kalman filter for non-linear process model.
+       * Predicts the object's state in dt time in the future
        * in accordance with NON-LINEAR process model and input control vector.
-       *
-       * Notice that for linear process models the compiler will choose the corresponding method from the
-       * base class (KalmanFilterBase) which works with linear process models.
        *
        * @param bel a current belief of the object's state
        * @param ut a control vector
@@ -75,11 +72,31 @@ namespace ser94mor
       }
 
       /**
-       * Update step of the Extended Kalman filter. Incorporates the sensor measurement into the given prior belief.
-       * Works only with NON-LINEAR measurement models.
+       * Prediction step of the Extended Kalman filter for linear process model.
+       * Predicts the object's state in dt time in the future
+       * in accordance with LINEAR process model and input control vector.
        *
-       * Notice that for linear measurement models the compiler will choose the corresponding method from the
-       * base class (KalmanFilter) which works with linear measurement models.
+       * Notice that we use here a simple Kalman filter's Predict equations.
+       *
+       * @param bel a current belief of the object's state
+       * @param ut a control vector
+       * @param dt time interval between the previous and current measurements
+       * @param process_model an instance of the process model
+       *
+       * @return a prior belief, that is, after prediction but before incorporating the measurement
+       */
+      template<bool enable = true>
+      static auto
+      Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
+      -> std::enable_if_t<ProcessModel::IsLinear() and enable, Belief>
+      {
+        return KF::Predict(bel, ut, dt, process_model);
+      }
+
+      /**
+       * Update step of the Extended Kalman filter for non-linear measurement model.
+       * Incorporates the sensor measurement into the given prior belief.
+       * Works only with NON-LINEAR measurement models.
        *
        * @param bel a belief after the prediction Extended Kalman filter step
        * @param measurement a measurement from the sensor
@@ -103,6 +120,27 @@ namespace ser94mor
           /* state vector */            mu + Kt * measurement_model.Diff(measurement.z(), measurement_model.h(mu)),
           /* state covariance matrix */ (I - Kt * Ht) * Sigma,
         };
+      }
+
+      /**
+       * Update step of the Extended Kalman filter for linear measurement model.
+       * Incorporates the sensor measurement into the given prior belief.
+       * Works only with LINEAR measurement models.
+       *
+       * Notice that we use here a simple Kalman filter's Update equations.
+       *
+       * @param bel a belief after the prediction Extended Kalman filter step
+       * @param measurement a measurement from the sensor
+       * @param measurement_model an instance of the measurement model
+       *
+       * @return a posterior belief, that is, after the incorporation of the measurement
+       */
+      template<bool enable = true>
+      static auto
+      Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
+      -> std::enable_if_t<MeasurementModel::IsLinear() and enable, Belief>
+      {
+        return KF::Update(bel, measurement, measurement_model);
       }
 
     };

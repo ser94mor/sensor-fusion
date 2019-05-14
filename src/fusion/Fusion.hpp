@@ -85,7 +85,7 @@ namespace ser94mor
       }
 
       template<class Measurement_type, class MeasurementModel_type>
-      static auto ProcessMeasurement(Measurement_type&, MeasurementModel_type&)
+      auto ProcessMeasurement(Measurement_type&, MeasurementModel_type&)
       -> std::enable_if_t<Measurement_type::MeasurementModelKind() != MeasurementModel_type::Kind(), void>
       {
         // Do nothing.
