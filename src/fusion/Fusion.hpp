@@ -50,8 +50,8 @@ namespace ser94mor
        * @param process_noise_covariance_matrix an process noise covariance matrix
        * @param measurement_covariance_matrices
        */
-      explicit Fusion(const typename ProcessModel::ProcessNoiseCovarianceMatrix_type process_noise_covariance_matrix,
-                      const typename MeasurementModel<ProcessModel>::MeasurementCovarianceMatrix_type...
+      explicit Fusion(const typename ProcessModel::ProcessNoiseCovarianceMatrix_type& process_noise_covariance_matrix,
+                      const typename MeasurementModel<ProcessModel>::MeasurementCovarianceMatrix_type&...
                       measurement_covariance_matrices)
       : processed_measurements_counter_{0}, belief_{0, {}, {}}, process_model_{}, measurement_models_{}
       {
