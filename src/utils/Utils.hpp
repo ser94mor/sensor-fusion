@@ -22,20 +22,28 @@
 #include <cmath>
 
 
-/**
- * Class containing different helper methods.
- */
-class Utils
+namespace ser94mor
 {
-public:
+  namespace sensor_fusion
+  {
 
-  /**
-   * Normalize angle to be between [-pi, pi].
-   * @param angle the pointer to variable containing angle to be normalized.
-   */
-  static void NormalizeAngle(double_t* angle);
+    /**
+     * Class containing different helper methods.
+     */
+    class Utils
+    {
+    public:
 
-};
+      /**
+       * Normalize angle to be between [-pi, pi].
+       * @param angle the pointer to variable containing angle to be normalized.
+       */
+      static void NormalizeAngle(double_t* angle);
+
+    };
+
+  }
+}
 
 
 #endif //SENSOR_FUSION_UTILS_HPP

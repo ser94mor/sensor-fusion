@@ -115,24 +115,24 @@ int main(int, char* argv[])
 {
   openlog(argv[0], LOG_PID, LOG_USER);
 
-  CTRV::ProcessNoiseCovarianceMatrix cv_p_mtx;
-  cv_p_mtx << 9.0, 0.0,
-              0.0, 9.0;
+  CV::ProcessNoiseCovarianceMatrix cv_mtx;
+  cv_mtx << 9.0, 0.0,
+            0.0, 9.0;
 
-  CTRV::ProcessNoiseCovarianceMatrix ctrv_p_mtx;
-  ctrv_p_mtx << 0.126025,  0.0,
-                     0.0, 0.16;
+  CTRV::ProcessNoiseCovarianceMatrix ctrv_mtx;
+  ctrv_mtx << 0.126025,  0.0,
+              0.0,      0.16;
 
   Lidar::MeasurementCovarianceMatrix lidar_mtx;
   lidar_mtx << 0.0225,    0.0,
-                  0.0, 0.0225;
+               0.0, 0.0225;
   
   Radar::MeasurementCovarianceMatrix radar_mtx;
   radar_mtx << 0.09,    0.0,  0.0,
                 0.0, 0.0009,  0.0,
                 0.0,    0.0, 0.09;
 
-  UKF_CTRV_LIDAR_RADAR_Fusion fusion{ctrv_p_mtx, lidar_mtx, radar_mtx};
+  UKF_CTRV_LIDAR_RADAR_Fusion fusion{ctrv_mtx, lidar_mtx, radar_mtx};
 
   uWS::Hub h;
 

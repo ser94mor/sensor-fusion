@@ -23,7 +23,7 @@ file(GLOB state_vector_views_SRC src/state_vector_views/*)
 file(GLOB measurement_vector_views_SRC src/measurement_vector_views/*)
 file(GLOB beliefs_SRC src/beliefs/*)
 
-add_executable(sensor_fusion
+set(SRC_EXCEPT_MAIN
         ${sensors_SRC}
         ${states_SRC}
         ${process_models_SRC}
@@ -34,10 +34,18 @@ add_executable(sensor_fusion
         ${beliefs_SRC}
         ${state_vector_views_SRC}
         ${measurement_vector_views_SRC}
-        src/main.cpp
 )
 
-target_link_libraries(sensor_fusion z ssl uv uWS)
+add_executable(sensor_fusion_udacity_sim
+        ${SRC_EXCEPT_MAIN}
+        src/mains/udacity_sim_main.cpp
+)
+target_link_libraries(sensor_fusion_udacity_sim z ssl uv uWS)
+
+add_executable(sensor_fusion_all
+        ${SRC_EXCEPT_MAIN}
+        src/mains/all_main.cpp
+)
 
 add_library(Catch INTERFACE)
 add_executable( sensor_fusion_test

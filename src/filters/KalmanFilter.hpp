@@ -105,7 +105,7 @@ namespace ser94mor
        * Predicts the object's state in dt time in the future in accordance with the process model
        * and input control vector and then incorporates the sensor measurement into the belief.
        *
-       * Notice that process model and mesurement model can be either linear and non-linear.
+       * Notice that process model and measurement model can be either linear and non-linear.
        *
        * @param bel a current belief of the object's state
        * @param ut a control vector
