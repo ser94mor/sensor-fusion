@@ -20,11 +20,26 @@
 
 #include <cmath>
 
-void Utils::NormalizeAngle(double_t* angle)
+
+namespace ser94mor
 {
-  auto times = std::round( std::fabs( *angle / (2.0 * M_PI) ) );  // for the case when angle is very very large
+  namespace sensor_fusion
+  {
 
-  if (*angle >  M_PI) *angle -= times * 2.0 * M_PI;
+    void Utils::NormalizeAngle(double_t* angle)
+    {
+      const auto times = std::round(std::fabs(*angle / (2. * M_PI)));  // for the case when angle is very very large
 
-  if (*angle < -M_PI) *angle += times * 2.0 * M_PI;
+      if (*angle > M_PI)
+      {
+        *angle -= times * 2.0 * M_PI;
+      }
+
+      if (*angle < -M_PI)
+      {
+        *angle += times * 2.0 * M_PI;
+      }
+    }
+
+  }
 }

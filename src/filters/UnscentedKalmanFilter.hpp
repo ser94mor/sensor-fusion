@@ -22,6 +22,8 @@
 #include "definitions.hpp"
 #include "KalmanFilter.hpp"
 
+#include <tuple>
+
 
 namespace ser94mor
 {
@@ -41,8 +43,8 @@ namespace ser94mor
     {
     private:
       /**
-      * @return a number of dimensions in the augmented state vector
-      */
+       * @return a number of dimensions in the augmented state vector
+       */
       constexpr static int AugmentedStateDims()
       {
         return ProcessModel::StateDims() + ProcessModel::ProcessNoiseDims();
@@ -104,15 +106,17 @@ namespace ser94mor
 
       template <int sigma_points_num>
       using WeightsVector = Eigen::Matrix<double_t, sigma_points_num, 1>;
+      using AugmentedWeightsVector = WeightsVector<SigmaPointsNumber(AugmentedStateDims())>;
+      using OrdinaryWeightsVector = WeightsVector<SigmaPointsNumber(ProcessModel::StateDims())>;
 
       using CrossCorrelationMatrix =
           Eigen::Matrix<double_t, ProcessModel::StateDims(), MeasurementModel::MeasurementDims()>;
 
-       /**
-        * @tparam state_dims a number os dimentions in a state vector
-        * @tparam sigma_points_num a number of sigma points
-        * @return a sigma points weights
-        */
+      /**
+       * @tparam state_dims a number os dimentions in a state vector
+       * @tparam sigma_points_num a number of sigma points
+       * @return a sigma points weights
+       */
       template <int state_dims, int sigma_points_num>
       static WeightsVector<sigma_points_num> Weights()
       {
@@ -237,33 +241,26 @@ namespace ser94mor
         return Zeta;
       }
 
-    public:
-      using KalmanFilterBase<ProcessModel, MeasurementModel, UnscentedKalmanFilter>::Predict;
-      using KalmanFilterBase<ProcessModel, MeasurementModel, UnscentedKalmanFilter>::Update;
-
       /**
-       * Prediction step of the Unscented Kalman filter. Predicts the object's state in dt time in the future
-       * in accordance with NON-LINEAR process model and input control vector.
-       *
-       * Notice that for linear process models the compiler will choose the corresponding method from the
-       * base class (KalmanFilterBase) which works with linear process models.
+       * Prediction step of the Unscented Kalman filter for non-linear process models.
+       * Predicts the object's state in dt time in the future in accordance with NON-LINEAR process model
+       * and input control vector.
        *
        * @param bel a current belief of the object's state
        * @param ut a control vector
        * @param dt a time interval between the previous and current measurements
        * @param process_model an instance of the process model
        *
-       * @return a prior belief, that is, after prediction but before incorporating the measurement
+       * @return a tuple containing a prior belief, that is, after prediction but before incorporating the measurement,
+       *         a sigma points matrix, generated during execution of this method, and the weights vector
        */
-      template<bool enable = true>
-      static auto
-      Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
-      -> std::enable_if_t<not ProcessModel::IsLinear() and enable, Belief>
+      static std::tuple<Belief, AugmentedPriorSigmaPointsMatrix, AugmentedWeightsVector>
+      PredictNonLinear(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
       {
         constexpr int aug_state_dims{AugmentedStateDims()};
         constexpr int sigma_points_num{SigmaPointsNumber(aug_state_dims)};
 
-        WeightsVector<sigma_points_num> w{Weights<aug_state_dims, sigma_points_num>()};
+        AugmentedWeightsVector w{Weights<aug_state_dims, sigma_points_num>()};
 
         AugmentedPriorSigmaPointsMatrix Chi{PredictSigmaPoints(bel, ut, dt, process_model)};
 
@@ -288,43 +285,37 @@ namespace ser94mor
           Sigma_prior += w(i) * diff * diff.transpose();
         }
 
-        return {
-            /* timestamp */               bel.t() + dt,
-            /* state vector */            mu_prior,
-            /* state covariance matrix */ Sigma_prior,
-        };
+        return std::make_tuple(Belief{bel.t() + dt, mu_prior, Sigma_prior}, Chi, w);
       }
 
       /**
-       * Update step of the Unscented Kalman filter. Incorporates the sensor measurement into the given prior belief.
+       * Update step of the Unscented Kalman filter for the non-linear measurement models.
+       * It incorporates the sensor measurement into the given prior belief.
        * Works only with NON-LINEAR measurement models.
        *
-       * Notice that for linear measurement models the compiler will choose the corresponding method from the
-       * base class (KalmanFilterBase) which works with linear measurement models.
-       *
-       * @param bel a belief after the prediction Extended Kalman filter step
+       * @param bel a belief after the prediction step of unscented Kalman filter
+       * @param Chi a sigma points matrix
+       * @param w a weights vector
        * @param measurement a measurement from the sensor
        * @param measurement_model an instance of the measurement model
        *
        * @return a posterior belief, that is, after the incorporation of the measurement
        */
-      template<bool enable = true>
-      static auto
-      Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
-      -> std::enable_if_t<not MeasurementModel::IsLinear() and enable, Belief>
+      template <int sigma_points_num>
+      static Belief
+      UpdateNonLinear(const Belief& bel,
+                      const SigmaPointsMatrix<ProcessModel::StateDims(), sigma_points_num>& Chi,
+                      const WeightsVector<sigma_points_num>& w,
+                      const Measurement& measurement,
+                      const MeasurementModel& measurement_model)
       {
         constexpr auto state_dims{ProcessModel::StateDims()};
-        constexpr auto sigma_points_num{SigmaPointsNumber(state_dims)};
-
-        WeightsVector<sigma_points_num> w{Weights<state_dims, sigma_points_num>()};
 
         OrdinaryStateVector mu{bel.mu()};
         OrdinaryStateCovarianceMatrix Sigma{bel.Sigma()};
 
-        OrdinarySigmaPointsMatrix Chi{GenerateSigmaPointsMatrix<state_dims, sigma_points_num>(mu, Sigma)};
-
         MeasurementSigmaPointsMatrix<sigma_points_num>
-          Zeta{ApplyMeasurementFunctionToEachSigmaPoint<state_dims, sigma_points_num>(Chi, measurement_model)};
+            Zeta{ApplyMeasurementFunctionToEachSigmaPoint<state_dims, sigma_points_num>(Chi, measurement_model)};
 
         MeasurementVector z{MeasurementVector::Zero()};
         for (int i=0; i < sigma_points_num; ++i)
@@ -349,10 +340,116 @@ namespace ser94mor
         auto Kt{Sigma_x_z * S.inverse()};
 
         return {
-          /* timestamp */               measurement.t(),
-          /* state vector */            mu + Kt * measurement_model.Diff(measurement.z(), z),
-          /* state covariance matrix */ bel.Sigma() - Kt * S * Kt.transpose(),
+            /* timestamp */               measurement.t(),
+            /* state vector */            mu + Kt * measurement_model.Diff(measurement.z(), z),
+            /* state covariance matrix */ bel.Sigma() - Kt * S * Kt.transpose(),
         };
+      }
+
+    public:
+      using KalmanFilterBase<ProcessModel, MeasurementModel, UnscentedKalmanFilter>::Predict;
+      using KalmanFilterBase<ProcessModel, MeasurementModel, UnscentedKalmanFilter>::Update;
+
+      /**
+       * Prediction step of the Unscented Kalman filter. Predicts the object's state in dt time in the future
+       * in accordance with NON-LINEAR process model and input control vector.
+       *
+       * Notice that for linear process models the compiler will choose the corresponding method from the
+       * base class (KalmanFilterBase) which works with linear process models.
+       *
+       * @param bel a current belief of the object's state
+       * @param ut a control vector
+       * @param dt a time interval between the previous and current measurements
+       * @param process_model an instance of the process model
+       *
+       * @return a prior belief, that is, after prediction but before incorporating the measurement
+       */
+      template<bool enable = true>
+      static auto
+      Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
+      -> std::enable_if_t<not ProcessModel::IsLinear() and enable, Belief>
+      {
+        return std::get<0>(PredictNonLinear(bel, ut, dt, process_model));
+      }
+
+      /**
+       * Update step of the Unscented Kalman filter. Incorporates the sensor measurement into the given prior belief.
+       * Works only with NON-LINEAR measurement models.
+       *
+       * Notice that for linear measurement models the compiler will choose the corresponding method from the
+       * base class (KalmanFilterBase) which works with linear measurement models.
+       *
+       * @param bel a belief after the prediction step of the Unscented Kalman filter
+       * @param measurement a measurement from the sensor
+       * @param measurement_model an instance of the measurement model
+       *
+       * @return a posterior belief, that is, after the incorporation of the measurement
+       */
+      template<bool enable = true>
+      static auto
+      Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
+      -> std::enable_if_t<not MeasurementModel::IsLinear() and enable, Belief>
+      {
+        constexpr auto state_dims{ProcessModel::StateDims()};
+        constexpr auto sigma_points_num{SigmaPointsNumber(state_dims)};
+
+        OrdinaryWeightsVector w{Weights<state_dims, sigma_points_num>()};
+        OrdinarySigmaPointsMatrix Chi{GenerateSigmaPointsMatrix<state_dims, sigma_points_num>(bel.mu(), bel.Sigma())};
+
+        return UpdateNonLinear<sigma_points_num>(bel, Chi, w, measurement, measurement_model);
+      }
+
+      /**
+       * Combined Predict and Update steps of the Unscented Kalman filter.
+       * Predicts the object's state in dt time in the future in accordance with the process model
+       * and input control vector and then incorporates the sensor measurement into the belief.
+       *
+       * Notice that this method is a specific optimization of the unscented Kalman filter for the case, when
+       * both process and measurement models are non-linear. In this case we can reuse the weights vector
+       * and sigma points matrix generated during the Predict step in the Update step.
+       *
+       * @param bel a current belief of the object's state
+       * @param ut a control vector
+       * @param measurement a measurement from the sensor
+       * @param process_model an instance of the process model
+       * @param measurement_model an instance of the measurement model
+       * @return a posterior belief, that is, after the prediction and incorporation of the measurement
+       */
+      template<bool enable = true>
+      static auto
+      PredictUpdate(const Belief& bel, const ControlVector& ut, const Measurement& measurement,
+                    const ProcessModel& process_model, const MeasurementModel& measurement_model)
+      -> std::enable_if_t<not (ProcessModel::IsLinear() or MeasurementModel::IsLinear()) and enable, Belief>
+      {
+        auto dt = measurement.t() - bel.t();
+        auto bel_Chi_w{PredictNonLinear(bel, ut, dt, process_model)};
+        return UpdateNonLinear(
+            std::get<0>(bel_Chi_w), std::get<1>(bel_Chi_w), std::get<2>(bel_Chi_w), measurement, measurement_model);
+      }
+
+      /**
+       * Combined Predict and Update steps of the derived Kalman filter.
+       * Predicts the object's state in dt time in the future in accordance with the process model
+       * and input control vector and then incorporates the sensor measurement into the belief.
+       *
+       * Notice that this method will be invoked in cases when either one or both process
+       * and measurement models are linear.
+       *
+       * @param bel a current belief of the object's state
+       * @param ut a control vector
+       * @param measurement a measurement from the sensor
+       * @param process_model an instance of the process model
+       * @param measurement_model an instance of the measurement model
+       * @return a posterior belief, that is, after the prediction and incorporation of the measurement
+       */
+      template<bool enable = true>
+      static auto
+      PredictUpdate(const Belief& bel, const ControlVector& ut, const Measurement& measurement,
+                    const ProcessModel& process_model, const MeasurementModel& measurement_model)
+      -> std::enable_if_t<(ProcessModel::IsLinear() or MeasurementModel::IsLinear()) and enable, Belief>
+      {
+        return KalmanFilterBase<ProcessModel, MeasurementModel, UnscentedKalmanFilter>::
+                 PredictUpdate(bel, ut, measurement, process_model, measurement_model);
       }
     };
 
