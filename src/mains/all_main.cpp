@@ -19,10 +19,11 @@
 
 #include <cstdlib>
 
-using namespace ser94mor::sensor_fusion;
 
 int main(int, char**)
 {
+  using namespace ser94mor::sensor_fusion;
+
   // parameter initialization
   CV::ProcessNoiseCovarianceMatrix cv_mtx;
   cv_mtx << 1.0, 2.0,

@@ -64,9 +64,8 @@ namespace ser94mor
         return state_covariance_matrix_;
       }
 
-      Belief(double_t timestamp, const StateVector& state_vector,
-             const StateCovarianceMatrix& state_covariance_matrix)
-      : timestamp_{timestamp}, state_vector_{state_vector}, state_covariance_matrix_{state_covariance_matrix}
+      Belief(double_t t, const StateVector& sv, const StateCovarianceMatrix& scm)
+      : timestamp_{t}, state_vector_{sv}, state_covariance_matrix_{scm}
       {
 
       }

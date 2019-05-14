@@ -40,11 +40,11 @@ namespace ser94mor
 
       }
 
-      StateVector ProcessModel::g(double_t dt, const ControlVector&, const StateVector& state_vector)
+      StateVector ProcessModel::g(double_t dt, const ControlVector&, const StateVector& sv)
       {
-        StateVector sv_dst{state_vector};
-        RWStateVectorView dst{sv_dst};
-        ROStateVectorView src{state_vector};
+        StateVector sv_dst{sv};
+        const RWStateVectorView dst{sv_dst};
+        const ROStateVectorView src{sv};
 
         if (std::fabs(src.yaw_rate()) < kEpsilon)
         {
@@ -54,7 +54,7 @@ namespace ser94mor
         }
         else
         {
-          auto v_yaw_rate{src.v()/src.yaw_rate()};
+          const auto v_yaw_rate{src.v()/src.yaw_rate()};
           dst.px()  += v_yaw_rate * (std::sin(src.yaw()+src.yaw_rate()*dt) - std::sin(src.yaw()));
           dst.py()  += v_yaw_rate * (-std::cos(src.yaw()+src.yaw_rate()*dt) + std::cos(src.yaw()));
           dst.yaw() += src.yaw_rate()*dt;
@@ -63,14 +63,14 @@ namespace ser94mor
         return sv_dst;
       }
 
-      StateTransitionMatrix ProcessModel::G(double_t dt, const StateVector& state_vector) const
+      StateTransitionMatrix ProcessModel::G(double_t dt, const StateVector& sv) const
       {
-        ROStateVectorView src{state_vector};
+        const ROStateVectorView src{sv};
         StateTransitionMatrix stm{state_transition_matrix_prototype_};
 
-        double_t v{src.v()};
-        double_t sin1{std::sin(src.yaw())};
-        double_t cos1{std::cos(src.yaw())};
+        const double_t v{src.v()};
+        const double_t sin1{std::sin(src.yaw())};
+        const double_t cos1{std::cos(src.yaw())};
 
         if (std::fabs(src.yaw_rate()) < kEpsilon)
         {
@@ -82,11 +82,11 @@ namespace ser94mor
         }
         else
         {
-          double_t sin2{std::sin(dt * src.yaw_rate() + src.yaw())};
-          double_t cos2{std::cos(dt * src.yaw_rate() + src.yaw())};
+          const double_t sin2{std::sin(dt * src.yaw_rate() + src.yaw())};
+          const double_t cos2{std::cos(dt * src.yaw_rate() + src.yaw())};
 
-          double_t yaw_rate{src.yaw_rate()};
-          double_t yaw_rate_2{yaw_rate * yaw_rate};
+          const double_t yaw_rate{src.yaw_rate()};
+          const double_t yaw_rate_2{yaw_rate * yaw_rate};
 
           stm(0, 2) = (-sin1 + sin2) / yaw_rate;
           stm(0, 3) = v * (-cos1 + cos2) / yaw_rate;
@@ -102,12 +102,12 @@ namespace ser94mor
         return stm;
       }
 
-      ProcessCovarianceMatrix ProcessModel::R(double_t dt, const StateVector& state_vector) const
+      ProcessCovarianceMatrix ProcessModel::R(double_t dt, const StateVector& sv) const
       {
-        double_t dt_2{dt * dt};
+        const double_t dt_2{dt * dt};
         Eigen::Matrix<double_t, ProcessModel::StateDims(), 2> Gt;
 
-        ROStateVectorView src{state_vector};
+        const ROStateVectorView src{sv};
 
         Gt << 0.5 * dt_2 * std::cos(src.yaw()),        0.0,
               0.5 * dt_2 * std::sin(src.yaw()),        0.0,
@@ -117,14 +117,14 @@ namespace ser94mor
         return Gt * process_noise_covariance_matrix_ * Gt.transpose();
       }
 
-      StateVector ProcessModel::g(double_t dt, const ControlVector& control_vector, const StateVector& state_vector,
-                                  const ProcessNoiseVector& noise_vector)
+      StateVector ProcessModel::g(double_t dt, const ControlVector& cv, const StateVector& sv,
+                                  const ProcessNoiseVector& nv)
       {
-        auto sv{g(dt, control_vector, state_vector)};
-        RWStateVectorView svv{sv};
-        ROProcessNoiseVectorView pnvv{noise_vector};
+        auto sv_copy{g(dt, cv, sv)};
+        const RWStateVectorView svv{sv_copy};
+        const ROProcessNoiseVectorView pnvv{nv};
 
-        auto dt_2{dt * dt};
+        const auto dt_2{dt * dt};
 
         // add noise
         svv.px()       += 0.5 * dt_2 * std::cos(svv.yaw()) * pnvv.longitudinal_acceleration();
@@ -133,7 +133,7 @@ namespace ser94mor
         svv.yaw()      += 0.5 * dt_2 * pnvv.yaw_acceleration();
         svv.yaw_rate() += dt * pnvv.yaw_acceleration();
 
-        return sv;
+        return sv_copy;
       }
 
     }

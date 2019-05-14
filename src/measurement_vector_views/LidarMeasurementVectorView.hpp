@@ -39,10 +39,10 @@ namespace ser94mor
       public:
         /**
          * Constructor.
-         * @param measurement_vector a measurement vector
+         * @param mv a measurement vector
          */
-        explicit ROMeasurementVectorView(const MeasurementVector& measurement_vector)
-        : ser94mor::sensor_fusion::ROMeasurementVectorView<MeasurementVector>{measurement_vector}
+        explicit ROMeasurementVectorView(const MeasurementVector& mv)
+        : ser94mor::sensor_fusion::ROMeasurementVectorView<MeasurementVector>{mv}
         {
 
         }

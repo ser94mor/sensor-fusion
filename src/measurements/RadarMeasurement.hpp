@@ -33,8 +33,13 @@ namespace ser94mor
       {
       public:
 
-        Measurement(double_t timestamp, const MeasurementVector& measurement_vector)
-        : MeasurementBase{timestamp, measurement_vector}
+        /**
+         * Constructor.
+         *
+         * @param t a timestamp
+         * @param mv a measurement vector
+         */
+        Measurement(double_t t, const MeasurementVector& mv) : MeasurementBase{t, mv}
         {
 
         }

@@ -41,10 +41,9 @@ namespace ser94mor
       public:
         /**
          * Constructor.
-         * @param state_vector a state vector
+         * @param sv a state vector
          */
-        explicit RWStateVectorView(StateVector& state_vector)
-        : ser94mor::sensor_fusion::RWStateVectorView<StateVector>{state_vector}
+        explicit RWStateVectorView(StateVector& sv) : ser94mor::sensor_fusion::RWStateVectorView<StateVector>{sv}
         {
 
         }
@@ -92,10 +91,10 @@ namespace ser94mor
 
         /**
          * Constructor.
-         * @param state_vector a state vector
+         * @param sv a state vector
          */
-        explicit ROStateVectorView(const StateVector& state_vector)
-        : ser94mor::sensor_fusion::ROStateVectorView<CV::StateVector>{state_vector}
+        explicit ROStateVectorView(const StateVector& sv)
+        : ser94mor::sensor_fusion::ROStateVectorView<CV::StateVector>{sv}
         {
 
         }

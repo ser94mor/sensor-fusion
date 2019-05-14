@@ -55,55 +55,55 @@ namespace ser94mor
          * A state transition function without the noise vector.
          *
          * @param dt a difference between the current measurement timestamp and the previous measurement timestamp
-         * @param control_vector a control vector
-         * @param state_vector a state vector
+         * @param cv a control vector
+         * @param sv a state vector
          * @return a prior state vector, that is, a state vector after the state transition function applied.
          */
-        static StateVector g(double_t dt, const ControlVector& control_vector, const StateVector& state_vector);
+        static StateVector g(double_t dt, const ControlVector& cv, const StateVector& sv);
 
         /**
          * A state transition function with the noise vector. Some filters may require noise terms to be incorporated
          * into this non-linear state transition function.
          *
          * @param dt a difference between the current measurement timestamp and the previous measurement timestamp
-         * @param control_vector a control vector
-         * @param state_vector a state vector
-         * @param noise_vector a noise vector
+         * @param cv a control vector
+         * @param sv a state vector
+         * @param nv a noise vector
          * @return a prior state vector, that is, a state vector after the state transition function applied.
          */
         static StateVector
-        g(double_t dt, const ControlVector& control_vector,
-          const StateVector& state_vector, const ProcessNoiseVector& noise_vector);
+        g(double_t dt, const ControlVector& cv, const StateVector& sv, const ProcessNoiseVector& nv);
 
         /**
          * @param dt a difference between the current measurement timestamp and the previous measurement timestamp
-         * @param state_vector a state vector
+         * @param sv a state vector
          * @return a state transition matrix
          */
-        StateTransitionMatrix G(double_t dt, const StateVector& state_vector) const;
+        StateTransitionMatrix G(double_t dt, const StateVector& sv) const;
 
         /**
          * @param dt a difference between the current measurement timestamp and the previous measurement timestamp
+         * @param sv a state vector
          * @return a process covariance matrix
          */
-        ProcessCovarianceMatrix R(double_t dt, const StateVector& state_vector) const;
+        ProcessCovarianceMatrix R(double_t dt, const StateVector& sv) const;
 
         /**
          * Subtract one state vector from another.
          * Dimension representing yaw angle that is normalized to be within the [-pi, pi] range.
          *
          * @tparam StateVector_type a type of a state vector (ordinary or augmented, that is, that has more dimensions)
-         * @param state_vector_1 a state vector to subtract from
-         * @param state_vector_2 a state vector which to subtract
+         * @param sv_1 a state vector to subtract from
+         * @param sv_2 a state vector which to subtract
          *
          * @return a difference between two state vectors with normalized yaw angle
          */
         template <class StateVector_type>
-        static auto Subtract(const StateVector_type& state_vector_1, const StateVector_type& state_vector_2)
+        static auto Subtract(const StateVector_type& sv_1, const StateVector_type& sv_2)
         -> std::enable_if_t<StateVector_type::SizeAtCompileTime >= StateDims(), StateVector_type>
         {
-          StateVector_type sv{state_vector_1 - state_vector_2};
-          RWStateVectorViewBase<StateVector_type> svv{sv};
+          StateVector_type sv{sv_1 - sv_2};
+          const RWStateVectorViewBase<StateVector_type> svv{sv};
 
           Utils::NormalizeAngle(&svv.yaw());
 
@@ -115,17 +115,17 @@ namespace ser94mor
          * Dimension representing yaw angle that is normalized to be within the [-pi, pi] range.
          *
          * @tparam StateVector_type a type of a state vector (ordinary or augmented, that is, that has more dimensions)
-         * @param state_vector_1 a first state vector
-         * @param state_vector_2 a second state vector
+         * @param sv_1 a first state vector
+         * @param sv_2 a second state vector
          *
          * @return a sum of two state vectors with normalized yaw angle
          */
         template <class StateVector_type>
-        static auto Add(const StateVector_type& state_vector_1, const StateVector_type& state_vector_2)
+        static auto Add(const StateVector_type& sv_1, const StateVector_type& sv_2)
         -> std::enable_if_t<StateVector_type::SizeAtCompileTime >= StateDims(), StateVector_type>
         {
-          StateVector_type sv{state_vector_1 + state_vector_2};
-          RWStateVectorViewBase<StateVector_type> svv{sv};
+          StateVector_type sv{sv_1 + sv_2};
+          const RWStateVectorViewBase<StateVector_type> svv{sv};
 
           Utils::NormalizeAngle(&svv.yaw());
 

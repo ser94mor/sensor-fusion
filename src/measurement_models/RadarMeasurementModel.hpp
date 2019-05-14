@@ -69,10 +69,10 @@ namespace ser94mor
          * @param state_vector a state vector
          * @return a corresponding vector in measurement space
          */
-        MeasurementVector h(const StateVector_type& state_vector) const
+        static MeasurementVector h(const StateVector_type& state_vector)
         {
-          auto sv{state_vector};
-          ROStateVectorView_type svv{sv};
+          const auto sv{state_vector};
+          const ROStateVectorView_type svv{sv};
 
           MeasurementVector measurement_vector;
           measurement_vector << svv.range(), svv.bearing(), svv.range_rate();
@@ -87,23 +87,23 @@ namespace ser94mor
          * @param state_vector a state vector
          * @return a measurement matrix
          */
-        MeasurementMatrix_type H(const StateVector_type& state_vector) const
+        static MeasurementMatrix_type H(const StateVector_type& state_vector)
         {
-          auto sv{state_vector};
-          ROStateVectorView_type svv{sv};
+          const auto sv{state_vector};
+          const ROStateVectorView_type svv{sv};
 
-          auto rho{svv.range()};
-          auto rho_2{rho*rho};
-          auto rho_3{rho_2*rho};
-          auto tmp1{svv.px()/rho};
-          auto tmp2{svv.py()/rho};
+          const auto rho{svv.range()};
+          const auto rho_2{rho*rho};
+          const auto rho_3{rho_2*rho};
+          const auto tmp1{svv.px()/rho};
+          const auto tmp2{svv.py()/rho};
 
           MeasurementMatrix_type measurement_matrix{MeasurementMatrix_type::Zero()};
           switch (ProcessModel::Kind())
           {
             case PMKind::CV:
             {
-              auto tmp3{svv.vx()*svv.py()-svv.vy()*svv.px()};
+              const auto tmp3{svv.vx()*svv.py()-svv.vy()*svv.px()};
 
               measurement_matrix(0,0) = tmp1;
               measurement_matrix(0,1) = tmp2;
@@ -121,10 +121,10 @@ namespace ser94mor
 
             case PMKind::CTRV:
             {
-              auto sin{std::sin(svv.yaw())};
-              auto cos{std::cos(svv.yaw())};
-              auto tmp4{svv.v()/rho};
-              auto tmp5{svv.px()*cos + svv.py()*sin};
+              const auto sin1{std::sin(svv.yaw())};
+              const auto cos1{std::cos(svv.yaw())};
+              const auto tmp4{svv.v()/rho};
+              const auto tmp5{svv.px()*cos1 + svv.py()*sin1};
 
               measurement_matrix(0,0) = tmp1;
               measurement_matrix(0,1) = tmp2;
@@ -132,10 +132,10 @@ namespace ser94mor
               measurement_matrix(1,0) = -svv.py() / rho_2;
               measurement_matrix(1,1) =  svv.px() / rho_2;
 
-              measurement_matrix(2,0) = tmp4 * (cos - svv.px() * tmp5 / rho_2);
-              measurement_matrix(2,1) = tmp4 * (sin - svv.py() * tmp5 / rho_2);
+              measurement_matrix(2,0) = tmp4 * (cos1 - svv.px() * tmp5 / rho_2);
+              measurement_matrix(2,1) = tmp4 * (sin1 - svv.py() * tmp5 / rho_2);
               measurement_matrix(2,2) = tmp5 / rho;
-              measurement_matrix(2,3) = tmp4 * (svv.py()*cos - svv.px()*sin);
+              measurement_matrix(2,3) = tmp4 * (svv.py()*cos1 - svv.px()*sin1);
 
               break;
             }

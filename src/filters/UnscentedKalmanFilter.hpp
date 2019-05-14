@@ -66,7 +66,7 @@ namespace ser94mor
       constexpr static double_t SigmaPointSpreadingParameter(int state_dims)
       {
         // the value is chosen in accordance with a well known heuristics
-        return 3.0 - state_dims;
+        return 3.0 - static_cast<double_t>(state_dims);
       }
 
       /**
@@ -122,9 +122,10 @@ namespace ser94mor
       template <int state_dims, int sigma_points_num>
       static WeightsVector<sigma_points_num> Weights()
       {
-        double_t lambda{SigmaPointSpreadingParameter(state_dims)};
-        WeightsVector<sigma_points_num> w{WeightsVector<sigma_points_num>::Constant(0.5 / (lambda + state_dims))};
-        w(0) = lambda / (lambda + state_dims);
+        const double_t lambda{SigmaPointSpreadingParameter(state_dims)};
+        WeightsVector<sigma_points_num> w{WeightsVector<sigma_points_num>::Constant(
+            0.5 / (lambda + static_cast<double_t>(state_dims)))};
+        w(0) = lambda / (lambda + static_cast<double_t>(state_dims));
 
         return w;
       }
@@ -147,14 +148,14 @@ namespace ser94mor
         constexpr double_t lambda{SigmaPointSpreadingParameter(state_dims)};
 
         // calculate square root matrix out of an augmeneted state covariance matrix
-        StateCovarianceMatrix<state_dims> L{Sigma.llt().matrixL()};
+        const StateCovarianceMatrix<state_dims> L{Sigma.llt().matrixL()};
 
         // initialize columns (i.e., sigma points) of the augmented sigma points matrix
         SigmaPointsMatrix<state_dims, sigma_points_num> Chi;
         Chi.col(0) = mu;
         for (int i = 0; i < state_dims; ++i)
         {
-          auto tmp{std::sqrt(lambda + state_dims) * L.col(i)};
+          const auto tmp{std::sqrt(lambda + static_cast<double_t>(state_dims)) * L.col(i)};
           Chi.col(i+1) = mu + tmp;
           Chi.col(i+1+state_dims) = mu - tmp;
         }
@@ -205,7 +206,7 @@ namespace ser94mor
       {
         constexpr int sigma_points_num{SigmaPointsNumber(AugmentedStateDims())};
 
-        AugmentedSigmaPointsMatrix Chi_aug{GenerateAugmentedSigmaPointsMatrix(bel, process_model)};
+        const AugmentedSigmaPointsMatrix Chi_aug{GenerateAugmentedSigmaPointsMatrix(bel, process_model)};
 
         // predict sigma points
         AugmentedPriorSigmaPointsMatrix Chi;
@@ -262,9 +263,9 @@ namespace ser94mor
         constexpr int aug_state_dims{AugmentedStateDims()};
         constexpr int sigma_points_num{SigmaPointsNumber(aug_state_dims)};
 
-        AugmentedWeightsVector w{Weights<aug_state_dims, sigma_points_num>()};
+        const AugmentedWeightsVector w{Weights<aug_state_dims, sigma_points_num>()};
 
-        AugmentedPriorSigmaPointsMatrix Chi{PredictSigmaPoints(bel, ut, dt, process_model)};
+        const AugmentedPriorSigmaPointsMatrix Chi{PredictSigmaPoints(bel, ut, dt, process_model)};
 
         // predict state vector
         OrdinaryStateVector mu_prior{OrdinaryStateVector::Zero()};
@@ -282,8 +283,8 @@ namespace ser94mor
         OrdinaryStateCovarianceMatrix Sigma_prior{OrdinaryStateCovarianceMatrix::Zero()};
         for (int i = 0; i < sigma_points_num; ++i)
         {
-          OrdinaryStateVector sigma_point{Chi.col(i)};
-          auto diff{process_model.Subtract(sigma_point, mu_prior)};
+          const OrdinaryStateVector sigma_point{Chi.col(i)};
+          const auto diff{ProcessModel::Subtract(sigma_point, mu_prior)};
           Sigma_prior += w(i) * diff * diff.transpose();
         }
 
@@ -313,10 +314,9 @@ namespace ser94mor
       {
         constexpr auto state_dims{ProcessModel::StateDims()};
 
-        OrdinaryStateVector mu{bel.mu()};
-        OrdinaryStateCovarianceMatrix Sigma{bel.Sigma()};
+        const OrdinaryStateVector mu{bel.mu()};
 
-        MeasurementSigmaPointsMatrix<sigma_points_num>
+        const MeasurementSigmaPointsMatrix<sigma_points_num>
             Zeta{ApplyMeasurementFunctionToEachSigmaPoint<state_dims, sigma_points_num>(Chi, measurement_model)};
 
         MeasurementVector z{MeasurementVector::Zero()};
@@ -330,20 +330,20 @@ namespace ser94mor
         CrossCorrelationMatrix Sigma_x_z{CrossCorrelationMatrix::Zero()};
         for (int i = 0; i < sigma_points_num; ++i)
         {
-          auto z_diff{measurement_model.Diff(Zeta.col(i), z)};
+          const auto z_diff{MeasurementModel::Diff(Zeta.col(i), z)};
           S += w(i) * z_diff * z_diff.transpose();
 
-          OrdinaryStateVector sigma_point{Chi.col(i)};
-          OrdinaryStateVector mu_diff{ProcessModel::Subtract(sigma_point, mu)};
+          const OrdinaryStateVector sigma_point{Chi.col(i)};
+          const OrdinaryStateVector mu_diff{ProcessModel::Subtract(sigma_point, mu)};
 
           Sigma_x_z += w(i) * mu_diff * z_diff.transpose();
         }
 
-        auto Kt{Sigma_x_z * S.inverse()};
+        const auto Kt{Sigma_x_z * S.inverse()};
 
         return {
             /* timestamp */               measurement.t(),
-            /* state vector */            mu + Kt * measurement_model.Diff(measurement.z(), z),
+            /* state vector */            mu + Kt * MeasurementModel::Diff(measurement.z(), z),
             /* state covariance matrix */ bel.Sigma() - Kt * S * Kt.transpose(),
         };
       }
@@ -364,7 +364,7 @@ namespace ser94mor
       template<bool enable = true>
       static auto
       Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
-      -> std::enable_if_t<not ProcessModel::IsLinear() and enable, Belief>
+      -> std::enable_if_t<!ProcessModel::IsLinear() && enable, Belief>
       {
         return std::get<0>(PredictNonLinear(bel, ut, dt, process_model));
       }
@@ -386,7 +386,7 @@ namespace ser94mor
       template<bool enable = true>
       static auto
       Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
-      -> std::enable_if_t<ProcessModel::IsLinear() and enable, Belief>
+      -> std::enable_if_t<ProcessModel::IsLinear() && enable, Belief>
       {
         return KF::Predict(bel, ut, dt, process_model);
       }
@@ -405,13 +405,14 @@ namespace ser94mor
       template<bool enable = true>
       static auto
       Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
-      -> std::enable_if_t<not MeasurementModel::IsLinear() and enable, Belief>
+      -> std::enable_if_t<!MeasurementModel::IsLinear() && enable, Belief>
       {
         constexpr auto state_dims{ProcessModel::StateDims()};
         constexpr auto sigma_points_num{SigmaPointsNumber(state_dims)};
 
-        OrdinaryWeightsVector w{Weights<state_dims, sigma_points_num>()};
-        OrdinarySigmaPointsMatrix Chi{GenerateSigmaPointsMatrix<state_dims, sigma_points_num>(bel.mu(), bel.Sigma())};
+        const OrdinaryWeightsVector w{Weights<state_dims, sigma_points_num>()};
+        const OrdinarySigmaPointsMatrix
+          Chi{GenerateSigmaPointsMatrix<state_dims, sigma_points_num>(bel.mu(), bel.Sigma())};
 
         return UpdateNonLinear<sigma_points_num>(bel, Chi, w, measurement, measurement_model);
       }
@@ -432,7 +433,7 @@ namespace ser94mor
       template<bool enable = true>
       static auto
       Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
-      -> std::enable_if_t<MeasurementModel::IsLinear() and enable, Belief>
+      -> std::enable_if_t<MeasurementModel::IsLinear() && enable, Belief>
       {
         return KF::Update(bel, measurement, measurement_model);
       }
@@ -457,10 +458,10 @@ namespace ser94mor
       static auto
       PredictUpdate(const Belief& bel, const ControlVector& ut, const Measurement& measurement,
                     const ProcessModel& process_model, const MeasurementModel& measurement_model)
-      -> std::enable_if_t<not (ProcessModel::IsLinear() or MeasurementModel::IsLinear()) and enable, Belief>
+      -> std::enable_if_t<!(ProcessModel::IsLinear() || MeasurementModel::IsLinear()) && enable, Belief>
       {
-        auto dt = measurement.t() - bel.t();
-        auto bel_Chi_w{PredictNonLinear(bel, ut, dt, process_model)};
+        const auto dt = measurement.t() - bel.t();
+        const auto bel_Chi_w{PredictNonLinear(bel, ut, dt, process_model)};
         return UpdateNonLinear(
             std::get<0>(bel_Chi_w), std::get<1>(bel_Chi_w), std::get<2>(bel_Chi_w), measurement, measurement_model);
       }
@@ -484,7 +485,7 @@ namespace ser94mor
       static auto
       PredictUpdate(const Belief& bel, const ControlVector& ut, const Measurement& measurement,
                     const ProcessModel& process_model, const MeasurementModel& measurement_model)
-      -> std::enable_if_t<(ProcessModel::IsLinear() or MeasurementModel::IsLinear()) and enable, Belief>
+      -> std::enable_if_t<(ProcessModel::IsLinear() || MeasurementModel::IsLinear()) and enable, Belief>
       {
         return KalmanFilterBase<ProcessModel, MeasurementModel, UnscentedKalmanFilter>::
                  PredictUpdate(bel, ut, measurement, process_model, measurement_model);

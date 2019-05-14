@@ -62,7 +62,7 @@ namespace ser94mor
       template <bool enable = true>
       static auto
       Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
-      -> std::enable_if_t<ProcessModel::IsLinear() and enable, Belief>
+      -> std::enable_if_t<ProcessModel::IsLinear() && enable, Belief>
       {
         auto At{process_model.A(dt)};
         return {
@@ -85,7 +85,7 @@ namespace ser94mor
       template <bool enable = true>
       static auto
       Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
-      -> std::enable_if_t<MeasurementModel::IsLinear() and enable, Belief>
+      -> std::enable_if_t<MeasurementModel::IsLinear() && enable, Belief>
       {
         const auto Ct{measurement_model.C()};
         const auto mu{bel.mu()};

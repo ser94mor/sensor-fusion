@@ -50,23 +50,64 @@ namespace ser94mor
        * @param process_noise_covariance_matrix an process noise covariance matrix
        * @param measurement_covariance_matrices
        */
-      Fusion(const typename ProcessModel::ProcessNoiseCovarianceMatrix_type process_noise_covariance_matrix,
-             const typename MeasurementModel<ProcessModel>::MeasurementCovarianceMatrix_type...
-             measurement_covariance_matrices);
+      explicit Fusion(const typename ProcessModel::ProcessNoiseCovarianceMatrix_type process_noise_covariance_matrix,
+                      const typename MeasurementModel<ProcessModel>::MeasurementCovarianceMatrix_type...
+                      measurement_covariance_matrices)
+      : processed_measurements_counter_{0}, belief_{0, {}, {}}, process_model_{}, measurement_models_{}
+      {
+
+        process_model_.SetProcessNoiseCovarianceMatrix(process_noise_covariance_matrix);
+
+        InitializeMeasurementCovarianceMatrices(
+            std::forward_as_tuple(measurement_covariance_matrices...),
+            std::index_sequence_for<MeasurementModel<ProcessModel>...>{});
+      }
 
       template <class Measurement>
-      Belief ProcessMeasurement(Measurement& measurement);
+      Belief ProcessMeasurement(const Measurement& measurement)
+      {
+        ser94mor::sensor_fusion::apply(
+            [this, &measurement](auto... measurement_model)
+            {
+              static_cast<void>(
+                  std::initializer_list<int>{(this->ProcessMeasurement(measurement, measurement_model), void(), 0)...}
+              );
+            },
+            measurement_models_
+        );
 
-      void SetBelief(const Belief& belief);
-      const Belief& GetBelief() const;
+        return belief_;
+      }
+
+      void SetBelief(const Belief& belief)
+      {
+        belief_ = belief;
+      }
+
+      const Belief& GetBelief() const
+      {
+        return belief_;
+      }
 
     private:
       template<class TupleOfMeasurementConvarianceMatrices, std::size_t... Is>
       void InitializeMeasurementCovarianceMatrices(
-          const TupleOfMeasurementConvarianceMatrices& tup, std::index_sequence<Is...>);
+          const TupleOfMeasurementConvarianceMatrices& tup, std::index_sequence<Is...>)
+      {
+        // For C++17:
+        // ((std::get<Is>(measurement_model_sensor_map_).first.SetMeasurementCovarianceMatrix(std::get<Is>(tup))), ...);
+
+        // For C++14:
+        static_cast<void>(
+            std::initializer_list<int>
+                {
+                    (std::get<Is>(measurement_models_).SetMeasurementCovarianceMatrix(std::get<Is>(tup)), void(), 0)...
+                }
+        );
+      }
 
       template<class Measurement_type, class MeasurementModel_type>
-      auto ProcessMeasurement(Measurement_type& measurement, MeasurementModel_type& measurement_model)
+      auto ProcessMeasurement(const Measurement_type& measurement, const MeasurementModel_type& measurement_model)
       -> std::enable_if_t<Measurement_type::MeasurementModelKind() == MeasurementModel_type::Kind(), void>
       {
         using ControlVector = typename ProcessModel::ControlVector_type;
@@ -85,7 +126,7 @@ namespace ser94mor
       }
 
       template<class Measurement_type, class MeasurementModel_type>
-      auto ProcessMeasurement(Measurement_type&, MeasurementModel_type&)
+      auto ProcessMeasurement(const Measurement_type&, const MeasurementModel_type&)
       -> std::enable_if_t<Measurement_type::MeasurementModelKind() != MeasurementModel_type::Kind(), void>
       {
         // Do nothing.
@@ -99,74 +140,8 @@ namespace ser94mor
       std::tuple<MeasurementModel<ProcessModel>...> measurement_models_;
     };
 
-
-    template<template<class, class> class Filter, class ProcessModel,
-        template<class> class... MeasurementModel>
-    Fusion<Filter, ProcessModel, MeasurementModel...>::
-      Fusion(const typename ProcessModel::ProcessNoiseCovarianceMatrix_type process_noise_covariance_matrix,
-             const typename MeasurementModel<ProcessModel>::MeasurementCovarianceMatrix_type...
-             measurement_covariance_matrices) :
-        processed_measurements_counter_{0},
-        belief_{0, {}, {}},
-        process_model_{},
-        measurement_models_{}
-    {
-
-      process_model_.SetProcessNoiseCovarianceMatrix(process_noise_covariance_matrix);
-
-      InitializeMeasurementCovarianceMatrices(
-          std::forward_as_tuple(measurement_covariance_matrices...),
-          std::index_sequence_for<MeasurementModel<ProcessModel>...>{});
-    }
-
-    template<template<class, class> class Filter, class ProcessModel,
-        template<class> class... MeasurementModel>
-    template<class Tuple_Of_MeasurementConvarianceMatrix, size_t... Is>
-    void Fusion<Filter, ProcessModel, MeasurementModel...>::InitializeMeasurementCovarianceMatrices(
-        const Tuple_Of_MeasurementConvarianceMatrix& tup, std::index_sequence<Is...>)
-    {
-      // For C++17:
-      // ((std::get<Is>(measurement_model_sensor_map_).first.SetMeasurementCovarianceMatrix(std::get<Is>(tup))), ...);
-
-      // For C++14:
-      (void) std::initializer_list<int>
-      {
-        (std::get<Is>(measurement_models_).SetMeasurementCovarianceMatrix(std::get<Is>(tup)), void(), 0)...
-      };
-    }
-
-    template<template<class, class> class Filter, class ProcessModel, template<class> class... MeasurementModel>
-    template<class Measurement>
-    typename Fusion<Filter, ProcessModel, MeasurementModel...>::Belief
-    Fusion<Filter, ProcessModel, MeasurementModel...>::ProcessMeasurement(Measurement& measurement)
-    {
-      ser94mor::sensor_fusion::apply(
-        [this, &measurement](auto... measurement_model)
-        {
-          (void) std::initializer_list<int>{(this->ProcessMeasurement(measurement, measurement_model), void(), 0)...};
-        },
-        measurement_models_
-      );
-
-      return belief_;
-    }
-
-    template<template<class, class> class Filter, class ProcessModel, template<class> class... MeasurementModel>
-    void Fusion<Filter, ProcessModel, MeasurementModel...>::SetBelief(const Belief& belief)
-    {
-      belief_ = belief;
-    }
-
-    template<template<class, class> class Filter, class ProcessModel, template<class> class... MeasurementModel>
-    const typename Fusion<Filter, ProcessModel, MeasurementModel...>::Belief&
-    Fusion<Filter, ProcessModel, MeasurementModel...>::GetBelief() const
-    {
-      return belief_;
-    }
-
   }
 }
-
 
 
 #endif //SENSOR_FUSION_FUSION_HPP

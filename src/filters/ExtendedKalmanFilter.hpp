@@ -60,10 +60,10 @@ namespace ser94mor
       template<bool enable = true>
       static auto
       Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
-      -> std::enable_if_t<not ProcessModel::IsLinear() and enable, Belief>
+      -> std::enable_if_t<!ProcessModel::IsLinear() && enable, Belief>
       {
-        auto mu{bel.mu()};
-        auto Gt{process_model.G(dt, mu)};
+        const auto mu{bel.mu()};
+        const auto Gt{process_model.G(dt, mu)};
         return {
             /* timestamp */               bel.t() + dt,
             /* state vector */            process_model.g(dt, ut, mu),
@@ -88,7 +88,7 @@ namespace ser94mor
       template<bool enable = true>
       static auto
       Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
-      -> std::enable_if_t<ProcessModel::IsLinear() and enable, Belief>
+      -> std::enable_if_t<ProcessModel::IsLinear() && enable, Belief>
       {
         return KF::Predict(bel, ut, dt, process_model);
       }
@@ -107,17 +107,17 @@ namespace ser94mor
       template<bool enable = true>
       static auto
       Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
-      -> std::enable_if_t<not MeasurementModel::IsLinear() and enable, Belief>
+      -> std::enable_if_t<!MeasurementModel::IsLinear() && enable, Belief>
       {
-        auto mu{bel.mu()};
-        auto Sigma{bel.Sigma()};
-        auto Ht{measurement_model.H(mu)};
-        auto Kt{Sigma * Ht.transpose() * (Ht * Sigma * Ht.transpose() + measurement_model.Q()).inverse()};
-        auto I{Eigen::Matrix<double_t, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
+        const auto mu{bel.mu()};
+        const auto Sigma{bel.Sigma()};
+        const auto Ht{measurement_model.H(mu)};
+        const auto Kt{Sigma * Ht.transpose() * (Ht * Sigma * Ht.transpose() + measurement_model.Q()).inverse()};
+        const auto I{Eigen::Matrix<double_t, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
 
         return {
           /* timestamp */               measurement.t(),
-          /* state vector */            mu + Kt * measurement_model.Diff(measurement.z(), measurement_model.h(mu)),
+          /* state vector */            mu + Kt * MeasurementModel::Diff(measurement.z(), measurement_model.h(mu)),
           /* state covariance matrix */ (I - Kt * Ht) * Sigma,
         };
       }
@@ -138,7 +138,7 @@ namespace ser94mor
       template<bool enable = true>
       static auto
       Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
-      -> std::enable_if_t<MeasurementModel::IsLinear() and enable, Belief>
+      -> std::enable_if_t<MeasurementModel::IsLinear() && enable, Belief>
       {
         return KF::Update(bel, measurement, measurement_model);
       }

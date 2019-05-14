@@ -105,21 +105,21 @@ namespace ser94mor
        * TODO: measurement covariance matrix should have 1's in px, py dimensions and much higher values
        *       for the dimensions of the state vector about which we have no information from the measurement vector.
        *
-       * @param measurement the first received measurement
+       * @param meas the first received measurement
        * @return an initial belief
        */
-      static Belief_type GetInitialBeliefBasedOn(const Measurement_type& measurement)
+      static Belief_type GetInitialBeliefBasedOn(const Measurement_type& meas)
       {
-        StateVector_type state_vector{StateVector_type::Zero()};
-        const RWStateVectorView_type svv{state_vector};
-        const ROMeasurementVectorView_type mvv{measurement.z()};
+        StateVector_type sv{StateVector_type::Zero()};
+        const RWStateVectorView_type svv{sv};
+        const ROMeasurementVectorView_type mvv{meas.z()};
 
         svv.px() = mvv.px();
         svv.py() = mvv.py();
 
         const typename ProcessModel::StateCovarianceMatrix_type
           state_covariance_matrix{ProcessModel::StateCovarianceMatrix_type::Identity()};
-        return Belief_type{measurement.t(), state_vector, state_covariance_matrix};
+        return Belief_type{meas.t(), sv, state_covariance_matrix};
       }
 
     private:

@@ -67,11 +67,11 @@ namespace ser94mor
 
       /**
        * Constructor.
-       * @param timestamp a timestamp
-       * @param measurement_vector a measurement vector
+       *
+       * @param t a timestamp
+       * @param mv a measurement vector
        */
-      Measurement(double_t timestamp, const MeasurementVector& measurement_vector)
-      : timestamp_{timestamp}, measurement_vector_{measurement_vector}
+      Measurement(double_t t, const MeasurementVector& mv) : timestamp_{t}, measurement_vector_{mv}
       {
 
       }
