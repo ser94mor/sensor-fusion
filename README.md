@@ -53,7 +53,7 @@ where
 ![CTRV_process_model_alpha](docs/pics/CTRV_process_model_alpha.png)
 and
 ![CTRV_process_model_beta](docs/pics/CTRV_process_model_beta.png)
-The results of solving these integrals depends on the yaw_rate, see [CTRVProcessModel](src/process_models/CTRVProcessModel.cpp).
+The results of solving these integrals depends on the yaw_rate, see [CTRVProcessModel](src/process_models/CTRVProcessModel.hpp).
 
 
 ## Measurement Models
