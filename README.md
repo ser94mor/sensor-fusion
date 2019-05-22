@@ -3,12 +3,12 @@
 This repository contains implementations of Kalman filter, extended Kalman filter, and unscented Kalman filter for the selected process and measurement models. 
 
 Process Models:  
-- CV (constant velocity)
-- CTRV (constant turn rate and velocity)
+- [CV (constant velocity)](#cv-constant-velocity)
+- [CTRV (constant turn rate and velocity magnitude)](#ctrv-constant-turn-rate-and-velocity-magnitude)
 
 Measurement Models:  
-- Radar 
-- Lidar
+- [Radar](#radar) 
+- [Lidar](#lidar)
 
 The project relies on the 
 [Eigen library](http://eigen.tuxfamily.org/index.php?title=Main_Page) for vector and matrix operations.
@@ -38,7 +38,7 @@ For explanations of what each variable means, please, refer to comments in the c
 
 ## Process Models
 
-The following illustration helps to understand what the state vector dimensions mean.
+The following illustration helps to understand what the state vector dimensions mean.  
 ![graph](docs/pics/graph.png)
 
 ### CV (Constant Velocity)
