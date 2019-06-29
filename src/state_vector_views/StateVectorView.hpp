@@ -18,6 +18,7 @@
 #ifndef SENSOR_FUSION_STATEVECTORVIEW_HPP
 #define SENSOR_FUSION_STATEVECTORVIEW_HPP
 
+#include <cmath>
 
 namespace ser94mor
 {
@@ -31,19 +32,23 @@ namespace ser94mor
      * @tparam StateVector a class of the state vector
      */
     template <class StateVector>
-    class RWStateVectorView
+    class RWStateVectorView : public RWVectorView<StateVector>
     {
     protected:
       /**
        * Constructor.
        * @param state_vector a state vector
        */
-      explicit RWStateVectorView(StateVector& state_vector) : state_vector_modifiable_{state_vector}
+      explicit RWStateVectorView(StateVector& state_vector) : RWVectorView<StateVector>{state_vector}
       {
 
       }
 
-      StateVector& state_vector_modifiable_;
+      /**
+       * Destructor.
+       */
+      virtual ~RWStateVectorView() = default;
+
     };
 
     /**
@@ -53,7 +58,7 @@ namespace ser94mor
      *  @tparam StateVector a class of the state vector
      */
     template <class StateVector>
-    class ROStateVectorView
+    class ROStateVectorView : public ROVectorView<StateVector>
     {
     public:
       /**
@@ -112,14 +117,15 @@ namespace ser94mor
        * Constructor.
        * @param state_vector a state vector
        */
-      explicit ROStateVectorView(const StateVector& state_vector) : state_vector_{state_vector}
+      explicit ROStateVectorView(const StateVector& state_vector) : ROVectorView<StateVector>{state_vector}
       {
 
       }
 
+      /**
+       * Destructor.
+       */
       virtual ~ROStateVectorView() = default;
-
-      const StateVector& state_vector_;
     };
 
     /**
@@ -129,7 +135,7 @@ namespace ser94mor
      *  @tparam ProcessNoiseVector a class of the process noise vector
      */
     template <class ProcessNoiseVector>
-    class ROProcessNoiseVectorView
+    class ROProcessNoiseVectorView : public ROVectorView<ProcessNoiseVector>
     {
     protected:
       /**
@@ -137,12 +143,15 @@ namespace ser94mor
        * @param process_noise_vector a process noise vector
        */
       explicit ROProcessNoiseVectorView(const ProcessNoiseVector& process_noise_vector)
-      : process_noise_vector_{process_noise_vector}
+      : ROVectorView<ProcessNoiseVector>{process_noise_vector}
       {
 
       }
 
-      const ProcessNoiseVector& process_noise_vector_;
+      /**
+       * Destructor.
+       */
+      virtual ~ROProcessNoiseVectorView() = default;
     };
 
   }

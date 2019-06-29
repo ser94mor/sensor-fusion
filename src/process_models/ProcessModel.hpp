@@ -62,25 +62,25 @@ namespace ser94mor
       /**
        * @return a number of dimensions in the state vector
        */
-      constexpr static int StateDims()
+      constexpr static size_t StateDims()
       {
-        return static_cast<int>(StateVector::SizeAtCompileTime);
+        return StateVector::SizeAtCompileTime;
       }
 
       /**
        * @return a number of dimensions in the control vector
        */
-      constexpr static int ControlDims()
+      constexpr static size_t ControlDims()
       {
-        return static_cast<int>(ControlVector::SizeAtCompileTime);
+        return ControlVector::SizeAtCompileTime;
       }
 
       /**
        * @return a number of dimensions in the process noise vector
        */
-      constexpr static int ProcessNoiseDims()
+      constexpr static size_t ProcessNoiseDims()
       {
-        return static_cast<int>(ProcessNoiseCovarianceMatrix::RowsAtCompileTime);
+        return ProcessNoiseCovarianceMatrix::RowsAtCompileTime;
       }
 
       /**
@@ -102,7 +102,7 @@ namespace ser94mor
         return process_noise_covariance_matrix_;
       }
 
-    protected:
+    private:
       ProcessNoiseCovarianceMatrix process_noise_covariance_matrix_;
     };
 

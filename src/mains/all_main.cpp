@@ -42,9 +42,9 @@ int main(int, char**)
                16.0, 17.0, 18.0,
                19.0, 20.0, 21.0;
   
-  Lidar::Measurement lidar_measurement{22.0, Lidar::MeasurementVector::Constant(23.0)};
+  const Lidar::Measurement lidar_measurement{22.0, Lidar::MeasurementVector::Constant(23.0)};
   
-  Radar::Measurement radar_measurement{24.0, Radar::MeasurementVector::Constant(25.0)};
+  const Radar::Measurement radar_measurement{24.0, Radar::MeasurementVector::Constant(25.0)};
   
   // variations of Kalman filter
   KF_CV_LIDAR_Fusion kf_cv_lidar_fusion{cv_mtx, lidar_mtx};

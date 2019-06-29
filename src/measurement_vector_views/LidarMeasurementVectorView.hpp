@@ -52,7 +52,7 @@ namespace ser94mor
          */
         virtual double_t px() const override
         {
-          return measurement_vector_(0);
+          return GetVector()(0);
         }
 
         /**
@@ -60,7 +60,7 @@ namespace ser94mor
          */
         virtual double_t py() const override
         {
-          return measurement_vector_(1);
+          return GetVector()(1);
         }
       };
 
@@ -86,7 +86,7 @@ namespace ser94mor
          */
         double_t& px() const
         {
-          return measurement_vector_modifiable_(0);
+          return GetVector()(0);
         }
 
         /**
@@ -94,7 +94,7 @@ namespace ser94mor
          */
         double_t& py() const
         {
-          return measurement_vector_modifiable_(1);
+          return GetVector()(1);
         }
       };
 

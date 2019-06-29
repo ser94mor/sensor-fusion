@@ -67,7 +67,7 @@ namespace ser94mor
       Belief ProcessMeasurement(const Measurement& measurement)
       {
         ser94mor::sensor_fusion::apply(
-            [this, &measurement](auto... measurement_model)
+            [this, &measurement](const auto... measurement_model)
             {
               static_cast<void>(
                   std::initializer_list<int>{(this->ProcessMeasurement(measurement, measurement_model), void(), 0)...}
@@ -126,7 +126,7 @@ namespace ser94mor
       }
 
       template<class Measurement_type, class MeasurementModel_type>
-      auto ProcessMeasurement(const Measurement_type&, const MeasurementModel_type&)
+      static auto ProcessMeasurement(const Measurement_type&, const MeasurementModel_type&)
       -> std::enable_if_t<Measurement_type::MeasurementModelKind() != MeasurementModel_type::Kind(), void>
       {
         // Do nothing.

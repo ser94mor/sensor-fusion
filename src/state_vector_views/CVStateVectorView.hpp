@@ -53,7 +53,7 @@ namespace ser94mor
          */
         double_t& px() const
         {
-          return state_vector_modifiable_(0);
+          return GetVector()(0);
         }
 
         /**
@@ -61,7 +61,7 @@ namespace ser94mor
          */
         double_t& py() const
         {
-          return state_vector_modifiable_(1);
+          return GetVector()(1);
         }
 
         /**
@@ -69,7 +69,7 @@ namespace ser94mor
          */
         double_t& vx() const
         {
-          return state_vector_modifiable_(2);
+          return GetVector()(2);
         }
 
         /**
@@ -77,7 +77,7 @@ namespace ser94mor
          */
         double_t& vy() const
         {
-          return state_vector_modifiable_(3);
+          return GetVector()(3);
         }
       };
 
@@ -104,7 +104,7 @@ namespace ser94mor
          */
         virtual double_t px() const override
         {
-          return state_vector_(0);
+          return GetVector()(0);
         }
 
         /**
@@ -112,7 +112,7 @@ namespace ser94mor
          */
         virtual double_t py() const override
         {
-          return state_vector_(1);
+          return GetVector()(1);
         }
 
         /**
@@ -120,7 +120,7 @@ namespace ser94mor
          */
         virtual double_t vx() const override
         {
-          return state_vector_(2);
+          return GetVector()(2);
         }
 
         /**
@@ -128,7 +128,7 @@ namespace ser94mor
          */
         virtual double_t vy() const override
         {
-          return state_vector_(3);
+          return GetVector()(3);
         }
 
         /**

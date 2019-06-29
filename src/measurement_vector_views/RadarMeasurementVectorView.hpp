@@ -54,7 +54,7 @@ namespace ser94mor
          */
         virtual double_t px() const override
         {
-          return measurement_vector_(0) * std::cos(measurement_vector_(1));
+          return GetVector()(0) * std::cos(GetVector()(1));
         }
 
         /**
@@ -62,7 +62,7 @@ namespace ser94mor
          */
         virtual double_t py() const override
         {
-          return measurement_vector_(0) * std::sin(measurement_vector_(1));
+          return GetVector()(0) * std::sin(GetVector()(1));
         }
 
         /**
@@ -70,7 +70,7 @@ namespace ser94mor
          */
         double_t range() const
         {
-          return measurement_vector_(0);
+          return GetVector()(0);
         }
 
         /**
@@ -79,7 +79,7 @@ namespace ser94mor
          */
         double_t bearing() const
         {
-          return measurement_vector_(1);
+          return GetVector()(1);
         }
 
         /**
@@ -87,7 +87,7 @@ namespace ser94mor
          */
         double_t range_rate() const
         {
-          return measurement_vector_(2);
+          return GetVector()(2);
         }
 
       };
@@ -115,7 +115,7 @@ namespace ser94mor
          */
         double_t& range() const
         {
-          return measurement_vector_modifiable_(0);
+          return GetVector()(0);
         }
 
         /**
@@ -124,7 +124,7 @@ namespace ser94mor
          */
         double_t& bearing() const
         {
-          return measurement_vector_modifiable_(1);
+          return GetVector()(1);
         }
 
         /**
@@ -132,7 +132,7 @@ namespace ser94mor
          */
         double_t& range_rate() const
         {
-          return measurement_vector_modifiable_(2);
+          return GetVector()(2);
         }
       };
 

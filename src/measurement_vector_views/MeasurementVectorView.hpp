@@ -31,7 +31,7 @@ namespace ser94mor
      * @tparam MeasurementVector a class of the measurement vector
      */
     template <class MeasurementVector>
-    class ROMeasurementVectorView
+    class ROMeasurementVectorView : public ROVectorView<MeasurementVector>
     {
     public:
       /**
@@ -50,15 +50,15 @@ namespace ser94mor
        * @param measurement_vector a measurement vector
        */
       explicit ROMeasurementVectorView(const MeasurementVector& measurement_vector)
-      : measurement_vector_{measurement_vector}
+      : ROVectorView<MeasurementVector>{measurement_vector}
       {
 
       }
 
+      /**
+       * Destructor.
+       */
       virtual ~ROMeasurementVectorView() = default;
-
-
-      const MeasurementVector& measurement_vector_;
     };
 
     /**
@@ -68,7 +68,7 @@ namespace ser94mor
      * @tparam MeasurementVector a class of the measurement vector
      */
     template <class MeasurementVector>
-    class RWMeasurementVectorView
+    class RWMeasurementVectorView : public RWVectorView<MeasurementVector>
     {
     protected:
       /**
@@ -76,12 +76,15 @@ namespace ser94mor
        * @param measurement_vector a measurement vector
        */
       explicit RWMeasurementVectorView(MeasurementVector& measurement_vector)
-      : measurement_vector_modifiable_{measurement_vector}
+      : RWVectorView<MeasurementVector>{measurement_vector}
       {
 
       }
 
-      MeasurementVector& measurement_vector_modifiable_;
+      /**
+       * Destructor.
+       */
+      virtual ~RWMeasurementVectorView() = default;
     };
 
   }

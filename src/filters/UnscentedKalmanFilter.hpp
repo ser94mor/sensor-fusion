@@ -45,7 +45,7 @@ namespace ser94mor
       /**
        * @return a number of dimensions in the augmented state vector
        */
-      constexpr static int AugmentedStateDims()
+      constexpr static size_t AugmentedStateDims()
       {
         return ProcessModel::StateDims() + ProcessModel::ProcessNoiseDims();
       }
@@ -54,7 +54,7 @@ namespace ser94mor
        * @param state_dims a number of dimensions in a state vector
        * @return a number of sigma points to generate for a state vector
        */
-      constexpr static int SigmaPointsNumber(int state_dims)
+      constexpr static size_t SigmaPointsNumber(const size_t state_dims)
       {
         return 2 * state_dims + 1;
       }
@@ -63,7 +63,7 @@ namespace ser94mor
        * @param state_dims a number of dimensions in a state vector
        * @return a sigma points spreading parameter (lambda) for augmented state vector
        */
-      constexpr static double_t SigmaPointSpreadingParameter(int state_dims)
+      constexpr static double_t SigmaPointSpreadingParameter(const size_t state_dims)
       {
         // the value is chosen in accordance with a well known heuristics
         return 3.0 - static_cast<double_t>(state_dims);
@@ -80,17 +80,17 @@ namespace ser94mor
       using MeasurementVector = typename MeasurementModel::MeasurementVector_type;
       using MeasurementCovarianceMatrix = typename MeasurementModel::MeasurementCovarianceMatrix_type;
 
-      template <int state_dims>
+      template <size_t state_dims>
       using StateVector = Eigen::Matrix<double_t, state_dims, 1>;
       using OrdinaryStateVector = StateVector<ProcessModel::StateDims()>;
       using AugmentedStateVector = StateVector<AugmentedStateDims()>;
 
-      template <int state_dims>
+      template <size_t state_dims>
       using StateCovarianceMatrix = Eigen::Matrix<double_t, state_dims, state_dims>;
       using OrdinaryStateCovarianceMatrix = StateCovarianceMatrix<ProcessModel::StateDims()>;
       using AugmentedStateCovarianceMatrix = StateCovarianceMatrix<AugmentedStateDims()>;
 
-      template <int state_dims, int sigma_points_num>
+      template <size_t state_dims, size_t sigma_points_num>
       using SigmaPointsMatrix = Eigen::Matrix<double_t, state_dims, sigma_points_num>;
       using AugmentedSigmaPointsMatrix =
           SigmaPointsMatrix<AugmentedStateDims(), SigmaPointsNumber(AugmentedStateDims())>;
@@ -99,14 +99,14 @@ namespace ser94mor
       using OrdinarySigmaPointsMatrix =
           SigmaPointsMatrix<ProcessModel::StateDims(), SigmaPointsNumber(ProcessModel::StateDims())>;
 
-      template <int sigma_points_num>
+      template <size_t sigma_points_num>
       using MeasurementSigmaPointsMatrix = SigmaPointsMatrix<MeasurementModel::MeasurementDims(), sigma_points_num>;
       using AugmentedMeasurementSigmaPointsMatrix =
           MeasurementSigmaPointsMatrix<SigmaPointsNumber(AugmentedStateDims())>;
       using OrdinaryMeasurementSigmaPointsMatrix =
           MeasurementSigmaPointsMatrix<SigmaPointsNumber(ProcessModel::StateDims())>;
 
-      template <int sigma_points_num>
+      template <size_t sigma_points_num>
       using WeightsVector = Eigen::Matrix<double_t, sigma_points_num, 1>;
       using AugmentedWeightsVector = WeightsVector<SigmaPointsNumber(AugmentedStateDims())>;
       using OrdinaryWeightsVector = WeightsVector<SigmaPointsNumber(ProcessModel::StateDims())>;
@@ -119,10 +119,10 @@ namespace ser94mor
        * @tparam sigma_points_num a number of sigma points
        * @return a sigma points weights
        */
-      template <int state_dims, int sigma_points_num>
+      template <size_t state_dims, size_t sigma_points_num>
       static WeightsVector<sigma_points_num> Weights()
       {
-        const double_t lambda{SigmaPointSpreadingParameter(state_dims)};
+        const auto lambda{SigmaPointSpreadingParameter(state_dims)};
         WeightsVector<sigma_points_num> w{WeightsVector<sigma_points_num>::Constant(
             0.5 / (lambda + static_cast<double_t>(state_dims)))};
         w(0) = lambda / (lambda + static_cast<double_t>(state_dims));
@@ -141,11 +141,11 @@ namespace ser94mor
        *
        * @return a sigma points matrix
        */
-      template <int state_dims, int sigma_points_num>
+      template <size_t state_dims, size_t sigma_points_num>
       static SigmaPointsMatrix<state_dims, sigma_points_num>
       GenerateSigmaPointsMatrix(const StateVector<state_dims>& mu, const StateCovarianceMatrix<state_dims>& Sigma)
       {
-        constexpr double_t lambda{SigmaPointSpreadingParameter(state_dims)};
+        constexpr auto lambda{SigmaPointSpreadingParameter(state_dims)};
 
         // calculate square root matrix out of an augmeneted state covariance matrix
         const StateCovarianceMatrix<state_dims> L{Sigma.llt().matrixL()};
@@ -153,7 +153,7 @@ namespace ser94mor
         // initialize columns (i.e., sigma points) of the augmented sigma points matrix
         SigmaPointsMatrix<state_dims, sigma_points_num> Chi;
         Chi.col(0) = mu;
-        for (int i = 0; i < state_dims; ++i)
+        for (size_t i = 0; i < state_dims; ++i)
         {
           const auto tmp{std::sqrt(lambda + static_cast<double_t>(state_dims)) * L.col(i)};
           Chi.col(i+1) = mu + tmp;
@@ -173,10 +173,10 @@ namespace ser94mor
       static AugmentedSigmaPointsMatrix
       GenerateAugmentedSigmaPointsMatrix(const Belief& bel, const ProcessModel& process_model)
       {
-        constexpr int aug_state_dims{AugmentedStateDims()};
-        constexpr int sigma_points_num{SigmaPointsNumber(aug_state_dims)};
-        constexpr int state_dims{ProcessModel::StateDims()};
-        constexpr int pn_dims{ProcessModel::ProcessNoiseDims()};
+        constexpr auto aug_state_dims{AugmentedStateDims()};
+        constexpr auto sigma_points_num{SigmaPointsNumber(aug_state_dims)};
+        constexpr auto state_dims{ProcessModel::StateDims()};
+        constexpr auto pn_dims{ProcessModel::ProcessNoiseDims()};
 
         // an augmented state vector
         AugmentedStateVector mu_aug{AugmentedStateVector::Zero()};
@@ -204,13 +204,13 @@ namespace ser94mor
       static AugmentedPriorSigmaPointsMatrix
       PredictSigmaPoints(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
       {
-        constexpr int sigma_points_num{SigmaPointsNumber(AugmentedStateDims())};
+        constexpr auto sigma_points_num{SigmaPointsNumber(AugmentedStateDims())};
 
         const AugmentedSigmaPointsMatrix Chi_aug{GenerateAugmentedSigmaPointsMatrix(bel, process_model)};
 
         // predict sigma points
         AugmentedPriorSigmaPointsMatrix Chi;
-        for (int i = 0; i < sigma_points_num; ++i)
+        for (size_t i = 0; i < sigma_points_num; ++i)
         {
           Chi.col(i) = process_model.g(dt, ut, Chi_aug.col(i).head(5), Chi_aug.col(i).tail(2));
         }
@@ -231,13 +231,13 @@ namespace ser94mor
        *         a number of columns is equal to the number of sigma points generated previously, that is,
        *         it is similar to the number of columns in the @param Chi matrix.
        */
-      template <int state_dims, int sigma_points_num>
+      template <size_t state_dims, size_t sigma_points_num>
       static MeasurementSigmaPointsMatrix<sigma_points_num>
       ApplyMeasurementFunctionToEachSigmaPoint(const SigmaPointsMatrix<state_dims, sigma_points_num>& Chi,
                                                const MeasurementModel& measurement_model)
       {
         MeasurementSigmaPointsMatrix<sigma_points_num> Zeta;
-        for (int i = 0; i < sigma_points_num; ++i)
+        for (size_t i = 0; i < sigma_points_num; ++i)
         {
           Zeta.col(i) = measurement_model.h(Chi.col(i));
         }
@@ -260,8 +260,8 @@ namespace ser94mor
       static std::tuple<Belief, AugmentedPriorSigmaPointsMatrix, AugmentedWeightsVector>
       PredictNonLinear(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
       {
-        constexpr int aug_state_dims{AugmentedStateDims()};
-        constexpr int sigma_points_num{SigmaPointsNumber(aug_state_dims)};
+        constexpr auto aug_state_dims{AugmentedStateDims()};
+        constexpr auto sigma_points_num{SigmaPointsNumber(aug_state_dims)};
 
         const AugmentedWeightsVector w{Weights<aug_state_dims, sigma_points_num>()};
 
@@ -269,7 +269,7 @@ namespace ser94mor
 
         // predict state vector
         OrdinaryStateVector mu_prior{OrdinaryStateVector::Zero()};
-        for (int i = 0; i < sigma_points_num; ++i)
+        for (size_t i = 0; i < sigma_points_num; ++i)
         {
           mu_prior += w(i) * Chi.col(i);
         }
@@ -281,7 +281,7 @@ namespace ser94mor
         // where it is suggested to add R process covariance matrix in this step. Here we use different approach
         // due to the specifics of some non-linear process models, such as CTRV.
         OrdinaryStateCovarianceMatrix Sigma_prior{OrdinaryStateCovarianceMatrix::Zero()};
-        for (int i = 0; i < sigma_points_num; ++i)
+        for (size_t i = 0; i < sigma_points_num; ++i)
         {
           const OrdinaryStateVector sigma_point{Chi.col(i)};
           const auto diff{ProcessModel::Subtract(sigma_point, mu_prior)};
@@ -304,7 +304,7 @@ namespace ser94mor
        *
        * @return a posterior belief, that is, after the incorporation of the measurement
        */
-      template <int sigma_points_num>
+      template <size_t sigma_points_num>
       static Belief
       UpdateNonLinear(const Belief& bel,
                       const SigmaPointsMatrix<ProcessModel::StateDims(), sigma_points_num>& Chi,
@@ -320,7 +320,7 @@ namespace ser94mor
             Zeta{ApplyMeasurementFunctionToEachSigmaPoint<state_dims, sigma_points_num>(Chi, measurement_model)};
 
         MeasurementVector z{MeasurementVector::Zero()};
-        for (int i=0; i < sigma_points_num; ++i)
+        for (size_t i=0; i < sigma_points_num; ++i)
         {
           z += w(i) * Zeta.col(i);
         }
@@ -328,7 +328,7 @@ namespace ser94mor
         // here the measurement noise is additive
         MeasurementCovarianceMatrix S{measurement_model.Q()};
         CrossCorrelationMatrix Sigma_x_z{CrossCorrelationMatrix::Zero()};
-        for (int i = 0; i < sigma_points_num; ++i)
+        for (size_t i = 0; i < sigma_points_num; ++i)
         {
           const auto z_diff{MeasurementModel::Diff(Zeta.col(i), z)};
           S += w(i) * z_diff * z_diff.transpose();
@@ -460,9 +460,10 @@ namespace ser94mor
                     const ProcessModel& process_model, const MeasurementModel& measurement_model)
       -> std::enable_if_t<!(ProcessModel::IsLinear() || MeasurementModel::IsLinear()) && enable, Belief>
       {
+        constexpr auto sigma_points_num{SigmaPointsNumber(AugmentedStateDims())};
         const auto dt = measurement.t() - bel.t();
         const auto bel_Chi_w{PredictNonLinear(bel, ut, dt, process_model)};
-        return UpdateNonLinear(
+        return UpdateNonLinear<sigma_points_num>(
             std::get<0>(bel_Chi_w), std::get<1>(bel_Chi_w), std::get<2>(bel_Chi_w), measurement, measurement_model);
       }
 

@@ -64,15 +64,15 @@ namespace ser94mor
       /**
        * @return a number of dimensions in measurement vector
        */
-      constexpr static int MeasurementDims()
+      constexpr static size_t MeasurementDims()
       {
-        return static_cast<int>(MeasurementVector::SizeAtCompileTime);
+        return MeasurementVector::SizeAtCompileTime;
       }
 
       /**
        * @return a number of state dimensions
        */
-      constexpr static int StateDims()
+      constexpr static size_t StateDims()
       {
         return ProcessModel::StateDims();
       }

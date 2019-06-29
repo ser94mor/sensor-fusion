@@ -42,7 +42,7 @@ namespace ser94mor
          */
         virtual double_t px() const override
         {
-          return state_vector_(0);
+          return GetVector()(0);
         }
 
         /**
@@ -50,7 +50,7 @@ namespace ser94mor
          */
         virtual double_t py() const override
         {
-          return state_vector_(1);
+          return GetVector()(1);
         }
 
         /**
@@ -74,7 +74,7 @@ namespace ser94mor
          */
         virtual double_t v() const override
         {
-          return state_vector_(2);
+          return GetVector()(2);
         }
 
         /**
@@ -82,7 +82,7 @@ namespace ser94mor
          */
         virtual double_t yaw() const override
         {
-          return state_vector_(3);
+          return GetVector()(3);
         }
 
         /**
@@ -90,7 +90,7 @@ namespace ser94mor
          */
         virtual double_t yaw_rate() const override
         {
-          return state_vector_(4);
+          return GetVector()(4);
         }
 
         /**
@@ -146,7 +146,7 @@ namespace ser94mor
          */
         double_t& px() const
         {
-          return this->state_vector_modifiable_(0);
+          return this->GetVector()(0);
         }
 
         /**
@@ -154,7 +154,7 @@ namespace ser94mor
          */
         double_t& py() const
         {
-          return this->state_vector_modifiable_(1);
+          return this->GetVector()(1);
         }
 
         /**
@@ -162,7 +162,7 @@ namespace ser94mor
          */
         double_t& v() const
         {
-          return this->state_vector_modifiable_(2);
+          return this->GetVector()(2);
         }
 
         /**
@@ -170,7 +170,7 @@ namespace ser94mor
          */
         double_t& yaw() const
         {
-          return this->state_vector_modifiable_(3);
+          return this->GetVector()(3);
         }
 
         /**
@@ -178,7 +178,7 @@ namespace ser94mor
          */
         double_t& yaw_rate() const
         {
-          return this->state_vector_modifiable_(4);
+          return this->GetVector()(4);
         }
         
       };
@@ -222,7 +222,7 @@ namespace ser94mor
          */
         double_t longitudinal_acceleration() const
         {
-          return process_noise_vector_(0);
+          return GetVector()(0);
         }
 
         /**
@@ -230,7 +230,7 @@ namespace ser94mor
          */
         double_t yaw_acceleration() const
         {
-          return process_noise_vector_(1);
+          return GetVector()(1);
         }
       };
 

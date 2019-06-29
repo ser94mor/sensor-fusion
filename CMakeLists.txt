@@ -33,19 +33,16 @@ set(SRC_EXCEPT_MAIN
         ${utils_SRC}
         ${beliefs_SRC}
         ${state_vector_views_SRC}
-        ${measurement_vector_views_SRC}
-)
+        ${measurement_vector_views_SRC})
 
 add_executable(sensor_fusion_udacity_sim
         ${SRC_EXCEPT_MAIN}
-        src/mains/udacity_sim_main.cpp
-)
+        src/mains/udacity_sim_main.cpp)
 target_link_libraries(sensor_fusion_udacity_sim z ssl uv uWS)
 
 add_executable(sensor_fusion_all
         ${SRC_EXCEPT_MAIN}
-        src/mains/all_main.cpp
-)
+        src/mains/all_main.cpp)
 
 add_library(Catch INTERFACE)
 add_executable( sensor_fusion_test
