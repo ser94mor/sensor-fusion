@@ -64,7 +64,7 @@ namespace ser94mor
        */
       constexpr static size_t StateDims()
       {
-        return StateVector::SizeAtCompileTime;
+        return static_cast<size_t>(StateVector::SizeAtCompileTime);
       }
 
       /**
@@ -72,7 +72,7 @@ namespace ser94mor
        */
       constexpr static size_t ControlDims()
       {
-        return ControlVector::SizeAtCompileTime;
+        return static_cast<size_t>(ControlVector::SizeAtCompileTime);
       }
 
       /**
@@ -80,7 +80,7 @@ namespace ser94mor
        */
       constexpr static size_t ProcessNoiseDims()
       {
-        return ProcessNoiseCovarianceMatrix::RowsAtCompileTime;
+        return static_cast<size_t>(ProcessNoiseCovarianceMatrix::RowsAtCompileTime);
       }
 
       /**

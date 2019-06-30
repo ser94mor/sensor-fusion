@@ -115,7 +115,7 @@ int main(int, char* argv[])
 {
   openlog(argv[0], LOG_PID, LOG_USER);
 
-  CV::ProcessNoiseCovarianceMatrix cv_mtx;
+  CVProcessNoiseCovarianceMatrix cv_mtx;
   cv_mtx << 9.0, 0.0,
             0.0, 9.0;
 

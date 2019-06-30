@@ -101,22 +101,24 @@ namespace ser94mor
       return ret;
     }
 
-    namespace CV
-    {
-      const size_t kStateVectorDims{4};
-      const size_t kControlVectorDims{4};
-      const size_t kProcessNoiseVectorDims{2};
-      const bool kIsLinear{true};
+    //
+    // CV process model definitions.
+    //
+    const size_t kCVStateVectorDims{4};
+    const size_t kCVControlVectorDims{4};
+    const size_t kCVProcessNoiseVectorDims{2};
+    const bool kCVIsLinear{true};
 
-      using StateVector                  = Eigen::Matrix<double_t, kStateVectorDims, 1>;
-      using StateCovarianceMatrix        = Eigen::Matrix<double_t, kStateVectorDims, kStateVectorDims>;
-      using StateTransitionMatrix        = Eigen::Matrix<double_t, kStateVectorDims, kStateVectorDims>;
-      using ControlVector                = Eigen::Matrix<double_t, kControlVectorDims, 1>;
-      using ControlTransitionMatrix      = Eigen::Matrix<double_t, kStateVectorDims, kControlVectorDims>;
-      using ProcessCovarianceMatrix      = Eigen::Matrix<double_t, kStateVectorDims, kStateVectorDims>;
-      using ProcessNoiseVector           = Eigen::Matrix<double_t, kProcessNoiseVectorDims, 1>;
-      using ProcessNoiseCovarianceMatrix = Eigen::Matrix<double_t, kProcessNoiseVectorDims, kProcessNoiseVectorDims>;
-    }
+    using CVStateVector                  = Eigen::Matrix<double_t, kCVStateVectorDims, 1>;
+    using CVStateCovarianceMatrix        = Eigen::Matrix<double_t, kCVStateVectorDims, kCVStateVectorDims>;
+    using CVStateTransitionMatrix        = Eigen::Matrix<double_t, kCVStateVectorDims, kCVStateVectorDims>;
+    using CVControlVector                = Eigen::Matrix<double_t, kCVControlVectorDims, 1>;
+    using CVControlTransitionMatrix      = Eigen::Matrix<double_t, kCVStateVectorDims, kCVControlVectorDims>;
+    using CVProcessCovarianceMatrix      = Eigen::Matrix<double_t, kCVStateVectorDims, kCVStateVectorDims>;
+    using CVProcessNoiseVector           = Eigen::Matrix<double_t, kCVProcessNoiseVectorDims, 1>;
+    using CVProcessNoiseCovarianceMatrix = Eigen::Matrix<double_t, kCVProcessNoiseVectorDims, kCVProcessNoiseVectorDims>;
+
+
 
     namespace CTRV
     {

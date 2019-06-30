@@ -39,21 +39,21 @@ namespace ser94mor
     //
 
     // Kalman filter
-    using KF_CV_LIDAR_Fusion = Fusion<KalmanFilter, CV::ProcessModel, Lidar::MeasurementModel>;
+    using KF_CV_LIDAR_Fusion = Fusion<KalmanFilter, CVProcessModel, Lidar::MeasurementModel>;
 
     // Extended Kalman filter
-    using EKF_CV_RADAR_Fusion = Fusion<ExtendedKalmanFilter, CV::ProcessModel, Radar::MeasurementModel>;
+    using EKF_CV_RADAR_Fusion = Fusion<ExtendedKalmanFilter, CVProcessModel, Radar::MeasurementModel>;
     using EKF_CV_LIDAR_RADAR_Fusion =
-        Fusion<ExtendedKalmanFilter, CV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
+        Fusion<ExtendedKalmanFilter, CVProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
     using EKF_CTRV_LIDAR_Fusion = Fusion<ExtendedKalmanFilter, CTRV::ProcessModel, Lidar::MeasurementModel>;
     using EKF_CTRV_RADAR_Fusion = Fusion<ExtendedKalmanFilter, CTRV::ProcessModel, Radar::MeasurementModel>;
     using EKF_CTRV_LIDAR_RADAR_Fusion =
         Fusion<ExtendedKalmanFilter, CTRV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
 
     // Unscented Kalman filter
-    using UKF_CV_RADAR_Fusion = Fusion<UnscentedKalmanFilter, CV::ProcessModel, Radar::MeasurementModel>;
+    using UKF_CV_RADAR_Fusion = Fusion<UnscentedKalmanFilter, CVProcessModel, Radar::MeasurementModel>;
     using UKF_CV_LIDAR_RADAR_Fusion =
-        Fusion<UnscentedKalmanFilter, CV::ProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
+        Fusion<UnscentedKalmanFilter, CVProcessModel, Lidar::MeasurementModel, Radar::MeasurementModel>;
     using UKF_CTRV_LIDAR_Fusion = Fusion<UnscentedKalmanFilter, CTRV::ProcessModel, Lidar::MeasurementModel>;
     using UKF_CTRV_RADAR_Fusion = Fusion<UnscentedKalmanFilter, CTRV::ProcessModel, Radar::MeasurementModel>;
     using UKF_CTRV_LIDAR_RADAR_Fusion =

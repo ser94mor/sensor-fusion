@@ -33,18 +33,18 @@ using namespace ser94mor::sensor_fusion;
 // KALMAN FILTER //
 ///////////////////
 
-TEST_CASE("KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel>>::Predict", "[filters]")
+TEST_CASE("KalmanFilter<CVProcessModel, Lidar::MeasurementModel<CVProcessModel>>::Predict", "[filters]")
 {
-  CV::ProcessModel cv_pm;
-  CV::ProcessNoiseCovarianceMatrix mtx;
+  CVProcessModel cv_pm;
+  CVProcessNoiseCovarianceMatrix mtx;
   mtx << 3.0, 7.0,
          7.0, 5.0;
   cv_pm.SetProcessNoiseCovarianceMatrix(mtx);
 
-  using KF = KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel>>;
-  using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
+  using KF = KalmanFilter<CVProcessModel, Lidar::MeasurementModel<CVProcessModel>>;
+  using BEL = Belief<CVStateVector, CVStateCovarianceMatrix>;
 
-  CV::ControlVector control_vector{CV::ControlVector::Zero()};
+  CVControlVector control_vector{CVControlVector::Zero()};
 
   Vector4d mu;
   mu << 1., 2., 3., 4.;
@@ -74,10 +74,10 @@ TEST_CASE("KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessMod
 }
 
 
-TEST_CASE("KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel>>::Update", "[filters]")
+TEST_CASE("KalmanFilter<CVProcessModel, Lidar::MeasurementModel<CVProcessModel>>::Update", "[filters]")
 {
-  using KF = KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel>>;
-  using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
+  using KF = KalmanFilter<CVProcessModel, Lidar::MeasurementModel<CVProcessModel>>;
+  using BEL = Belief<CVStateVector, CVStateCovarianceMatrix>;
 
   Vector4d mu_prior;
   mu_prior << 7., 10., 3., 4.;
@@ -91,17 +91,17 @@ TEST_CASE("KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessMod
   Lidar::MeasurementCovarianceMatrix lidar_mtx;
   lidar_mtx << 5., 4.,
                4., 3.;
-  Lidar::MeasurementModel<CV::ProcessModel> lidar_mm;
+  Lidar::MeasurementModel<CVProcessModel> lidar_mm;
   lidar_mm.SetMeasurementCovarianceMatrix(lidar_mtx);
 
   Lidar::MeasurementVector z;
   z << 11, 8;
   Lidar::Measurement measurement{2, z};
 
-  CV::StateVector state_vector_expected;
+  CVStateVector state_vector_expected;
   state_vector_expected << (6128./537.), (1499./179.), (3532./537.), (785./537.);
 
-  CV::StateCovarianceMatrix state_covariance_matrix_expected;
+  CVStateCovarianceMatrix state_covariance_matrix_expected;
   state_covariance_matrix_expected << (2633./537.),  (1411./358.), (1696./537.),  (1747./1074.),
                                       (1411./358.),  (1063./358.), (919./358.),   (413./358.),
                                       (1696./537.),  (919./358.),  (3176./537.),  (7337./1074.),
@@ -120,18 +120,18 @@ TEST_CASE("KalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessMod
 // EXTENDED KALMAN FILTER //
 ////////////////////////////
 
-TEST_CASE("ExtendedKalmanFilter<CV::ProcessModel, Radar::MeasurementModel<CV::ProcessModel>>::Predict", "[filters]")
+TEST_CASE("ExtendedKalmanFilter<CVProcessModel, Radar::MeasurementModel<CVProcessModel>>::Predict", "[filters]")
 {
-  CV::ProcessModel cv_pm;
-  CV::ProcessNoiseCovarianceMatrix mtx;
+  CVProcessModel cv_pm;
+  CVProcessNoiseCovarianceMatrix mtx;
   mtx << 3.0, 7.0,
          7.0, 5.0;
   cv_pm.SetProcessNoiseCovarianceMatrix(mtx);
 
-  using EKF = ExtendedKalmanFilter<CV::ProcessModel, Radar::MeasurementModel<CV::ProcessModel>>;
-  using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
+  using EKF = ExtendedKalmanFilter<CVProcessModel, Radar::MeasurementModel<CVProcessModel>>;
+  using BEL = Belief<CVStateVector, CVStateCovarianceMatrix>;
 
-  CV::ControlVector control_vector{CV::ControlVector::Zero()};
+  CVControlVector control_vector{CVControlVector::Zero()};
 
   Vector4d mu;
   mu << 1., 2., 3., 4.;
@@ -167,10 +167,10 @@ TEST_CASE("ExtendedKalmanFilter<CTRV::ProcessModel, Radar::MeasurementModel<CTRV
 }
 
 
-TEST_CASE("ExtendedKalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel>>::Update", "[filters]")
+TEST_CASE("ExtendedKalmanFilter<CVProcessModel, Lidar::MeasurementModel<CVProcessModel>>::Update", "[filters]")
 {
-  using EKF = ExtendedKalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::ProcessModel>>;
-  using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
+  using EKF = ExtendedKalmanFilter<CVProcessModel, Lidar::MeasurementModel<CVProcessModel>>;
+  using BEL = Belief<CVStateVector, CVStateCovarianceMatrix>;
 
   Vector4d mu_prior;
   mu_prior << 7., 10., 3., 4.;
@@ -184,17 +184,17 @@ TEST_CASE("ExtendedKalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::Pr
   Lidar::MeasurementCovarianceMatrix lidar_mtx;
   lidar_mtx << 5., 4.,
                4., 3.;
-  Lidar::MeasurementModel<CV::ProcessModel> lidar_mm;
+  Lidar::MeasurementModel<CVProcessModel> lidar_mm;
   lidar_mm.SetMeasurementCovarianceMatrix(lidar_mtx);
 
   Lidar::MeasurementVector z;
   z << 11, 8;
   Lidar::Measurement measurement{2, z};
 
-  CV::StateVector state_vector_expected;
+  CVStateVector state_vector_expected;
   state_vector_expected << (6128./537.), (1499./179.), (3532./537.), (785./537.);
 
-  CV::StateCovarianceMatrix state_covariance_matrix_expected;
+  CVStateCovarianceMatrix state_covariance_matrix_expected;
   state_covariance_matrix_expected << (2633./537.),  (1411./358.), (1696./537.),  (1747./1074.),
                                       (1411./358.),  (1063./358.), (919./358.),   (413./358.),
                                       (1696./537.),  (919./358.),  (3176./537.),  (7337./1074.),
@@ -208,10 +208,10 @@ TEST_CASE("ExtendedKalmanFilter<CV::ProcessModel, Lidar::MeasurementModel<CV::Pr
 }
 
 
-TEST_CASE("ExtendedKalmanFilter<CV::ProcessModel, Radar::MeasurementModel<CV::ProcessModel>>::Update", "[filters]")
+TEST_CASE("ExtendedKalmanFilter<CVProcessModel, Radar::MeasurementModel<CVProcessModel>>::Update", "[filters]")
 {
-  using EKF = ExtendedKalmanFilter<CV::ProcessModel, Radar::MeasurementModel<CV::ProcessModel>>;
-  using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
+  using EKF = ExtendedKalmanFilter<CVProcessModel, Radar::MeasurementModel<CVProcessModel>>;
+  using BEL = Belief<CVStateVector, CVStateCovarianceMatrix>;
 
   Vector4d mu_prior;
   mu_prior << 7., 10., 3., 4.;
@@ -226,17 +226,17 @@ TEST_CASE("ExtendedKalmanFilter<CV::ProcessModel, Radar::MeasurementModel<CV::Pr
   radar_mtx << 6., 5., 4.,
                4., 3., 2.,
                1., 3., 5.;
-  Radar::MeasurementModel<CV::ProcessModel> radar_mm;
+  Radar::MeasurementModel<CVProcessModel> radar_mm;
   radar_mm.SetMeasurementCovarianceMatrix(radar_mtx);
 
   Radar::MeasurementVector z;
   z << 11, M_PI_4,  8;
   Radar::Measurement measurement{2, z};
 
-  CV::StateVector state_vector_expected;
+  CVStateVector state_vector_expected;
   state_vector_expected << 6.5601563736393267, 8.8442906470847316, 4.421325574037267, 5.5173910728606534;
 
-  CV::StateCovarianceMatrix state_covariance_matrix_expected;
+  CVStateCovarianceMatrix state_covariance_matrix_expected;
   state_covariance_matrix_expected <<
      -7.7423273663513541,  6.0580378541632163, -7.0780179461910935,  6.4404125444715659,
       6.8607045995033218, -6.2275790258719192,  7.0179341272832367, -5.476430297456611,

@@ -31,10 +31,10 @@ using namespace Eigen;
 // CV //
 ////////
 
-TEST_CASE("CV::ProcessModel::A", "[process_models]")
+TEST_CASE("CVProcessModel::A", "[process_models]")
 {
-  CV::ProcessModel cv_pm;
-  CV::ProcessNoiseCovarianceMatrix mtx;
+  CVProcessModel cv_pm;
+  CVProcessNoiseCovarianceMatrix mtx;
   mtx << 9.0, 0.0,
          0.0, 9.0;
   cv_pm.SetProcessNoiseCovarianceMatrix(mtx);
@@ -49,10 +49,10 @@ TEST_CASE("CV::ProcessModel::A", "[process_models]")
 }
 
 
-TEST_CASE("CV::ProcessModel::B", "[process_models]")
+TEST_CASE("CVProcessModel::B", "[process_models]")
 {
-  CV::ProcessModel cv_pm;
-  CV::ProcessNoiseCovarianceMatrix mtx;
+  CVProcessModel cv_pm;
+  CVProcessNoiseCovarianceMatrix mtx;
   mtx << 9.0, 0.0,
          0.0, 9.0;
   cv_pm.SetProcessNoiseCovarianceMatrix(mtx);
@@ -63,10 +63,10 @@ TEST_CASE("CV::ProcessModel::B", "[process_models]")
 }
 
 
-TEST_CASE("CV::ProcessModel::R", "[process_models]")
+TEST_CASE("CVProcessModel::R", "[process_models]")
 {
-  CV::ProcessModel cv_pm1;
-  CV::ProcessNoiseCovarianceMatrix mtx1;
+  CVProcessModel cv_pm1;
+  CVProcessNoiseCovarianceMatrix mtx1;
   mtx1 << 9.0, 0.0,
           0.0, 9.0;
   cv_pm1.SetProcessNoiseCovarianceMatrix(mtx1);
@@ -77,8 +77,8 @@ TEST_CASE("CV::ProcessModel::R", "[process_models]")
         4.5,  0.0, 9.0, 0.0,
         0.0,  4.5, 0.0, 9.0;
 
-  CV::ProcessModel cv_pm2;
-  CV::ProcessNoiseCovarianceMatrix mtx2;
+  CVProcessModel cv_pm2;
+  CVProcessNoiseCovarianceMatrix mtx2;
   mtx2 << 3.0, 7.0,
           7.0, 5.0;
   cv_pm2.SetProcessNoiseCovarianceMatrix(mtx2);
@@ -94,45 +94,45 @@ TEST_CASE("CV::ProcessModel::R", "[process_models]")
 }
 
 
-TEST_CASE("CV::ProcessModel::Type", "[process_models]")
+TEST_CASE("CVProcessModel::Type", "[process_models]")
 {
-  REQUIRE(CV::ProcessModel::Type() == EntityType::ProcessModel);
+  REQUIRE(CVProcessModel::Type() == EntityType::ProcessModel);
 }
 
 
-TEST_CASE("CV::ProcessModel::TypeName", "[process_models]")
+TEST_CASE("CVProcessModel::TypeName", "[process_models]")
 {
-  REQUIRE(std::string(CV::ProcessModel::TypeName()) == "PROCESS_MODEL");
+  REQUIRE(std::string(CVProcessModel::TypeName()) == "PROCESS_MODEL");
 }
 
 
-TEST_CASE("CV::ProcessModel::Kind", "[process_models]")
+TEST_CASE("CVProcessModel::Kind", "[process_models]")
 {
-  REQUIRE(CV::ProcessModel::Kind() == PMKind::CV);
+  REQUIRE(CVProcessModel::Kind() == PMKind::CV);
 }
 
 
-TEST_CASE("CV::ProcessModel::KindName", "[process_models]")
+TEST_CASE("CVProcessModel::KindName", "[process_models]")
 {
-  REQUIRE(std::string(CV::ProcessModel::KindName()) == "CV");
+  REQUIRE(std::string(CVProcessModel::KindName()) == "CV");
 }
 
 
-TEST_CASE("CV::ProcessModel::IsLinear", "[process_models]")
+TEST_CASE("CVProcessModel::IsLinear", "[process_models]")
 {
-  REQUIRE(CV::ProcessModel::IsLinear() == true);
+  REQUIRE(CVProcessModel::IsLinear() == true);
 }
 
 
-TEST_CASE("CV::ProcessModel::ControlDims", "[process_models]")
+TEST_CASE("CVProcessModel::ControlDims", "[process_models]")
 {
-  REQUIRE(CV::ProcessModel::ControlDims() == 4);
+  REQUIRE(CVProcessModel::ControlDims() == 4);
 }
 
 
-TEST_CASE("CV::ProcessModel::StateDims", "[process_models]")
+TEST_CASE("CVProcessModel::StateDims", "[process_models]")
 {
-  REQUIRE(CV::ProcessModel::StateDims() == 4);
+  REQUIRE(CVProcessModel::StateDims() == 4);
 }
 
 

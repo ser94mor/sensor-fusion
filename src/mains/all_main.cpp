@@ -25,7 +25,7 @@ int main(int, char**)
   using namespace ser94mor::sensor_fusion;
 
   // parameter initialization
-  CV::ProcessNoiseCovarianceMatrix cv_mtx;
+  CVProcessNoiseCovarianceMatrix cv_mtx;
   cv_mtx << 1.0, 2.0,
             3.0, 4.0;
   

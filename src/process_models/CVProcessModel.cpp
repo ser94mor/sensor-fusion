@@ -23,52 +23,48 @@ namespace ser94mor
 {
   namespace sensor_fusion
   {
-    namespace CV
+    CVProcessModel::CVProcessModel()
+    : ser94mor::sensor_fusion::ProcessModel<CVStateVector, CVStateCovarianceMatrix, CVControlVector,
+                                            CVProcessNoiseCovarianceMatrix, CVROStateVectorView, CVRWStateVectorView,
+                                            PMKind::CV, kCVIsLinear>{},
+      state_transition_matrix_prototype_{CVStateTransitionMatrix::Identity()}
     {
 
-      ProcessModel::ProcessModel()
-      : ser94mor::sensor_fusion::ProcessModel<StateVector, StateCovarianceMatrix, ControlVector,
-                                              ProcessNoiseCovarianceMatrix, ROStateVectorView, RWStateVectorView,
-                                              PMKind::CV, kIsLinear>{},
-        state_transition_matrix_prototype_{StateTransitionMatrix::Identity()}
-      {
-
-      }
-
-      StateTransitionMatrix ProcessModel::A(double_t dt) const
-      {
-        StateTransitionMatrix state_transition_matrix{state_transition_matrix_prototype_};
-        state_transition_matrix(0, 2) = dt;
-        state_transition_matrix(1, 3) = dt;
-        return state_transition_matrix;
-      }
-
-      ProcessCovarianceMatrix ProcessModel::R(double_t dt) const
-      {
-        Eigen::Matrix<double_t, ProcessModel::StateDims(), 2> Gt;
-        const double_t dt_2_2 = dt * dt / 2.;
-        Gt << dt_2_2,    0.0,
-                 0.0, dt_2_2,
-                  dt,    0.0,
-                 0.0,     dt;
-        return Gt * GetProcessNoiseCovarianceMatrix() * Gt.transpose();
-      }
-
-      ControlTransitionMatrix ProcessModel::B()
-      {
-        return ControlTransitionMatrix::Zero();
-      }
-
-      StateVector ProcessModel::Subtract(const StateVector& state_vector_1, const StateVector& state_vector_2)
-      {
-        return state_vector_1 - state_vector_2;
-      }
-
-      StateVector ProcessModel::Add(const StateVector& state_vector_1, const StateVector& state_vector_2)
-      {
-        return state_vector_1 + state_vector_2;
-      }
-
     }
+
+    CVStateTransitionMatrix CVProcessModel::A(double_t dt) const
+    {
+      CVStateTransitionMatrix state_transition_matrix{state_transition_matrix_prototype_};
+      state_transition_matrix(0, 2) = dt;
+      state_transition_matrix(1, 3) = dt;
+      return state_transition_matrix;
+    }
+
+    CVProcessCovarianceMatrix CVProcessModel::R(double_t dt) const
+    {
+      Eigen::Matrix<double_t, CVProcessModel::StateDims(), 2> Gt;
+      const double_t dt_2_2 = dt * dt / 2.;
+      Gt << dt_2_2,    0.0,
+          0.0, dt_2_2,
+          dt,    0.0,
+          0.0,     dt;
+      return Gt * GetProcessNoiseCovarianceMatrix() * Gt.transpose();
+    }
+
+    CVControlTransitionMatrix CVProcessModel::B()
+    {
+      return CVControlTransitionMatrix::Zero();
+    }
+
+    CVStateVector CVProcessModel::Subtract(const CVStateVector& state_vector_1, const CVStateVector& state_vector_2)
+    {
+      return state_vector_1 - state_vector_2;
+    }
+
+    CVStateVector CVProcessModel::Add(const CVStateVector& state_vector_1, const CVStateVector& state_vector_2)
+    {
+      return state_vector_1 + state_vector_2;
+    }
+
   }
 }

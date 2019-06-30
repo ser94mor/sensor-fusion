@@ -66,7 +66,7 @@ namespace ser94mor
        */
       constexpr static size_t MeasurementDims()
       {
-        return MeasurementVector::SizeAtCompileTime;
+        return static_cast<size_t>(MeasurementVector::SizeAtCompileTime);
       }
 
       /**

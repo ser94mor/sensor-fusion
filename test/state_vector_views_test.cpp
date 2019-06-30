@@ -29,11 +29,11 @@ using namespace ser94mor::sensor_fusion;
 // CV  //
 /////////
 
-TEST_CASE("CV::ROStateVectorView", "[state_vector_views]")
+TEST_CASE("CVROStateVectorView", "[state_vector_views]")
 {
-  CV::StateVector sv;
+  CVStateVector sv;
   sv << 1., 2., 3., 4.;
-  CV::ROStateVectorView svv{sv};
+  CVROStateVectorView svv{sv};
 
   REQUIRE(Approx(1.) == svv.px());
   REQUIRE(Approx(2.) == svv.py());
@@ -48,11 +48,11 @@ TEST_CASE("CV::ROStateVectorView", "[state_vector_views]")
 }
 
 
-TEST_CASE("CV::RWStateVectorView", "[state_vector_views]")
+TEST_CASE("CVRWStateVectorView", "[state_vector_views]")
 {
-  CV::StateVector sv;
+  CVStateVector sv;
   sv << 1., 2., 3., 4.;
-  CV::RWStateVectorView svv{sv};
+  CVRWStateVectorView svv{sv};
 
   //=====
 
@@ -93,7 +93,7 @@ TEST_CASE("CV::RWStateVectorView", "[state_vector_views]")
   REQUIRE(Approx(12.) == svv.vx());
   REQUIRE(Approx(13.) == svv.vy());
 
-  CV::StateVector sv_expected;
+  CVStateVector sv_expected;
   sv_expected << 10., 11., 12., 13.;
 
   REQUIRE(sv.isApprox(sv_expected));

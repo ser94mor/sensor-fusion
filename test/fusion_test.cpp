@@ -30,9 +30,9 @@ using namespace Eigen;
 
 TEST_CASE("Fusion::ProcessMeasurement", "[fusion]")
 {
-  using BEL = Belief<CV::StateVector, CV::StateCovarianceMatrix>;
+  using BEL = Belief<CVStateVector, CVStateCovarianceMatrix>;
 
-  CV::ProcessNoiseCovarianceMatrix p_mtx;
+  CVProcessNoiseCovarianceMatrix p_mtx;
   p_mtx << 3.0, 7.0,
            7.0, 5.0;
 
@@ -50,10 +50,10 @@ TEST_CASE("Fusion::ProcessMeasurement", "[fusion]")
            4., 7., 9., 10;
   BEL belief_initial{0, mu, Sigma};
 
-  CV::StateVector state_vector_expected;
+  CVStateVector state_vector_expected;
   state_vector_expected << (6128./537.), (1499./179.), (3532./537.), (785./537.);
 
-  CV::StateCovarianceMatrix state_covariance_matrix_expected;
+  CVStateCovarianceMatrix state_covariance_matrix_expected;
   state_covariance_matrix_expected <<
       (2633./537.),  (1411./358.), (1696./537.),  (1747./1074.),
       (1411./358.),  (1063./358.), (919./358.),   (413./358.),
@@ -62,7 +62,7 @@ TEST_CASE("Fusion::ProcessMeasurement", "[fusion]")
 
   BEL belief_posterior_expected{2, state_vector_expected, state_covariance_matrix_expected};
 
-  Fusion<KalmanFilter, CV::ProcessModel, Lidar::MeasurementModel>
+  Fusion<KalmanFilter, CVProcessModel, Lidar::MeasurementModel>
   fusion{p_mtx, m_mtx};
 
   Lidar::MeasurementVector meas_vect;

@@ -29,161 +29,156 @@ namespace ser94mor
 {
   namespace sensor_fusion
   {
-    namespace CV
+    /**
+     * A read-write wrapper around StateVector for CV process model
+     * that provides meaningful accessors and setters to the StateVector components.
+     */
+    class CVRWStateVectorView : public ser94mor::sensor_fusion::RWStateVectorView<CVStateVector>
     {
+    public:
+      /**
+       * Constructor.
+       * @param sv a state vector
+       */
+      explicit CVRWStateVectorView(CVStateVector& sv) : ser94mor::sensor_fusion::RWStateVectorView<CVStateVector>{sv}
+      {
+
+      }
 
       /**
-       * A read-write wrapper around StateVector for CV process model
-       * that provides meaningful accessors and setters to the StateVector components.
+       * @return X-axis coordinate
        */
-      class RWStateVectorView : public ser94mor::sensor_fusion::RWStateVectorView<StateVector>
+      double_t& px() const
       {
-      public:
-        /**
-         * Constructor.
-         * @param sv a state vector
-         */
-        explicit RWStateVectorView(StateVector& sv) : ser94mor::sensor_fusion::RWStateVectorView<StateVector>{sv}
-        {
-
-        }
-
-        /**
-         * @return X-axis coordinate
-         */
-        double_t& px() const
-        {
-          return GetVector()(0);
-        }
-
-        /**
-         * @return Y-axis coordinate
-         */
-        double_t& py() const
-        {
-          return GetVector()(1);
-        }
-
-        /**
-         * @return X-axis velocity
-         */
-        double_t& vx() const
-        {
-          return GetVector()(2);
-        }
-
-        /**
-         * @return Y-axis velocity
-         */
-        double_t& vy() const
-        {
-          return GetVector()(3);
-        }
-      };
+        return GetVector()(0);
+      }
 
       /**
-       * A read-only wrapper around StateVector for CV process model
-       * that provides meaningful accessors to the StateVector components.
+       * @return Y-axis coordinate
        */
-      class ROStateVectorView : public ser94mor::sensor_fusion::ROStateVectorView<CV::StateVector>
+      double_t& py() const
       {
-      public:
+        return GetVector()(1);
+      }
 
-        /**
-         * Constructor.
-         * @param sv a state vector
-         */
-        explicit ROStateVectorView(const StateVector& sv)
-        : ser94mor::sensor_fusion::ROStateVectorView<CV::StateVector>{sv}
-        {
+      /**
+       * @return X-axis velocity
+       */
+      double_t& vx() const
+      {
+        return GetVector()(2);
+      }
 
-        }
+      /**
+       * @return Y-axis velocity
+       */
+      double_t& vy() const
+      {
+        return GetVector()(3);
+      }
+    };
 
-        /**
-         * @return X-axis coordinate
-         */
-        virtual double_t px() const override
-        {
-          return GetVector()(0);
-        }
+    /**
+     * A read-only wrapper around StateVector for CV process model
+     * that provides meaningful accessors to the StateVector components.
+     */
+    class CVROStateVectorView : public ser94mor::sensor_fusion::ROStateVectorView<CVStateVector>
+    {
+    public:
 
-        /**
-         * @return Y-axis coordinate
-         */
-        virtual double_t py() const override
-        {
-          return GetVector()(1);
-        }
+      /**
+       * Constructor.
+       * @param sv a state vector
+       */
+      explicit CVROStateVectorView(const CVStateVector& sv)
+          : ser94mor::sensor_fusion::ROStateVectorView<CVStateVector>{sv}
+      {
 
-        /**
-         * @return X-axis velocity
-         */
-        virtual double_t vx() const override
-        {
-          return GetVector()(2);
-        }
+      }
 
-        /**
-         * @return Y-axis velocity
-         */
-        virtual double_t vy() const override
-        {
-          return GetVector()(3);
-        }
+      /**
+       * @return X-axis coordinate
+       */
+      virtual double_t px() const override
+      {
+        return GetVector()(0);
+      }
 
-        /**
-         * @return velocity module
-         */
-        virtual double_t v() const override
-        {
-          return std::sqrt(vx()*vx() + vy()*vy());
-        }
+      /**
+       * @return Y-axis coordinate
+       */
+      virtual double_t py() const override
+      {
+        return GetVector()(1);
+      }
 
-        /**
-         * @return yaw rotation angle
-         */
-        virtual double_t yaw() const override
-        {
-          return std::acos(vx()/v());
-        }
+      /**
+       * @return X-axis velocity
+       */
+      virtual double_t vx() const override
+      {
+        return GetVector()(2);
+      }
 
-        /**
-         * @return angular velocity of yaw rotation
-         */
-        virtual double_t yaw_rate() const override
-        {
-          return 0.0;
-        }
+      /**
+       * @return Y-axis velocity
+       */
+      virtual double_t vy() const override
+      {
+        return GetVector()(3);
+      }
 
-        /**
-         * @return range: radial distance from origin
-         */
-        virtual double_t range() const override
-        {
-          const double_t rho{std::sqrt(px()*px() + py()*py())};
-          return (rho < kEpsilon) ? kEpsilon : rho;
-        }
+      /**
+       * @return velocity module
+       */
+      virtual double_t v() const override
+      {
+        return std::sqrt(vx()*vx() + vy()*vy());
+      }
 
-        /**
-         * @return bearing: angle between range and X-axis
-         * (which points into the direction of heading of our car, where sensors are installed)
-         */
-        virtual double_t bearing() const override
-        {
-          return std::atan2(py(), px());
-        }
+      /**
+       * @return yaw rotation angle
+       */
+      virtual double_t yaw() const override
+      {
+        return std::acos(vx()/v());
+      }
 
-        /**
-         * @return radial velocity: change of range, i.e., range rate
-         */
-        virtual double_t range_rate() const override
-        {
-          return (px()*vx() + py()*vy()) / range();
-        }
+      /**
+       * @return angular velocity of yaw rotation
+       */
+      virtual double_t yaw_rate() const override
+      {
+        return 0.0;
+      }
 
-      };
+      /**
+       * @return range: radial distance from origin
+       */
+      virtual double_t range() const override
+      {
+        const double_t rho{std::sqrt(px()*px() + py()*py())};
+        return (rho < kEpsilon) ? kEpsilon : rho;
+      }
 
-    }
+      /**
+       * @return bearing: angle between range and X-axis
+       * (which points into the direction of heading of our car, where sensors are installed)
+       */
+      virtual double_t bearing() const override
+      {
+        return std::atan2(py(), px());
+      }
+
+      /**
+       * @return radial velocity: change of range, i.e., range rate
+       */
+      virtual double_t range_rate() const override
+      {
+        return (px()*vx() + py()*vy()) / range();
+      }
+
+    };
   }
 }
 
