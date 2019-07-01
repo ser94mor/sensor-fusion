@@ -27,23 +27,23 @@ using namespace ser94mor::sensor_fusion;
 
 TEST_CASE("Utils::NormalizeAngle", "[utils]")
 {
-  CTRV::StateVector sv1;
+  CTRVStateVector sv1;
   sv1 << 1., 2., 3., 98 * M_PI, M_PI_2;
 
-  CTRV::StateVector sv2;
+  CTRVStateVector sv2;
   sv2 << 1., 2., 3., -99 * M_PI - 0.001, M_PI_2;
 
-  CTRV::RWStateVectorView svv1{sv1};
+  CTRVRWStateVectorView svv1{sv1};
 
-  CTRV::RWStateVectorView svv2{sv2};
+  CTRVRWStateVectorView svv2{sv2};
 
   Utils::NormalizeAngle(&svv1.yaw());
   Utils::NormalizeAngle(&svv2.yaw());
 
-  CTRV::StateVector sv_expected1;
+  CTRVStateVector sv_expected1;
   sv_expected1 << 1., 2., 3., 0., M_PI_2;
 
-  CTRV::StateVector sv_expected2;
+  CTRVStateVector sv_expected2;
   sv_expected2 << 1., 2., 3., M_PI - 0.001, M_PI_2;
 
   REQUIRE(sv1.isApprox(sv_expected1));

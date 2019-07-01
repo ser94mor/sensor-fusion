@@ -104,11 +104,11 @@ TEST_CASE("CVRWStateVectorView", "[state_vector_views]")
 // CTRV  //
 ///////////
 
-TEST_CASE("CTRV::ROStateVectorView", "[state_vector_views]")
+TEST_CASE("CTRVROStateVectorView", "[state_vector_views]")
 {
-  CTRV::StateVector sv;
+  CTRVStateVector sv;
   sv << 1., 2., 3., M_PI/6., M_PI/12.;
-  CTRV::ROStateVectorView svv{sv};
+  CTRVROStateVectorView svv{sv};
 
   REQUIRE(Approx(1.) == svv.px());
   REQUIRE(Approx(2.) == svv.py());
@@ -123,23 +123,23 @@ TEST_CASE("CTRV::ROStateVectorView", "[state_vector_views]")
 }
 
 
-TEST_CASE("CTRV::ROProcessNoiseVectorView", "[state_vector_views]")
+TEST_CASE("CTRVROProcessNoiseVectorView", "[state_vector_views]")
 {
-  CTRV::ProcessNoiseVector pnv;
+  CTRVProcessNoiseVector pnv;
   pnv << 1., 2.;
 
-  CTRV::ROProcessNoiseVectorView pnvv{pnv};
+  CTRVROProcessNoiseVectorView pnvv{pnv};
 
   REQUIRE(Approx(1.) == pnvv.longitudinal_acceleration());
   REQUIRE(Approx(2.) == pnvv.yaw_acceleration());
 }
 
 
-TEST_CASE("CTRV::RWStateVectorView", "[state_vector_views]")
+TEST_CASE("CTRVRWStateVectorView", "[state_vector_views]")
 {
-  CTRV::StateVector sv;
+  CTRVStateVector sv;
   sv << 1., 2., 3., M_PI/6., M_PI/12.;
-  CTRV::RWStateVectorView svv{sv};
+  CTRVRWStateVectorView svv{sv};
 
   //=====
 
@@ -194,18 +194,18 @@ TEST_CASE("CTRV::RWStateVectorView", "[state_vector_views]")
   REQUIRE(Approx(M_PI/3.) == svv.yaw());
   REQUIRE(Approx(M_PI) == svv.yaw_rate());
 
-  CTRV::StateVector sv_expected;
+  CTRVStateVector sv_expected;
   sv_expected << 10., 11., 12., M_PI/3., M_PI;
 
   REQUIRE(sv.isApprox(sv_expected));
 }
 
-TEST_CASE("CTRV::RWStateVectorViewBase", "[state_vector_views]")
+TEST_CASE("CTRVRWStateVectorViewBase", "[state_vector_views]")
 {
-  using StateVector_type = Eigen::Matrix<double_t, CTRV::kStateVectorDims + CTRV::kProcessNoiseVectorDims, 1>;
+  using StateVector_type = Eigen::Matrix<double_t, kCTRVStateVectorDims + kCTRVProcessNoiseVectorDims, 1>;
   StateVector_type sv;
   sv << 1., 2., 3., M_PI/6., M_PI/12., 11., 15.;
-  CTRV::RWStateVectorViewBase<StateVector_type> svv{sv};
+  CTRVRWStateVectorViewBase<StateVector_type> svv{sv};
 
   //=====
 

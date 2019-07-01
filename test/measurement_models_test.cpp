@@ -42,11 +42,11 @@ TEST_CASE("Lidar::MeasurementModel<*>::C", "[measurement_models]")
     REQUIRE(lidar_mm_cv.C().isApprox(meas_mtx_cv));
   }
 
-  SECTION("CTRV::ProcessModel")
+  SECTION("CTRVProcessModel")
   {
-    Lidar::MeasurementModel<CTRV::ProcessModel> lidar_mm_ctrv;
-    Lidar::MeasurementModel<CTRV::ProcessModel>::MeasurementMatrix_type
-        meas_mtx_ctrv{Lidar::MeasurementModel<CTRV::ProcessModel>::MeasurementMatrix_type::Identity()};
+    Lidar::MeasurementModel<CTRVProcessModel> lidar_mm_ctrv;
+    Lidar::MeasurementModel<CTRVProcessModel>::MeasurementMatrix_type
+        meas_mtx_ctrv{Lidar::MeasurementModel<CTRVProcessModel>::MeasurementMatrix_type::Identity()};
 
     REQUIRE(lidar_mm_ctrv.C().isApprox(meas_mtx_ctrv));
   }
@@ -67,9 +67,9 @@ TEST_CASE("Lidar::MeasurementModel<*>::Q", "[measurement_models]")
     REQUIRE(lidar_mm_cv.Q().isApprox(lidar_mtx));
   }
 
-  SECTION("CTRV::ProcessModel")
+  SECTION("CTRVProcessModel")
   {
-    Lidar::MeasurementModel<CTRV::ProcessModel> lidar_mm_ctrv;
+    Lidar::MeasurementModel<CTRVProcessModel> lidar_mm_ctrv;
     lidar_mm_ctrv.SetMeasurementCovarianceMatrix(lidar_mtx);
 
     REQUIRE(lidar_mm_ctrv.Q().isApprox(lidar_mtx));
@@ -80,49 +80,49 @@ TEST_CASE("Lidar::MeasurementModel<*>::Q", "[measurement_models]")
 TEST_CASE("Lidar::MeasurementModel<*>::Type", "[measurement_models]")
 {
   REQUIRE(Lidar::MeasurementModel<CVProcessModel>::Type() == EntityType::MeasurementModel);
-  REQUIRE(Lidar::MeasurementModel<CTRV::ProcessModel>::Type() == EntityType::MeasurementModel);
+  REQUIRE(Lidar::MeasurementModel<CTRVProcessModel>::Type() == EntityType::MeasurementModel);
 }
 
 
 TEST_CASE("Lidar::MeasurementModel<*>::TypeName", "[measurement_models]")
 {
   REQUIRE(std::string(Lidar::MeasurementModel<CVProcessModel>::TypeName()) == "MEASUREMENT_MODEL");
-  REQUIRE(std::string(Lidar::MeasurementModel<CTRV::ProcessModel>::TypeName()) == "MEASUREMENT_MODEL");
+  REQUIRE(std::string(Lidar::MeasurementModel<CTRVProcessModel>::TypeName()) == "MEASUREMENT_MODEL");
 }
 
 
 TEST_CASE("Lidar::MeasurementModel<*>::Kind", "[measurement_models]")
 {
   REQUIRE(Lidar::MeasurementModel<CVProcessModel>::Kind() == MMKind::Lidar);
-  REQUIRE(Lidar::MeasurementModel<CTRV::ProcessModel>::Kind() == MMKind::Lidar);
+  REQUIRE(Lidar::MeasurementModel<CTRVProcessModel>::Kind() == MMKind::Lidar);
 }
 
 
 TEST_CASE("Lidar::MeasurementModel<*>::KindName", "[measurement_models]")
 {
   REQUIRE(std::string(Lidar::MeasurementModel<CVProcessModel>::KindName()) == "LIDAR");
-  REQUIRE(std::string(Lidar::MeasurementModel<CTRV::ProcessModel>::KindName()) == "LIDAR");
+  REQUIRE(std::string(Lidar::MeasurementModel<CTRVProcessModel>::KindName()) == "LIDAR");
 }
 
 
 TEST_CASE("Lidar::MeasurementModel<*>::IsLinear", "[measurement_models]")
 {
   REQUIRE(Lidar::MeasurementModel<CVProcessModel>::IsLinear() == true);
-  REQUIRE(Lidar::MeasurementModel<CTRV::ProcessModel>::IsLinear() == true);
+  REQUIRE(Lidar::MeasurementModel<CTRVProcessModel>::IsLinear() == true);
 }
 
 
 TEST_CASE("Lidar::MeasurementModel<*>::MeasurementDims", "[measurement_models]")
 {
   REQUIRE(Lidar::MeasurementModel<CVProcessModel>::MeasurementDims() == 2);
-  REQUIRE(Lidar::MeasurementModel<CTRV::ProcessModel>::MeasurementDims() == 2);
+  REQUIRE(Lidar::MeasurementModel<CTRVProcessModel>::MeasurementDims() == 2);
 }
 
 
 TEST_CASE("Lidar::MeasurementModel<*>::StateDims", "[measurement_models]")
 {
   REQUIRE(Lidar::MeasurementModel<CVProcessModel>::StateDims() == 4);
-  REQUIRE(Lidar::MeasurementModel<CTRV::ProcessModel>::StateDims() == 5);
+  REQUIRE(Lidar::MeasurementModel<CTRVProcessModel>::StateDims() == 5);
 }
 
 
@@ -146,15 +146,15 @@ TEST_CASE("Lidar::MeasurementModel<*>::GetInitialBeliefBasedOn", "[measurement_m
     REQUIRE(belief_cv == belief_expected_cv);
   }
 
-  SECTION("CTRV::ProcessModel")
+  SECTION("CTRVProcessModel")
   {
-    auto belief_ctrv{Lidar::MeasurementModel<CTRV::ProcessModel>::GetInitialBeliefBasedOn(measurement)};
+    auto belief_ctrv{Lidar::MeasurementModel<CTRVProcessModel>::GetInitialBeliefBasedOn(measurement)};
 
-    CTRV::StateVector sv_ctrv;
+    CTRVStateVector sv_ctrv;
     sv_ctrv << 3., 4., 0., 0., 0.;
 
-    CTRV::StateCovarianceMatrix scm_ctrv{CTRV::StateCovarianceMatrix::Identity()};
-    CTRV::ProcessModel::Belief_type belief_expected_ctrv{measurement.t(), sv_ctrv, scm_ctrv};
+    CTRVStateCovarianceMatrix scm_ctrv{CTRVStateCovarianceMatrix::Identity()};
+    CTRVProcessModel::Belief_type belief_expected_ctrv{measurement.t(), sv_ctrv, scm_ctrv};
 
     REQUIRE(belief_ctrv == belief_expected_ctrv);
   }
@@ -180,11 +180,11 @@ TEST_CASE("Radar::MeasurementModel<*>::h", "[measurement_models]")
     REQUIRE(radar_mm.h(state_vector).isApprox(measurement_vector));
   }
 
-  SECTION("CTRV::ProcessModel")
+  SECTION("CTRVProcessModel")
   {
-    Radar::MeasurementModel<CTRV::ProcessModel> radar_mm;
+    Radar::MeasurementModel<CTRVProcessModel> radar_mm;
 
-    CTRV::StateVector state_vector;
+    CTRVStateVector state_vector;
     state_vector << 3., 4., 2., M_PI/6., M_PI/12.;
 
     Radar::MeasurementVector measurement_vector;
@@ -212,14 +212,14 @@ TEST_CASE("Radar::MeasurementModel<*>::H", "[measurement_models]")
     REQUIRE(radar_mm.H(state_vector).isApprox(measurement_matrix));
   }
 
-  SECTION("CTRV::ProcessModel")
+  SECTION("CTRVProcessModel")
   {
-    Radar::MeasurementModel<CTRV::ProcessModel> radar_mm;
+    Radar::MeasurementModel<CTRVProcessModel> radar_mm;
 
-    CTRV::StateVector state_vector;
+    CTRVStateVector state_vector;
     state_vector << 1., 2., 3., M_PI / 6., M_PI/12.;
 
-    Radar::MeasurementModel<CTRV::ProcessModel>::MeasurementMatrix_type measurement_matrix;
+    Radar::MeasurementModel<CTRVProcessModel>::MeasurementMatrix_type measurement_matrix;
     measurement_matrix <<     1./std::sqrt(5.), 2./std::sqrt(5.), 0., 0., 0.,
                                           -0.4,              0.2, 0., 0., 0.,
       (6.*std::sqrt(3.)-3.)/(5.*std::sqrt(5.)), ((3.-6*std::sqrt(3.))/(10.*std::sqrt((5.)))),
@@ -245,9 +245,9 @@ TEST_CASE("Radar::MeasurementModel<*>::Q", "[measurement_models]")
     REQUIRE(radar_mm_cv.Q().isApprox(radar_mtx));
   }
 
-  SECTION("CTRV::ProcessModel")
+  SECTION("CTRVProcessModel")
   {
-    Radar::MeasurementModel<CTRV::ProcessModel> radar_mm_ctrv;
+    Radar::MeasurementModel<CTRVProcessModel> radar_mm_ctrv;
     radar_mm_ctrv.SetMeasurementCovarianceMatrix(radar_mtx);
 
     REQUIRE(radar_mm_ctrv.Q().isApprox(radar_mtx));
@@ -258,49 +258,49 @@ TEST_CASE("Radar::MeasurementModel<*>::Q", "[measurement_models]")
 TEST_CASE("Radar::MeasurementModel<*>::Type", "[measurement_models]")
 {
   REQUIRE(Radar::MeasurementModel<CVProcessModel>::Type() == EntityType::MeasurementModel);
-  REQUIRE(Radar::MeasurementModel<CTRV::ProcessModel>::Type() == EntityType::MeasurementModel);
+  REQUIRE(Radar::MeasurementModel<CTRVProcessModel>::Type() == EntityType::MeasurementModel);
 }
 
 
 TEST_CASE("Radar::MeasurementModel<*>::TypeName", "[measurement_models]")
 {
   REQUIRE(std::string(Radar::MeasurementModel<CVProcessModel>::TypeName()) == "MEASUREMENT_MODEL");
-  REQUIRE(std::string(Radar::MeasurementModel<CTRV::ProcessModel>::TypeName()) == "MEASUREMENT_MODEL");
+  REQUIRE(std::string(Radar::MeasurementModel<CTRVProcessModel>::TypeName()) == "MEASUREMENT_MODEL");
 }
 
 
 TEST_CASE("Radar::MeasurementModel<*>::Kind", "[measurement_models]")
 {
   REQUIRE(Radar::MeasurementModel<CVProcessModel>::Kind() == MMKind::Radar);
-  REQUIRE(Radar::MeasurementModel<CTRV::ProcessModel>::Kind() == MMKind::Radar);
+  REQUIRE(Radar::MeasurementModel<CTRVProcessModel>::Kind() == MMKind::Radar);
 }
 
 
 TEST_CASE("Radar::MeasurementModel<*>::KindName", "[measurement_models]")
 {
   REQUIRE(std::string(Radar::MeasurementModel<CVProcessModel>::KindName()) == "RADAR");
-  REQUIRE(std::string(Radar::MeasurementModel<CTRV::ProcessModel>::KindName()) == "RADAR");
+  REQUIRE(std::string(Radar::MeasurementModel<CTRVProcessModel>::KindName()) == "RADAR");
 }
 
 
 TEST_CASE("Radar::MeasurementModel<*>::IsLinear", "[measurement_models]")
 {
   REQUIRE(Radar::MeasurementModel<CVProcessModel>::IsLinear() == false);
-  REQUIRE(Radar::MeasurementModel<CTRV::ProcessModel>::IsLinear() == false);
+  REQUIRE(Radar::MeasurementModel<CTRVProcessModel>::IsLinear() == false);
 }
 
 
 TEST_CASE("Radar::MeasurementModel<*>::MeasurementDims", "[measurement_models]")
 {
   REQUIRE(Radar::MeasurementModel<CVProcessModel>::MeasurementDims() == 3);
-  REQUIRE(Radar::MeasurementModel<CTRV::ProcessModel>::MeasurementDims() == 3);
+  REQUIRE(Radar::MeasurementModel<CTRVProcessModel>::MeasurementDims() == 3);
 }
 
 
 TEST_CASE("Radar::MeasurementModel<*>::StateDims", "[measurement_models]")
 {
   REQUIRE(Radar::MeasurementModel<CVProcessModel>::StateDims() == 4);
-  REQUIRE(Radar::MeasurementModel<CTRV::ProcessModel>::StateDims() == 5);
+  REQUIRE(Radar::MeasurementModel<CTRVProcessModel>::StateDims() == 5);
 }
 
 
@@ -324,15 +324,15 @@ TEST_CASE("Radar::MeasurementModel<*>::GetInitialBeliefBasedOn", "[measurement_m
     REQUIRE(belief_cv == belief_expected_cv);
   }
 
-  SECTION("CTRV::ProcessModel")
+  SECTION("CTRVProcessModel")
   {
-    CTRV::StateVector sv_ctrv;
+    CTRVStateVector sv_ctrv;
     sv_ctrv << 3. * std::sqrt(3.) / 2., 3. / 2., 0., 0., 0.;
 
-    CTRV::StateCovarianceMatrix scm_ctrv{CTRV::StateCovarianceMatrix::Identity()};
+    CTRVStateCovarianceMatrix scm_ctrv{CTRVStateCovarianceMatrix::Identity()};
 
-    auto belief_ctrv{Radar::MeasurementModel<CTRV::ProcessModel>::GetInitialBeliefBasedOn(measurement)};
-    CTRV::ProcessModel::Belief_type belief_expected_ctrv{measurement.t(), sv_ctrv, scm_ctrv};
+    auto belief_ctrv{Radar::MeasurementModel<CTRVProcessModel>::GetInitialBeliefBasedOn(measurement)};
+    CTRVProcessModel::Belief_type belief_expected_ctrv{measurement.t(), sv_ctrv, scm_ctrv};
 
     REQUIRE(belief_ctrv == belief_expected_ctrv);
   }

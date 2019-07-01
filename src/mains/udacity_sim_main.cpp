@@ -113,13 +113,15 @@ constexpr double_t us_to_s(std::time_t us)
 
 int main(int, char* argv[])
 {
+  using ROStateVectorView = CTRVROStateVectorView;
+
   openlog(argv[0], LOG_PID, LOG_USER);
 
   CVProcessNoiseCovarianceMatrix cv_mtx;
   cv_mtx << 9.0, 0.0,
             0.0, 9.0;
 
-  CTRV::ProcessNoiseCovarianceMatrix ctrv_mtx;
+  CTRVProcessNoiseCovarianceMatrix ctrv_mtx;
   ctrv_mtx << 0.126025,  0.0,
               0.0,      0.16;
 
@@ -217,7 +219,7 @@ int main(int, char* argv[])
             auto belief{fusion.ProcessMeasurement(measurement)};
 
             const auto& sv{belief.mu()};
-            CTRV::ROStateVectorView state_vector_view{sv};
+            ROStateVectorView state_vector_view{sv};
             estimate(0) = state_vector_view.px();
             estimate(1) = state_vector_view.py();
             estimate(2) = state_vector_view.vx();
@@ -230,7 +232,7 @@ int main(int, char* argv[])
             auto belief{fusion.ProcessMeasurement(measurement)};
 
             const auto& sv{belief.mu()};
-            CTRV::ROStateVectorView state_vector_view{sv};
+            ROStateVectorView state_vector_view{sv};
             estimate(0) = state_vector_view.px();
             estimate(1) = state_vector_view.py();
             estimate(2) = state_vector_view.vx();

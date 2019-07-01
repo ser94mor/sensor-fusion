@@ -140,28 +140,28 @@ TEST_CASE("CVProcessModel::StateDims", "[process_models]")
 // CTRV //
 //////////
 
-TEST_CASE("CTRV::ProcessModel::g", "[process_models]")
+TEST_CASE("CTRVProcessModel::g", "[process_models]")
 {
-  CTRV::ProcessModel ctrv_pm;
+  CTRVProcessModel ctrv_pm;
 
-  CTRV::StateVector sv1;
+  CTRVStateVector sv1;
   sv1 << 1., 2., 3., M_PI / 6., M_PI/12.;
 
-  CTRV::StateVector sv2;
+  CTRVStateVector sv2;
   sv2 << 1., 2., 3., M_PI / 6., -kEpsilon / 10.;
 
-  CTRV::ControlVector cv{CTRV::ControlVector::Zero()};
+  CTRVControlVector cv{CTRVControlVector::Zero()};
 
   double_t dt{2.};
 
-  CTRV::StateVector sv1_expected;
+  CTRVStateVector sv1_expected;
   sv1_expected << (1. + (18.*(std::sqrt(3.)-1.))/M_PI),
                   (2. + (18.*(std::sqrt(3.)-1.))/M_PI),
                   3.,
                   M_PI / 3.,
                   M_PI / 12.;
 
-  CTRV::StateVector sv2_expected;
+  CTRVStateVector sv2_expected;
   sv2_expected << (1. + 3.*std::sqrt(3.)), 5., 3., M_PI / 6., 0.;
 
 
@@ -170,21 +170,21 @@ TEST_CASE("CTRV::ProcessModel::g", "[process_models]")
 }
 
 
-TEST_CASE("CTRV::ProcessModel::G", "[process_model]")
+TEST_CASE("CTRVProcessModel::G", "[process_model]")
 {
   // TODO: write this unit test
 }
 
 
-TEST_CASE("CTRV::ProcessModel::R", "[process_models]")
+TEST_CASE("CTRVProcessModel::R", "[process_models]")
 {
-  CTRV::ProcessModel pm;
-  CTRV::ProcessNoiseCovarianceMatrix mtx;
+  CTRVProcessModel pm;
+  CTRVProcessNoiseCovarianceMatrix mtx;
   mtx << 3.0, 7.0,
          7.0, 5.0;
   pm.SetProcessNoiseCovarianceMatrix(mtx);
 
-  CTRV::StateCovarianceMatrix R_expected;
+  CTRVStateCovarianceMatrix R_expected;
   R_expected <<         9.0, 5.1961524227066311, 10.392304845413264, 24.248711305964285,  24.248711305964285,
          5.1961524227066311,                3.0,                6.0,               14.0,                14.0,
          10.392304845413264,                6.0,               12.0,               28.0,                28.0,
@@ -192,50 +192,50 @@ TEST_CASE("CTRV::ProcessModel::R", "[process_models]")
          24.248711305964285,               14.0,               28.0,               20.0,                20.0;
 
   double_t dt{2.};
-  CTRV::StateVector state_vector;
+  CTRVStateVector state_vector;
   state_vector << 1., 2., 3., M_PI/6., M_PI/12.;
 
   REQUIRE(pm.R(dt, state_vector).isApprox(R_expected));
 }
 
 
-TEST_CASE("CTRV::ProcessModel::Type", "[process_models]")
+TEST_CASE("CTRVProcessModel::Type", "[process_models]")
 {
-  REQUIRE(CTRV::ProcessModel::Type() == EntityType::ProcessModel);
+  REQUIRE(CTRVProcessModel::Type() == EntityType::ProcessModel);
 }
 
 
-TEST_CASE("CTRV::ProcessModel::TypeName", "[process_models]")
+TEST_CASE("CTRVProcessModel::TypeName", "[process_models]")
 {
-  REQUIRE(std::string(CTRV::ProcessModel::TypeName()) == "PROCESS_MODEL");
+  REQUIRE(std::string(CTRVProcessModel::TypeName()) == "PROCESS_MODEL");
 }
 
 
-TEST_CASE("CTRV::ProcessModel::Kind", "[process_models]")
+TEST_CASE("CTRVProcessModel::Kind", "[process_models]")
 {
-  REQUIRE(CTRV::ProcessModel::Kind() == PMKind::CTRV);
+  REQUIRE(CTRVProcessModel::Kind() == PMKind::CTRV);
 }
 
 
-TEST_CASE("CTRV::ProcessModel::KindName", "[process_models]")
+TEST_CASE("CTRVProcessModel::KindName", "[process_models]")
 {
-  REQUIRE(std::string(CTRV::ProcessModel::KindName()) == "CTRV");
+  REQUIRE(std::string(CTRVProcessModel::KindName()) == "CTRV");
 }
 
 
-TEST_CASE("CTRV::ProcessModel::IsLinear", "[process_models]")
+TEST_CASE("CTRVProcessModel::IsLinear", "[process_models]")
 {
-  REQUIRE(CTRV::ProcessModel::IsLinear() == false);
+  REQUIRE(CTRVProcessModel::IsLinear() == false);
 }
 
 
-TEST_CASE("CTRV::ProcessModel::ControlDims", "[process_models]")
+TEST_CASE("CTRVProcessModel::ControlDims", "[process_models]")
 {
-  REQUIRE(CTRV::ProcessModel::ControlDims() == 5);
+  REQUIRE(CTRVProcessModel::ControlDims() == 5);
 }
 
 
-TEST_CASE("CTRV::ProcessModel::StateDims", "[process_models]")
+TEST_CASE("CTRVProcessModel::StateDims", "[process_models]")
 {
-  REQUIRE(CTRV::ProcessModel::StateDims() == 5);
+  REQUIRE(CTRVProcessModel::StateDims() == 5);
 }

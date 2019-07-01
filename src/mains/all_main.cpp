@@ -29,7 +29,7 @@ int main(int, char**)
   cv_mtx << 1.0, 2.0,
             3.0, 4.0;
   
-  CTRV::ProcessNoiseCovarianceMatrix ctrv_mtx;
+  CTRVProcessNoiseCovarianceMatrix ctrv_mtx;
   ctrv_mtx << 5.0, 6.0,
               7.0, 8.0;
 
