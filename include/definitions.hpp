@@ -252,9 +252,9 @@ namespace ser94mor
     protected:
       /**
        * Constructor.
-       * @param vector a vector
+       * @param v a vector
        */
-      explicit RWVectorView(Vector_t& vector) : vector_{vector}
+      explicit RWVectorView(Vector_t& v) : vector_{v}
       {
 
       }
@@ -272,7 +272,6 @@ namespace ser94mor
         return vector_;
       }
 
-    private:
       Vector_t& vector_;
     };
 
@@ -288,9 +287,9 @@ namespace ser94mor
     protected:
       /**
        * Constructor.
-       * @param vector a vector
+       * @param v a vector
        */
-      explicit ROVectorView(const Vector_t& vector) : vector_{vector}
+      explicit ROVectorView(const Vector_t& v) : vector_{v}
       {
 
       }

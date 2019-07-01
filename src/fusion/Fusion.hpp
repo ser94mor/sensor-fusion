@@ -69,7 +69,7 @@ namespace ser94mor
       Belief_type ProcessMeasurement(const Measurement_type& meas)
       {
         ser94mor::sensor_fusion::apply(
-            [this, &meas](const auto... mm)
+            [this, &meas](const auto&... mm)
             {
               static_cast<void>(
                   std::initializer_list<int>{(this->ProcessMeasurement(meas, mm), void(), 0)...}
