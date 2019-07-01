@@ -32,7 +32,7 @@ namespace ser94mor
     template<class ProcessModel_t>
     using RadarMeasurementModelBase =
         MeasurementModel<RadarMeasurementVector, RadarMeasurementCovarianceMatrix, RadarROMeasurementVectorView,
-        ProcessModel_t, MMKind::Radar, kRadarIsLinear>;
+        ProcessModel_t, MMKind::e_Radar, kRadarIsLinear>;
 
     /**
      * A concrete (Radar) measurement model. It is still a template because the dimensionality of
@@ -62,12 +62,11 @@ namespace ser94mor
 
       /**
        * A measurement function. It transforms the a vector from the state space into a measurement space.
-       * @param state_vector a state vector
+       * @param sv a state vector
        * @return a corresponding vector in measurement space
        */
-      static RadarMeasurementVector h(const StateVector_type& state_vector)
+      static RadarMeasurementVector h(const StateVector_type& sv)
       {
-        const auto sv{state_vector};
         const ROStateVectorView_type svv{sv};
 
         RadarMeasurementVector measurement_vector;
@@ -80,12 +79,11 @@ namespace ser94mor
        * A Jacobian for non-linear case corresponding to the measurement matrix "C" for the linear case.
        * It depends on the process model kind.
        *
-       * @param state_vector a state vector
+       * @param sv a state vector
        * @return a measurement matrix
        */
-      static MeasurementMatrix_type H(const StateVector_type& state_vector)
+      static MeasurementMatrix_type H(const StateVector_type& sv)
       {
-        const auto sv{state_vector};
         const ROStateVectorView_type svv{sv};
 
         const auto rho{svv.range()};
@@ -97,7 +95,7 @@ namespace ser94mor
         MeasurementMatrix_type measurement_matrix{MeasurementMatrix_type::Zero()};
         switch (ProcessModel_t::Kind())
         {
-          case PMKind::CV:
+          case PMKind::e_CV:
           {
             const auto tmp3{svv.vx()*svv.py()-svv.vy()*svv.px()};
 
@@ -115,7 +113,7 @@ namespace ser94mor
             break;
           }
 
-          case PMKind::CTRV:
+          case PMKind::e_CTRV:
           {
             const auto sin1{std::sin(svv.yaw())};
             const auto cos1{std::cos(svv.yaw())};
@@ -150,14 +148,13 @@ namespace ser94mor
        * the bearing dimension because after the vector subtraction the bearing angle may fall out of the [-pi, pi]
        * interval.
        *
-       * @param measurement_vector_1 the first measurement vector
-       * @param measurement_vector_2 the second measurement vector
+       * @param mv_1 the first measurement vector
+       * @param mv_2 the second measurement vector
        * @return the difference between the two measurement vectors
        */
-      static RadarMeasurementVector Diff(const RadarMeasurementVector& measurement_vector_1,
-                                         const RadarMeasurementVector& measurement_vector_2)
+      static RadarMeasurementVector Diff(const RadarMeasurementVector& mv_1, const RadarMeasurementVector& mv_2)
       {
-        RadarMeasurementVector diff{measurement_vector_1 - measurement_vector_2};
+        RadarMeasurementVector diff{mv_1 - mv_2};
         const RadarRWMeasurementVectorView mvv{diff};
         Utils::NormalizeAngle(&mvv.bearing());
 

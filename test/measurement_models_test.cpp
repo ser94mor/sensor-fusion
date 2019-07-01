@@ -93,8 +93,8 @@ TEST_CASE("LidarMeasurementModel<*>::TypeName", "[measurement_models]")
 
 TEST_CASE("LidarMeasurementModel<*>::Kind", "[measurement_models]")
 {
-  REQUIRE(LidarMeasurementModel<CVProcessModel>::Kind() == MMKind::Lidar);
-  REQUIRE(LidarMeasurementModel<CTRVProcessModel>::Kind() == MMKind::Lidar);
+  REQUIRE(LidarMeasurementModel<CVProcessModel>::Kind() == MMKind::e_Lidar);
+  REQUIRE(LidarMeasurementModel<CTRVProcessModel>::Kind() == MMKind::e_Lidar);
 }
 
 
@@ -271,8 +271,8 @@ TEST_CASE("RadarMeasurementModel<*>::TypeName", "[measurement_models]")
 
 TEST_CASE("RadarMeasurementModel<*>::Kind", "[measurement_models]")
 {
-  REQUIRE(RadarMeasurementModel<CVProcessModel>::Kind() == MMKind::Radar);
-  REQUIRE(RadarMeasurementModel<CTRVProcessModel>::Kind() == MMKind::Radar);
+  REQUIRE(RadarMeasurementModel<CVProcessModel>::Kind() == MMKind::e_Radar);
+  REQUIRE(RadarMeasurementModel<CTRVProcessModel>::Kind() == MMKind::e_Radar);
 }
 
 

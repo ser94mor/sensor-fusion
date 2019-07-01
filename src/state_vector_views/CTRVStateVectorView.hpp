@@ -27,10 +27,10 @@ namespace ser94mor
 
       /**
        * Constructor.
-       * @param state_vector a state vector
+       * @param sv a state vector
        */
-      explicit CTRVROStateVectorView(const CTRVStateVector& state_vector)
-      : ROStateVectorView<CTRVStateVector>{state_vector}
+      explicit CTRVROStateVectorView(const CTRVStateVector& sv)
+      : ROStateVectorView<CTRVStateVector>{sv}
       {
 
       }
@@ -131,10 +131,10 @@ namespace ser94mor
     public:
       /**
        * Constructor.
-       * @param state_vector a state vector
+       * @param sv a state vector
        */
-      explicit CTRVRWStateVectorViewBase(StateVector_type& state_vector)
-      : RWStateVectorView<StateVector_type>{state_vector}
+      explicit CTRVRWStateVectorViewBase(StateVector_type& sv)
+      : RWStateVectorView<StateVector_type>{sv}
       {
 
       }
@@ -190,10 +190,10 @@ namespace ser94mor
     public:
       /**
        * Constructor.
-       * @param state_vector a state vector
+       * @param sv a state vector
        */
-      explicit CTRVRWStateVectorView(CTRVStateVector& state_vector)
-      : CTRVRWStateVectorViewBase<CTRVStateVector>{state_vector}
+      explicit CTRVRWStateVectorView(CTRVStateVector& sv)
+      : CTRVRWStateVectorViewBase<CTRVStateVector>{sv}
       {
 
       }
@@ -208,10 +208,10 @@ namespace ser94mor
     public:
       /**
        * Constructor.
-       * @param process_noise_vector a process noise vector
+       * @param pnv a process noise vector
        */
-      explicit CTRVROProcessNoiseVectorView(const CTRVProcessNoiseVector& process_noise_vector)
-      : ROProcessNoiseVectorView<CTRVProcessNoiseVector>{process_noise_vector}
+      explicit CTRVROProcessNoiseVectorView(const CTRVProcessNoiseVector& pnv)
+      : ROProcessNoiseVectorView<CTRVProcessNoiseVector>{pnv}
       {
 
       }

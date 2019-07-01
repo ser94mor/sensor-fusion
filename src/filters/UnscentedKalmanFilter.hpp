@@ -169,11 +169,11 @@ namespace ser94mor
        * Generate an augmented sigma points matrix based on the current belief.
        *
        * @param bel a current belief
-       * @param process_model an instance of process model
+       * @param pm an instance of process model
        * @return an augmented sigma points matrix
        */
       static AugmentedSigmaPointsMatrix
-      GenerateAugmentedSigmaPointsMatrix(const Belief_type& bel, const ProcessModel_t& process_model)
+      GenerateAugmentedSigmaPointsMatrix(const Belief_type& bel, const ProcessModel_t& pm)
       {
         constexpr auto aug_state_dims{AugmentedStateDims()};
         constexpr auto sigma_points_num{SigmaPointsNumber(aug_state_dims)};
@@ -187,7 +187,7 @@ namespace ser94mor
         // an augmented state covariance matrix
         AugmentedStateCovarianceMatrix Sigma_aug{AugmentedStateCovarianceMatrix::Zero()};
         Sigma_aug.topLeftCorner(state_dims, state_dims) = bel.Sigma();
-        Sigma_aug.bottomRightCorner(pn_dims, pn_dims) = process_model.GetProcessNoiseCovarianceMatrix();
+        Sigma_aug.bottomRightCorner(pn_dims, pn_dims) = pm.GetProcessNoiseCovarianceMatrix();
 
         return GenerateSigmaPointsMatrix<aug_state_dims, sigma_points_num>(mu_aug, Sigma_aug);
       }
@@ -199,23 +199,23 @@ namespace ser94mor
        * @param bel a current belief
        * @param ut a control vector
        * @param dt a time interval between the previous and current measurements
-       * @param process_model an instance of the process model
+       * @param pm an instance of the process model
        * @return a sigma points matrix having the same number of rows as in the ordinary state vector and
        *         the same number of columns as there are number of sigma points for augmented state vector
        */
       static AugmentedPriorSigmaPointsMatrix
       PredictSigmaPoints(
-          const Belief_type& bel, const ControlVector_type& ut, double_t dt, const ProcessModel_t& process_model)
+          const Belief_type& bel, const ControlVector_type& ut, double_t dt, const ProcessModel_t& pm)
       {
         constexpr auto sigma_points_num{SigmaPointsNumber(AugmentedStateDims())};
 
-        const AugmentedSigmaPointsMatrix Chi_aug{GenerateAugmentedSigmaPointsMatrix(bel, process_model)};
+        const AugmentedSigmaPointsMatrix Chi_aug{GenerateAugmentedSigmaPointsMatrix(bel, pm)};
 
         // predict sigma points
         AugmentedPriorSigmaPointsMatrix Chi;
         for (size_t i = 0; i < sigma_points_num; ++i)
         {
-          Chi.col(i) = process_model.g(dt, ut, Chi_aug.col(i).head(5), Chi_aug.col(i).tail(2));
+          Chi.col(i) = pm.g(dt, ut, Chi_aug.col(i).head(5), Chi_aug.col(i).tail(2));
         }
 
         return Chi;
@@ -228,7 +228,7 @@ namespace ser94mor
        * @tparam sigma_points_num a number of sigma points
        *
        * @param Chi a matrix containing sigma points
-       * @param measurement_model an instance of measurement model
+       * @param mm an instance of measurement model
        *
        * @return a matrix where the number of rows equals to the number of dimension in a measurement vector and
        *         a number of columns is equal to the number of sigma points generated previously, that is,
@@ -237,12 +237,12 @@ namespace ser94mor
       template <size_t state_dims, size_t sigma_points_num>
       static MeasurementSigmaPointsMatrix<sigma_points_num>
       ApplyMeasurementFunctionToEachSigmaPoint(const SigmaPointsMatrix<state_dims, sigma_points_num>& Chi,
-                                               const MeasurementModel_t& measurement_model)
+                                               const MeasurementModel_t& mm)
       {
         MeasurementSigmaPointsMatrix<sigma_points_num> Zeta;
         for (size_t i = 0; i < sigma_points_num; ++i)
         {
-          Zeta.col(i) = measurement_model.h(Chi.col(i));
+          Zeta.col(i) = mm.h(Chi.col(i));
         }
         return Zeta;
       }
@@ -255,21 +255,21 @@ namespace ser94mor
        * @param bel a current belief of the object's state
        * @param ut a control vector
        * @param dt a time interval between the previous and current measurements
-       * @param process_model an instance of the process model
+       * @param pm an instance of the process model
        *
        * @return a tuple containing a prior belief, that is, after prediction but before incorporating the measurement,
        *         a sigma points matrix, generated during execution of this method, and the weights vector
        */
       static std::tuple<Belief_type, AugmentedPriorSigmaPointsMatrix, AugmentedWeightsVector>
       PredictNonLinear(
-          const Belief_type& bel, const ControlVector_type& ut, double_t dt, const ProcessModel_t& process_model)
+          const Belief_type& bel, const ControlVector_type& ut, double_t dt, const ProcessModel_t& pm)
       {
         constexpr auto aug_state_dims{AugmentedStateDims()};
         constexpr auto sigma_points_num{SigmaPointsNumber(aug_state_dims)};
 
         const AugmentedWeightsVector w{Weights<aug_state_dims, sigma_points_num>()};
 
-        const AugmentedPriorSigmaPointsMatrix Chi{PredictSigmaPoints(bel, ut, dt, process_model)};
+        const AugmentedPriorSigmaPointsMatrix Chi{PredictSigmaPoints(bel, ut, dt, pm)};
 
         // predict state vector
         OrdinaryStateVector mu_prior{OrdinaryStateVector::Zero()};
@@ -303,8 +303,8 @@ namespace ser94mor
        * @param bel a belief after the prediction step of unscented Kalman filter
        * @param Chi a sigma points matrix
        * @param w a weights vector
-       * @param measurement a measurement from the sensor
-       * @param measurement_model an instance of the measurement model
+       * @param meas a measurement from the sensor
+       * @param mm an instance of the measurement model
        *
        * @return a posterior belief, that is, after the incorporation of the measurement
        */
@@ -313,15 +313,15 @@ namespace ser94mor
       UpdateNonLinear(const Belief_type& bel,
                       const SigmaPointsMatrix<ProcessModel_t::StateDims(), sigma_points_num>& Chi,
                       const WeightsVector<sigma_points_num>& w,
-                      const Measurement_type& measurement,
-                      const MeasurementModel_t& measurement_model)
+                      const Measurement_type& meas,
+                      const MeasurementModel_t& mm)
       {
         constexpr auto state_dims{ProcessModel_t::StateDims()};
 
         const OrdinaryStateVector mu{bel.mu()};
 
         const MeasurementSigmaPointsMatrix<sigma_points_num>
-            Zeta{ApplyMeasurementFunctionToEachSigmaPoint<state_dims, sigma_points_num>(Chi, measurement_model)};
+            Zeta{ApplyMeasurementFunctionToEachSigmaPoint<state_dims, sigma_points_num>(Chi, mm)};
 
         MeasurementVector_type z{MeasurementVector_type::Zero()};
         for (size_t i=0; i < sigma_points_num; ++i)
@@ -330,7 +330,7 @@ namespace ser94mor
         }
 
         // here the measurement noise is additive
-        MeasurementCovarianceMatrix_type S{measurement_model.Q()};
+        MeasurementCovarianceMatrix_type S{mm.Q()};
         CrossCorrelationMatrix Sigma_x_z{CrossCorrelationMatrix::Zero()};
         for (size_t i = 0; i < sigma_points_num; ++i)
         {
@@ -346,8 +346,8 @@ namespace ser94mor
         const auto Kt{Sigma_x_z * S.inverse()};
 
         return {
-            /* timestamp */               measurement.t(),
-            /* state vector */            mu + Kt * MeasurementModel_t::Diff(measurement.z(), z),
+            /* timestamp */               meas.t(),
+            /* state vector */            mu + Kt * MeasurementModel_t::Diff(meas.z(), z),
             /* state covariance matrix */ bel.Sigma() - Kt * S * Kt.transpose(),
         };
       }
@@ -361,16 +361,16 @@ namespace ser94mor
        * @param bel a current belief of the object's state
        * @param ut a control vector
        * @param dt time interval between the previous and current measurements
-       * @param process_model an instance of the process model
+       * @param pm an instance of the process model
        *
        * @return a prior belief, that is, after prediction but before incorporating the measurement
        */
       template<bool enable = true>
       static auto
-      Predict(const Belief_type& bel, const ControlVector_type& ut, double_t dt, const ProcessModel_t& process_model)
+      Predict(const Belief_type& bel, const ControlVector_type& ut, double_t dt, const ProcessModel_t& pm)
       -> std::enable_if_t<!ProcessModel_t::IsLinear() && enable, Belief_type>
       {
-        return std::get<0>(PredictNonLinear(bel, ut, dt, process_model));
+        return std::get<0>(PredictNonLinear(bel, ut, dt, pm));
       }
 
       /**
@@ -383,16 +383,16 @@ namespace ser94mor
        * @param bel a current belief of the object's state
        * @param ut a control vector
        * @param dt time interval between the previous and current measurements
-       * @param process_model an instance of the process model
+       * @param pm an instance of the process model
        *
        * @return a prior belief, that is, after prediction but before incorporating the measurement
        */
       template<bool enable = true>
       static auto
-      Predict(const Belief_type& bel, const ControlVector_type& ut, double_t dt, const ProcessModel_t& process_model)
+      Predict(const Belief_type& bel, const ControlVector_type& ut, double_t dt, const ProcessModel_t& pm)
       -> std::enable_if_t<ProcessModel_t::IsLinear() && enable, Belief_type>
       {
-        return KF_type::Predict(bel, ut, dt, process_model);
+        return KF_type::Predict(bel, ut, dt, pm);
       }
 
       /**
@@ -401,15 +401,15 @@ namespace ser94mor
        * Works only with NON-LINEAR measurement models.
        *
        * @param bel a belief after the prediction Extended Kalman filter step
-       * @param measurement a measurement from the sensor
-       * @param measurement_model an instance of the measurement model
+       * @param meas a measurement from the sensor
+       * @param mm an instance of the measurement model
        *
        * @return a posterior belief, that is, after the incorporation of the measurement
        */
       template<bool enable = true>
       static auto
       Update(
-          const Belief_type& bel, const Measurement_type& measurement, const MeasurementModel_t& measurement_model)
+          const Belief_type& bel, const Measurement_type& meas, const MeasurementModel_t& mm)
       -> std::enable_if_t<!MeasurementModel_t::IsLinear() && enable, Belief_type>
       {
         constexpr auto state_dims{ProcessModel_t::StateDims()};
@@ -419,7 +419,7 @@ namespace ser94mor
         const OrdinarySigmaPointsMatrix
           Chi{GenerateSigmaPointsMatrix<state_dims, sigma_points_num>(bel.mu(), bel.Sigma())};
 
-        return UpdateNonLinear<sigma_points_num>(bel, Chi, w, measurement, measurement_model);
+        return UpdateNonLinear<sigma_points_num>(bel, Chi, w, meas, mm);
       }
 
       /**
@@ -430,18 +430,18 @@ namespace ser94mor
        * Notice that we use here a simple Kalman filter's Update equations.
        *
        * @param bel a belief after the prediction Extended Kalman filter step
-       * @param measurement a measurement from the sensor
-       * @param measurement_model an instance of the measurement model
+       * @param meas a measurement from the sensor
+       * @param mm an instance of the measurement model
        *
        * @return a posterior belief, that is, after the incorporation of the measurement
        */
       template<bool enable = true>
       static auto
       Update(
-          const Belief_type& bel, const Measurement_type& measurement, const MeasurementModel_t& measurement_model)
+          const Belief_type& bel, const Measurement_type& meas, const MeasurementModel_t& mm)
       -> std::enable_if_t<MeasurementModel_t::IsLinear() && enable, Belief_type>
       {
-        return KF_type::Update(bel, measurement, measurement_model);
+        return KF_type::Update(bel, meas, mm);
       }
 
       /**
@@ -455,22 +455,22 @@ namespace ser94mor
        *
        * @param bel a current belief of the object's state
        * @param ut a control vector
-       * @param measurement a measurement from the sensor
-       * @param process_model an instance of the process model
-       * @param measurement_model an instance of the measurement model
+       * @param meas a measurement from the sensor
+       * @param pm an instance of the process model
+       * @param mm an instance of the measurement model
        * @return a posterior belief, that is, after the prediction and incorporation of the measurement
        */
       template<bool enable = true>
       static auto
-      PredictUpdate(const Belief_type& bel, const ControlVector_type& ut, const Measurement_type& measurement,
-                    const ProcessModel_t& process_model, const MeasurementModel_t& measurement_model)
+      PredictUpdate(const Belief_type& bel, const ControlVector_type& ut, const Measurement_type& meas,
+                    const ProcessModel_t& pm, const MeasurementModel_t& mm)
       -> std::enable_if_t<!(ProcessModel_t::IsLinear() || MeasurementModel_t::IsLinear()) && enable, Belief_type>
       {
         constexpr auto sigma_points_num{SigmaPointsNumber(AugmentedStateDims())};
-        const auto dt = measurement.t() - bel.t();
-        const auto bel_Chi_w{PredictNonLinear(bel, ut, dt, process_model)};
+        const auto dt = meas.t() - bel.t();
+        const auto bel_Chi_w{PredictNonLinear(bel, ut, dt, pm)};
         return UpdateNonLinear<sigma_points_num>(
-            std::get<0>(bel_Chi_w), std::get<1>(bel_Chi_w), std::get<2>(bel_Chi_w), measurement, measurement_model);
+            std::get<0>(bel_Chi_w), std::get<1>(bel_Chi_w), std::get<2>(bel_Chi_w), meas, mm);
       }
 
       /**
@@ -483,19 +483,19 @@ namespace ser94mor
        *
        * @param bel a current belief of the object's state
        * @param ut a control vector
-       * @param measurement a measurement from the sensor
-       * @param process_model an instance of the process model
-       * @param measurement_model an instance of the measurement model
+       * @param meas a measurement from the sensor
+       * @param pm an instance of the process model
+       * @param mm an instance of the measurement model
        * @return a posterior belief, that is, after the prediction and incorporation of the measurement
        */
       template<bool enable = true>
       static auto
-      PredictUpdate(const Belief_type& bel, const ControlVector_type& ut, const Measurement_type& measurement,
-                    const ProcessModel_t& process_model, const MeasurementModel_t& measurement_model)
+      PredictUpdate(const Belief_type& bel, const ControlVector_type& ut, const Measurement_type& meas,
+                    const ProcessModel_t& pm, const MeasurementModel_t& mm)
       -> std::enable_if_t<(ProcessModel_t::IsLinear() || MeasurementModel_t::IsLinear()) and enable, Belief_type>
       {
         return KalmanFilterBase<ProcessModel_t, MeasurementModel_t, UnscentedKalmanFilter>::
-                 PredictUpdate(bel, ut, measurement, process_model, measurement_model);
+                 PredictUpdate(bel, ut, meas, pm, mm);
       }
     };
 

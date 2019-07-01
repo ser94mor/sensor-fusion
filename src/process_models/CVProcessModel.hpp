@@ -32,7 +32,7 @@ namespace ser94mor
   {
     using CVProcessModelBase = ProcessModel<CVStateVector, CVStateCovarianceMatrix, CVControlVector,
                                             CVProcessNoiseCovarianceMatrix, CVROStateVectorView, CVRWStateVectorView,
-                                            PMKind::CV, kCVIsLinear>;
+                                            PMKind::e_CV, kCVIsLinear>;
 
     /**
      * A concrete process model class for CV process model. The State vector for process model consists of
@@ -68,22 +68,22 @@ namespace ser94mor
       /**
        * Subtract one state vector from another.
        *
-       * @param state_vector_1 a state vector to subtract from
-       * @param state_vector_2 a state vector which to subtract
+       * @param sv_1 a state vector to subtract from
+       * @param sv_2 a state vector which to subtract
        *
        * @return a difference between two state vectors
        */
-      static CVStateVector Subtract(const CVStateVector& state_vector_1, const CVStateVector& state_vector_2);
+      static CVStateVector Subtract(const CVStateVector& sv_1, const CVStateVector& sv_2);
 
       /**
        * Sums two vectors.
        *
-       * @param state_vector_1 a first state vector
-       * @param state_vector_2 a second state vector
+       * @param sv_1 a first state vector
+       * @param sv_2 a second state vector
        *
        * @return a sum of two state vectors
        */
-      static CVStateVector Add(const StateVector_type& state_vector_1, const StateVector_type& state_vector_2);
+      static CVStateVector Add(const StateVector_type& sv_1, const StateVector_type& sv_2);
 
     private:
       CVStateTransitionMatrix state_transition_matrix_prototype_;

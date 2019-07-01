@@ -47,10 +47,9 @@ namespace ser94mor
     protected:
       /**
        * Constructor.
-       * @param measurement_vector a measurement vector
+       * @param mv a measurement vector
        */
-      explicit ROMeasurementVectorView(const MeasurementVector_t& measurement_vector)
-      : ROVectorView<MeasurementVector_t>{measurement_vector}
+      explicit ROMeasurementVectorView(const MeasurementVector_t& mv) : ROVectorView<MeasurementVector_t>{mv}
       {
 
       }
@@ -73,10 +72,9 @@ namespace ser94mor
     protected:
       /**
        * Constructor.
-       * @param measurement_vector a measurement vector
+       * @param mv a measurement vector
        */
-      explicit RWMeasurementVectorView(MeasurementVector_t& measurement_vector)
-      : RWVectorView<MeasurementVector_t>{measurement_vector}
+      explicit RWMeasurementVectorView(MeasurementVector_t& mv) : RWVectorView<MeasurementVector_t>{mv}
       {
 
       }

@@ -55,20 +55,20 @@ namespace ser94mor
        * @param bel a current belief of the object's state
        * @param ut a control vector
        * @param dt time interval between the previous and current measurements
-       * @param process_model an instance of the process model
+       * @param pm an instance of the process model
        *
        * @return a prior belief, that is, after prediction but before incorporating the measurement
        */
       template <bool enable = true>
       static auto
-      Predict(const Belief_type& bel, const ControlVector_type& ut, double_t dt, const ProcessModel_t& process_model)
+      Predict(const Belief_type& bel, const ControlVector_type& ut, double_t dt, const ProcessModel_t& pm)
       -> std::enable_if_t<ProcessModel_t::IsLinear() && enable, Belief_type>
       {
-        auto At{process_model.A(dt)};
+        auto At{pm.A(dt)};
         return {
             /* timestamp */               bel.t() + dt,
-            /* state vector */            At * bel.mu() + process_model.B() * ut,
-            /* state covariance matrix */ At * bel.Sigma() * At.transpose() + process_model.R(dt),
+            /* state vector */            At * bel.mu() + pm.B() * ut,
+            /* state covariance matrix */ At * bel.Sigma() * At.transpose() + pm.R(dt),
         };
       }
 
@@ -77,27 +77,27 @@ namespace ser94mor
        * Works only with linear measurement models.
        *
        * @param bel a belief after the prediction Kalman filter step
-       * @param measurement a measurement from the sensor
-       * @param measurement_model an instance of the measurement model
+       * @param meas a measurement from the sensor
+       * @param mm an instance of the measurement model
        *
        * @return a posterior belief, that is, after the incorporation of the measurement
        */
       template <bool enable = true>
       static auto
       Update(
-          const Belief_type& bel, const Measurement_type& measurement, const MeasurementModel_t& measurement_model)
+          const Belief_type& bel, const Measurement_type& meas, const MeasurementModel_t& mm)
       -> std::enable_if_t<MeasurementModel_t::IsLinear() && enable, Belief_type>
       {
-        const auto Ct{measurement_model.C()};
+        const auto Ct{mm.C()};
         const auto mu{bel.mu()};
         const auto Sigma{bel.Sigma()};
-        const auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + measurement_model.Q()).inverse()};
+        const auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + mm.Q()).inverse()};
         const auto I{
           Eigen::Matrix<double_t, ProcessModel_t::StateDims(), ProcessModel_t::StateDims()>::Identity()};
 
         return {
-            /* timestamp */               measurement.t(),
-            /* state vector */            mu + Kt * (measurement.z() - Ct * mu),
+            /* timestamp */               meas.t(),
+            /* state vector */            mu + Kt * (meas.z() - Ct * mu),
             /* state covariance matrix */ (I - Kt * Ct) * Sigma,
         };
       }
@@ -111,22 +111,21 @@ namespace ser94mor
        *
        * @param bel a current belief of the object's state
        * @param ut a control vector
-       * @param measurement a measurement from the sensor
-       * @param process_model an instance of the process model
-       * @param measurement_model an instance of the measurement model
+       * @param meas a measurement from the sensor
+       * @param pm an instance of the process model
+       * @param mm an instance of the measurement model
        * @return a posterior belief, that is, after the prediction and incorporation of the measurement
        */
       static Belief_type
-      PredictUpdate(const Belief_type& bel, const ControlVector_type& ut, const Measurement_type& measurement,
-                    const ProcessModel_t& process_model, const MeasurementModel_t& measurement_model)
+      PredictUpdate(const Belief_type& bel, const ControlVector_type& ut, const Measurement_type& meas,
+                    const ProcessModel_t& pm, const MeasurementModel_t& mm)
       {
-        const auto dt = measurement.t() - bel.t();
+        const auto dt = meas.t() - bel.t();
 
         const auto bel_prior{
-          DerivedKalmanFilterTemplate_t<ProcessModel_t, MeasurementModel_t>::Predict(bel, ut, dt, process_model)};
+          DerivedKalmanFilterTemplate_t<ProcessModel_t, MeasurementModel_t>::Predict(bel, ut, dt, pm)};
 
-        return DerivedKalmanFilterTemplate_t<ProcessModel_t, MeasurementModel_t>::
-                 Update(bel_prior, measurement, measurement_model);
+        return DerivedKalmanFilterTemplate_t<ProcessModel_t, MeasurementModel_t>::Update(bel_prior, meas, mm);
       }
     };
 

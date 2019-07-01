@@ -34,7 +34,7 @@ namespace ser94mor
     template <class ProcessModel_t>
     using LidarMeasurementModelBase =
         MeasurementModel<LidarMeasurementVector, LidarMeasurementCovarianceMatrix, LidarROMeasurementVectorView,
-                         ProcessModel_t, MMKind::Lidar, kLidarIsLinear>;
+                         ProcessModel_t, MMKind::e_Lidar, kLidarIsLinear>;
 
     /**
      * A concrete (Lidar) measurement model. It is still a template because the dimensionality of
@@ -75,14 +75,14 @@ namespace ser94mor
       /**
        * Calculate a difference between two measurement vectors. In Lidar case, it is simply a vector subtraction.
        *
-       * @param measurement_vector_1 the first measurement vector
-       * @param measurement_vector_2 the second measurement vector
+       * @param mv_1 the first measurement vector
+       * @param mv_2 the second measurement vector
        * @return the difference between the two measurement vectors
        */
-      static LidarMeasurementVector Diff(const LidarMeasurementVector& measurement_vector_1,
-                                         const LidarMeasurementVector& measurement_vector_2)
+      static LidarMeasurementVector Diff(const LidarMeasurementVector& mv_1,
+                                         const LidarMeasurementVector& mv_2)
       {
-        return (measurement_vector_1 - measurement_vector_2);
+        return (mv_1 - mv_2);
       }
 
     private:

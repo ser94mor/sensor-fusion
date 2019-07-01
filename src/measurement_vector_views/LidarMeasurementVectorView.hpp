@@ -71,10 +71,10 @@ namespace ser94mor
     public:
       /**
        * Constructor.
-       * @param measurement_vector a measurement vector
+       * @param mv a measurement vector
        */
-      explicit LidarRWMeasurementVectorView(LidarMeasurementVector& measurement_vector)
-      : RWMeasurementVectorView<LidarMeasurementVector>{measurement_vector}
+      explicit LidarRWMeasurementVectorView(LidarMeasurementVector& mv)
+      : RWMeasurementVectorView<LidarMeasurementVector>{mv}
       {
 
       }

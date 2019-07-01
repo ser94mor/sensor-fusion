@@ -32,7 +32,7 @@ namespace ser94mor
   {
     using CTRVProcessModelBase = ProcessModel<CTRVStateVector, CTRVStateCovarianceMatrix, CTRVControlVector,
                                               CTRVProcessNoiseCovarianceMatrix, CTRVROStateVectorView,
-                                              CTRVRWStateVectorView, PMKind::CTRV, kCTRVIsLinear>;
+                                              CTRVRWStateVectorView, PMKind::e_CTRV, kCTRVIsLinear>;
 
     /**
      * A concrete process model class for CTRV process model. The State vector for process model consists of

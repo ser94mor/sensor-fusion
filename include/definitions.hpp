@@ -70,8 +70,8 @@ namespace ser94mor
 
     enum class PMKind
     {
-      CV = 0,
-      CTRV = 1,
+      e_CV = 0,
+      e_CTRV = 1,
     };
 
     inline constexpr const char* NameByKind(PMKind pmk)
@@ -79,12 +79,12 @@ namespace ser94mor
       const char* ret{nullptr};
       switch (pmk)
       {
-        case PMKind::CV:
+        case PMKind::e_CV:
         {
           ret = "CV";
           break;
         }
-        case PMKind::CTRV:
+        case PMKind::e_CTRV:
         {
           ret = "CTRV";
           break;
@@ -162,8 +162,8 @@ namespace ser94mor
 
     enum class MMKind
     {
-      Lidar = 0,
-      Radar = 1,
+      e_Lidar = 0,
+      e_Radar = 1,
     };
 
     inline constexpr const char* NameByKind(MMKind mm)
@@ -171,12 +171,12 @@ namespace ser94mor
       const char* ret{nullptr};
       switch (mm)
       {
-        case MMKind::Lidar:
+        case MMKind::e_Lidar:
         {
           ret = "LIDAR";
           break;
         }
-        case MMKind::Radar:
+        case MMKind::e_Radar:
         {
           ret = "RADAR";
           break;
@@ -189,40 +189,7 @@ namespace ser94mor
     }
 
 
-    /////////////
-    // SENSORS //
-    /////////////
-
-    enum class SensorKind
-    {
-      Lidar = 0,
-      Radar = 1,
-    };
-
-    inline constexpr const char* NameByKind(SensorKind sk)
-    {
-      const char* ret{nullptr};
-      switch (sk)
-      {
-        case SensorKind::Lidar:
-        {
-          ret = "LIDAR";
-          break;
-        }
-        case SensorKind::Radar:
-        {
-          ret = "RADAR";
-          break;
-        }
-        default:
-          throw std::logic_error("undefined sensor kind");
-      }
-
-      return ret;
-    }
-
-
-    template <EntityType type, class Kind_t, Kind_t kind>
+    template <EntityType tp, class Kind_t, Kind_t kd>
     class Entity
     {
     public:
@@ -236,39 +203,39 @@ namespace ser94mor
       constexpr static const char* KindName();
     };
 
-    template<EntityType type, class Kind_t, Kind_t kind>
-    constexpr EntityType Entity<type, Kind_t, kind>::Type()
+    template<EntityType tp, class Kind_t, Kind_t kd>
+    constexpr EntityType Entity<tp, Kind_t, kd>::Type()
     {
-      return type;
+      return tp;
     }
 
-    template<EntityType type, class Kind_t, Kind_t kind>
-    constexpr const char* Entity<type, Kind_t, kind>::TypeName()
+    template<EntityType tp, class Kind_t, Kind_t kd>
+    constexpr const char* Entity<tp, Kind_t, kd>::TypeName()
     {
       return EntityNameByType(Type());
     }
 
-    template<EntityType type, class Kind_t, Kind_t kind>
-    constexpr Kind_t Entity<type, Kind_t, kind>::Kind()
+    template<EntityType tp, class Kind_t, Kind_t kd>
+    constexpr Kind_t Entity<tp, Kind_t, kd>::Kind()
     {
-      return kind;
+      return kd;
     }
 
-    template<EntityType type, class Kind_t, Kind_t kind>
-    constexpr const char* Entity<type, Kind_t, kind>::KindName()
+    template<EntityType tp, class Kind_t, Kind_t kd>
+    constexpr const char* Entity<tp, Kind_t, kd>::KindName()
     {
       return NameByKind(Kind());
     }
 
-    template <EntityType type, class Kind_t, Kind_t kind, bool is_linear>
-    class ModelEntity : public Entity<type, Kind_t, kind>
+    template <EntityType tp, class Kind_t, Kind_t kd, bool is_linear>
+    class ModelEntity : public Entity<tp, Kind_t, kd>
     {
     public:
       constexpr static bool IsLinear();
     };
 
-    template<EntityType type, class Kind_t, Kind_t kind, bool is_linear>
-    constexpr bool ModelEntity<type, Kind_t, kind, is_linear>::IsLinear()
+    template<EntityType tp, class Kind_t, Kind_t kd, bool is_linear>
+    constexpr bool ModelEntity<tp, Kind_t, kd, is_linear>::IsLinear()
     {
       return is_linear;
     }

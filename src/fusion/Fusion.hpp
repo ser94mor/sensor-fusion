@@ -49,31 +49,30 @@ namespace ser94mor
     public:
       /**
        * Constructor.
-       * @param process_noise_covariance_matrix a process noise covariance matrix for the selected process model
-       * @param measurement_covariance_matrices a measurement covariance matrices for the selected measurement models
+       * @param pncm a process noise covariance matrix for the selected process model
+       * @param mcm a measurement covariance matrices for the selected measurement models
        */
       explicit
-      Fusion(const ProcessNoiseCovarianceMatrix_type& process_noise_covariance_matrix,
-             const typename MeasurementModelTemplate_t<ProcessModel_t>::MeasurementCovarianceMatrix_type&...
-               measurement_covariance_matrices)
+      Fusion(const ProcessNoiseCovarianceMatrix_type& pncm,
+             const typename MeasurementModelTemplate_t<ProcessModel_t>::MeasurementCovarianceMatrix_type&... mcm)
       : processed_measurements_counter_{0}, belief_{0, {}, {}}, process_model_{}, measurement_models_{}
       {
 
-        process_model_.SetProcessNoiseCovarianceMatrix(process_noise_covariance_matrix);
+        process_model_.SetProcessNoiseCovarianceMatrix(pncm);
 
         InitializeMeasurementCovarianceMatrices(
-            std::forward_as_tuple(measurement_covariance_matrices...),
+            std::forward_as_tuple(mcm...),
             std::index_sequence_for<MeasurementModelTemplate_t<ProcessModel_t>...>{});
       }
 
       template <class Measurement_type>
-      Belief_type ProcessMeasurement(const Measurement_type& measurement)
+      Belief_type ProcessMeasurement(const Measurement_type& meas)
       {
         ser94mor::sensor_fusion::apply(
-            [this, &measurement](const auto... measurement_model)
+            [this, &meas](const auto... mm)
             {
               static_cast<void>(
-                  std::initializer_list<int>{(this->ProcessMeasurement(measurement, measurement_model), void(), 0)...}
+                  std::initializer_list<int>{(this->ProcessMeasurement(meas, mm), void(), 0)...}
               );
             },
             measurement_models_
@@ -82,9 +81,9 @@ namespace ser94mor
         return belief_;
       }
 
-      void SetBelief(const Belief_type& belief)
+      void SetBelief(const Belief_type& bel)
       {
-        belief_ = belief;
+        belief_ = bel;
       }
 
       const Belief_type& GetBelief() const
@@ -109,20 +108,20 @@ namespace ser94mor
         );
       }
 
-      template<class Measurement_type, class MeasurementModel_type>
-      auto ProcessMeasurement(const Measurement_type& measurement, const MeasurementModel_type& measurement_model)
-      -> std::enable_if_t<Measurement_type::MeasurementModelKind() == MeasurementModel_type::Kind(), void>
+      template<class Measurement_t, class MeasurementModel_t>
+      auto ProcessMeasurement(const Measurement_t& meas, const MeasurementModel_t& mm)
+      -> std::enable_if_t<Measurement_t::MeasurementModelKind() == MeasurementModel_t::Kind(), void>
       {
         using ControlVector = typename ProcessModel_t::ControlVector_type;
 
         if (processed_measurements_counter_ == 0)
         {
-          belief_ = measurement_model.GetInitialBeliefBasedOn(measurement);
+          belief_ = mm.GetInitialBeliefBasedOn(meas);
         }
         else
         {
-          belief_ = FilterTemplate_t<ProcessModel_t, MeasurementModel_type>::
-                      PredictUpdate(belief_, ControlVector::Zero(), measurement, process_model_, measurement_model);
+          belief_ = FilterTemplate_t<ProcessModel_t, MeasurementModel_t>::
+                      PredictUpdate(belief_, ControlVector::Zero(), meas, process_model_, mm);
         }
 
         ++processed_measurements_counter_;

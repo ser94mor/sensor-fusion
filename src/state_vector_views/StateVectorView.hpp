@@ -37,9 +37,9 @@ namespace ser94mor
     protected:
       /**
        * Constructor.
-       * @param state_vector a state vector
+       * @param sv a state vector
        */
-      explicit RWStateVectorView(StateVector_t& state_vector) : RWVectorView<StateVector_t>{state_vector}
+      explicit RWStateVectorView(StateVector_t& sv) : RWVectorView<StateVector_t>{sv}
       {
 
       }
@@ -115,9 +115,9 @@ namespace ser94mor
     protected:
       /**
        * Constructor.
-       * @param state_vector a state vector
+       * @param sv a state vector
        */
-      explicit ROStateVectorView(const StateVector_t& state_vector) : ROVectorView<StateVector_t>{state_vector}
+      explicit ROStateVectorView(const StateVector_t& sv) : ROVectorView<StateVector_t>{sv}
       {
 
       }
@@ -140,10 +140,10 @@ namespace ser94mor
     protected:
       /**
        * Constructor.
-       * @param process_noise_vector a process noise vector
+       * @param pnv a process noise vector
        */
-      explicit ROProcessNoiseVectorView(const ProcessNoiseVector_t& process_noise_vector)
-      : ROVectorView<ProcessNoiseVector_t>{process_noise_vector}
+      explicit ROProcessNoiseVectorView(const ProcessNoiseVector_t& pnv)
+      : ROVectorView<ProcessNoiseVector_t>{pnv}
       {
 
       }

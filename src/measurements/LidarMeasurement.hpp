@@ -28,7 +28,7 @@ namespace ser94mor
   namespace sensor_fusion
   {
 
-    using LidarMeasurementBase = Measurement<LidarMeasurementVector, LidarMeasurementCovarianceMatrix, MMKind::Lidar>;
+    using LidarMeasurementBase = Measurement<LidarMeasurementVector, LidarMeasurementCovarianceMatrix, MMKind::e_Lidar>;
 
     class LidarMeasurement : public LidarMeasurementBase
     {
@@ -37,10 +37,10 @@ namespace ser94mor
       /**
        * Constructor.
        *
-       * @param t a timestamp
+       * @param tm a timestamp
        * @param mv a measurement vector
        */
-      LidarMeasurement(double_t t, const LidarMeasurementVector& mv) : LidarMeasurementBase{t, mv}
+      LidarMeasurement(double_t tm, const LidarMeasurementVector& mv) : LidarMeasurementBase{tm, mv}
       {
 
       }

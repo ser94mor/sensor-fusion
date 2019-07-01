@@ -53,14 +53,14 @@ namespace ser94mor
       return CVControlTransitionMatrix::Zero();
     }
 
-    CVStateVector CVProcessModel::Subtract(const CVStateVector& state_vector_1, const CVStateVector& state_vector_2)
+    CVStateVector CVProcessModel::Subtract(const CVStateVector& sv_1, const CVStateVector& sv_2)
     {
-      return state_vector_1 - state_vector_2;
+      return sv_1 - sv_2;
     }
 
-    CVStateVector CVProcessModel::Add(const CVStateVector& state_vector_1, const CVStateVector& state_vector_2)
+    CVStateVector CVProcessModel::Add(const CVStateVector& sv_1, const CVStateVector& sv_2)
     {
-      return state_vector_1 + state_vector_2;
+      return sv_1 + sv_2;
     }
 
   }

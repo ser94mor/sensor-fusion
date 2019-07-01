@@ -39,10 +39,10 @@ namespace ser94mor
     public:
       /**
        * Constructor.
-       * @param measurement_vector a measurement vector
+       * @param mv a measurement vector
        */
-      explicit RadarROMeasurementVectorView(const RadarMeasurementVector& measurement_vector)
-      : ROMeasurementVectorView<RadarMeasurementVector>{measurement_vector}
+      explicit RadarROMeasurementVectorView(const RadarMeasurementVector& mv)
+      : ROMeasurementVectorView<RadarMeasurementVector>{mv}
       {
 
       }
@@ -100,10 +100,10 @@ namespace ser94mor
     public:
       /**
        * Constructor.
-       * @param measurement_vector a measurement vector
+       * @param mv a measurement vector
        */
-      explicit RadarRWMeasurementVectorView(RadarMeasurementVector& measurement_vector)
-      : RWMeasurementVectorView<RadarMeasurementVector>{measurement_vector}
+      explicit RadarRWMeasurementVectorView(RadarMeasurementVector& mv)
+      : RWMeasurementVectorView<RadarMeasurementVector>{mv}
       {
 
       }

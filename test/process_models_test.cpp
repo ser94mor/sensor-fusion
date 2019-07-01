@@ -108,7 +108,7 @@ TEST_CASE("CVProcessModel::TypeName", "[process_models]")
 
 TEST_CASE("CVProcessModel::Kind", "[process_models]")
 {
-  REQUIRE(CVProcessModel::Kind() == PMKind::CV);
+  REQUIRE(CVProcessModel::Kind() == PMKind::e_CV);
 }
 
 
@@ -213,7 +213,7 @@ TEST_CASE("CTRVProcessModel::TypeName", "[process_models]")
 
 TEST_CASE("CTRVProcessModel::Kind", "[process_models]")
 {
-  REQUIRE(CTRVProcessModel::Kind() == PMKind::CTRV);
+  REQUIRE(CTRVProcessModel::Kind() == PMKind::e_CTRV);
 }
 
 
