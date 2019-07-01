@@ -11,7 +11,6 @@ include_directories(third_parties/nlohmann-3.6.1)
 include_directories(third_parties/catch2-2.7.0)
 include_directories(include)
 
-file(GLOB sensors_SRC src/sensors/*)
 file(GLOB process_models_SRC src/process_models/*)
 file(GLOB measurement_models_SRC src/measurement_models/*)
 file(GLOB filters_SRC src/filters/*)
@@ -24,7 +23,6 @@ file(GLOB measurement_vector_views_SRC src/measurement_vector_views/*)
 file(GLOB beliefs_SRC src/beliefs/*)
 
 set(SRC_EXCEPT_MAIN
-        ${sensors_SRC}
         ${states_SRC}
         ${process_models_SRC}
         ${measurement_models_SRC}
@@ -46,7 +44,6 @@ add_executable(sensor_fusion_all
 
 add_library(Catch INTERFACE)
 add_executable( sensor_fusion_test
-        test/sensors_test.cpp ${sensors_SRC}
         test/process_models_test.cpp ${process_models_SRC}
         test/measurement_models_test.cpp ${measurement_models_SRC}
         test/filters_test.cpp ${filters_SRC}

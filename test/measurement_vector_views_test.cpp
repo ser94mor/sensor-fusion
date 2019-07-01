@@ -28,23 +28,23 @@ using namespace ser94mor::sensor_fusion;
 // LIDAR //
 ///////////
 
-TEST_CASE("Lidar::ROMeasurementVectorView", "[measurement_vector_views]")
+TEST_CASE("LidarROMeasurementVectorView", "[measurement_vector_views]")
 {
-  Lidar::MeasurementVector mv;
+  LidarMeasurementVector mv;
   mv << 2., 1.;
 
-  Lidar::ROMeasurementVectorView mvv{mv};
+  LidarROMeasurementVectorView mvv{mv};
 
   REQUIRE(Approx(2.) == mvv.px());
   REQUIRE(Approx(1.) == mvv.py());
 }
 
-TEST_CASE("Lidar::RWMeasurementVectorView", "[measurement_vector_views]")
+TEST_CASE("LidarRWMeasurementVectorView", "[measurement_vector_views]")
 {
-  Lidar::MeasurementVector mv;
+  LidarMeasurementVector mv;
   mv << 2., 1.;
 
-  Lidar::RWMeasurementVectorView mvv{mv};
+  LidarRWMeasurementVectorView mvv{mv};
 
   //=====
 
@@ -65,7 +65,7 @@ TEST_CASE("Lidar::RWMeasurementVectorView", "[measurement_vector_views]")
 
   //=====
 
-  Lidar::MeasurementVector mv_expected;
+  LidarMeasurementVector mv_expected;
   mv_expected << 3., 4.;
 
   REQUIRE(mv.isApprox(mv_expected));
@@ -76,12 +76,12 @@ TEST_CASE("Lidar::RWMeasurementVectorView", "[measurement_vector_views]")
 // RADAR //
 ///////////
 
-TEST_CASE("Radar::ROMeasurementVectorView", "[measurement_vector_views]")
+TEST_CASE("RadarROMeasurementVectorView", "[measurement_vector_views]")
 {
-  Radar::MeasurementVector mv;
+  RadarMeasurementVector mv;
   mv << 4., M_PI/6., 2.;
 
-  Radar::ROMeasurementVectorView mvv{mv};
+  RadarROMeasurementVectorView mvv{mv};
 
   REQUIRE(Approx(4.) == mvv.range());
   REQUIRE(Approx(M_PI/6.) == mvv.bearing());
@@ -90,12 +90,12 @@ TEST_CASE("Radar::ROMeasurementVectorView", "[measurement_vector_views]")
   REQUIRE(Approx(2.) == mvv.py());
 }
 
-TEST_CASE("Radar::RWMeasurementVectorView", "[measurement_vector_views]")
+TEST_CASE("RadarRWMeasurementVectorView", "[measurement_vector_views]")
 {
-  Radar::MeasurementVector mv;
+  RadarMeasurementVector mv;
   mv << 2., M_PI_4, 3.;
 
-  Radar::RWMeasurementVectorView mvv{mv};
+  RadarRWMeasurementVectorView mvv{mv};
 
   //=====
 
@@ -126,7 +126,7 @@ TEST_CASE("Radar::RWMeasurementVectorView", "[measurement_vector_views]")
 
   //=====
 
-  Radar::MeasurementVector mv_expected;
+  RadarMeasurementVector mv_expected;
   mv_expected << 10., M_PI_2, 20.;
 
   REQUIRE(mv.isApprox(mv_expected));

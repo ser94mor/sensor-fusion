@@ -125,11 +125,11 @@ int main(int, char* argv[])
   ctrv_mtx << 0.126025,  0.0,
               0.0,      0.16;
 
-  Lidar::MeasurementCovarianceMatrix lidar_mtx;
+  LidarMeasurementCovarianceMatrix lidar_mtx;
   lidar_mtx << 0.0225,    0.0,
                0.0, 0.0225;
   
-  Radar::MeasurementCovarianceMatrix radar_mtx;
+  RadarMeasurementCovarianceMatrix radar_mtx;
   radar_mtx << 0.09,    0.0,  0.0,
                 0.0, 0.0009,  0.0,
                 0.0,    0.0, 0.09;
@@ -214,7 +214,7 @@ int main(int, char* argv[])
 
           if (meas_package.sensor_type_ == MeasurementPackage::LASER)
           {
-            Lidar::Measurement measurement{us_to_s(meas_package.timestamp_), meas_package.raw_measurements_};
+            LidarMeasurement measurement{us_to_s(meas_package.timestamp_), meas_package.raw_measurements_};
 
             auto belief{fusion.ProcessMeasurement(measurement)};
 
@@ -227,7 +227,7 @@ int main(int, char* argv[])
 
             estimations.push_back(estimate);
           } else {
-            Radar::Measurement measurement{us_to_s(meas_package.timestamp_), meas_package.raw_measurements_};
+            RadarMeasurement measurement{us_to_s(meas_package.timestamp_), meas_package.raw_measurements_};
 
             auto belief{fusion.ProcessMeasurement(measurement)};
 

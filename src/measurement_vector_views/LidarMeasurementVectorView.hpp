@@ -27,78 +27,75 @@ namespace ser94mor
 {
   namespace sensor_fusion
   {
-    namespace Lidar
+
+    /**
+     * A read-only wrapper around MeasurementVector for Lidar measurement model
+     * that provides meaningful accessors to the MeasurementVector components.
+     */
+    class LidarROMeasurementVectorView : ser94mor::sensor_fusion::ROMeasurementVectorView<LidarMeasurementVector>
     {
+    public:
+      /**
+       * Constructor.
+       * @param mv a measurement vector
+       */
+      explicit LidarROMeasurementVectorView(const LidarMeasurementVector& mv)
+      : ser94mor::sensor_fusion::ROMeasurementVectorView<LidarMeasurementVector>{mv}
+      {
+
+      }
 
       /**
-       * A read-only wrapper around MeasurementVector for Lidar measurement model
-       * that provides meaningful accessors to the MeasurementVector components.
+       * @return X-axis coordinate
        */
-      class ROMeasurementVectorView : ser94mor::sensor_fusion::ROMeasurementVectorView<MeasurementVector>
+      virtual double_t px() const override
       {
-      public:
-        /**
-         * Constructor.
-         * @param mv a measurement vector
-         */
-        explicit ROMeasurementVectorView(const MeasurementVector& mv)
-        : ser94mor::sensor_fusion::ROMeasurementVectorView<MeasurementVector>{mv}
-        {
-
-        }
-
-        /**
-         * @return X-axis coordinate
-         */
-        virtual double_t px() const override
-        {
-          return GetVector()(0);
-        }
-
-        /**
-         * @return Y-axis coordinate
-         */
-        virtual double_t py() const override
-        {
-          return GetVector()(1);
-        }
-      };
+        return GetVector()(0);
+      }
 
       /**
-       * A read-write wrapper around MeasurementVector for Lidar measurement model
-       * that provides meaningful accessors and setters to the MeasurementVector components.
+       * @return Y-axis coordinate
        */
-      class RWMeasurementVectorView : ser94mor::sensor_fusion::RWMeasurementVectorView<MeasurementVector>
+      virtual double_t py() const override
       {
-      public:
-        /**
-         * Constructor.
-         * @param measurement_vector a measurement vector
-         */
-        explicit RWMeasurementVectorView(MeasurementVector& measurement_vector)
-        : ser94mor::sensor_fusion::RWMeasurementVectorView<MeasurementVector>{measurement_vector}
-        {
+        return GetVector()(1);
+      }
+    };
 
-        }
+    /**
+     * A read-write wrapper around MeasurementVector for Lidar measurement model
+     * that provides meaningful accessors and setters to the MeasurementVector components.
+     */
+    class LidarRWMeasurementVectorView : ser94mor::sensor_fusion::RWMeasurementVectorView<LidarMeasurementVector>
+    {
+    public:
+      /**
+       * Constructor.
+       * @param measurement_vector a measurement vector
+       */
+      explicit LidarRWMeasurementVectorView(LidarMeasurementVector& measurement_vector)
+      : ser94mor::sensor_fusion::RWMeasurementVectorView<LidarMeasurementVector>{measurement_vector}
+      {
 
-        /**
-         * @return X-axis coordinate
-         */
-        double_t& px() const
-        {
-          return GetVector()(0);
-        }
+      }
 
-        /**
-         * @return Y-axis coordinate
-         */
-        double_t& py() const
-        {
-          return GetVector()(1);
-        }
-      };
+      /**
+       * @return X-axis coordinate
+       */
+      double_t& px() const
+      {
+        return GetVector()(0);
+      }
 
-    }
+      /**
+       * @return Y-axis coordinate
+       */
+      double_t& py() const
+      {
+        return GetVector()(1);
+      }
+    };
+
   }
 }
 

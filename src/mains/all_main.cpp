@@ -33,18 +33,18 @@ int main(int, char**)
   ctrv_mtx << 5.0, 6.0,
               7.0, 8.0;
 
-  Lidar::MeasurementCovarianceMatrix lidar_mtx;
+  LidarMeasurementCovarianceMatrix lidar_mtx;
   lidar_mtx <<  9.0, 10.0,
                11.0, 12.0;
 
-  Radar::MeasurementCovarianceMatrix radar_mtx;
+  RadarMeasurementCovarianceMatrix radar_mtx;
   radar_mtx << 13.0, 14.0, 15.0,
                16.0, 17.0, 18.0,
                19.0, 20.0, 21.0;
   
-  const Lidar::Measurement lidar_measurement{22.0, Lidar::MeasurementVector::Constant(23.0)};
+  const LidarMeasurement lidar_measurement{22.0, LidarMeasurementVector::Constant(23.0)};
   
-  const Radar::Measurement radar_measurement{24.0, Radar::MeasurementVector::Constant(25.0)};
+  const RadarMeasurement radar_measurement{24.0, RadarMeasurementVector::Constant(25.0)};
   
   // variations of Kalman filter
   KF_CV_LIDAR_Fusion kf_cv_lidar_fusion{cv_mtx, lidar_mtx};

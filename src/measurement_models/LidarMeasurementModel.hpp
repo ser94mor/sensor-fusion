@@ -30,68 +30,66 @@ namespace ser94mor
 {
   namespace  sensor_fusion
   {
-    namespace Lidar
+
+    /**
+     * A concrete (Lidar) measurement model. It is still a template because the dimensionality of
+     * the measurement matrix depends on the process model kind, which we know only at compile time.
+     * The naming of matrices are taken from the
+     * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
+     *
+     * @tparam ProcessModel a process model class, which is needed to determine the number of state dimensions
+     */
+    template<class ProcessModel>
+    class LidarMeasurementModel :
+        public ser94mor::sensor_fusion::MeasurementModel<LidarMeasurementVector, LidarMeasurementCovarianceMatrix,
+            LidarROMeasurementVectorView, ProcessModel,
+            MMKind::Lidar, kLidarIsLinear>
     {
+    public:
+      using MeasurementMatrix_type =
+      Eigen::Matrix<double_t, LidarMeasurementModel::MeasurementDims(), LidarMeasurementModel::StateDims()>;
 
       /**
-       * A concrete (Lidar) measurement model. It is still a template because the dimensionality of
-       * the measurement matrix depends on the process model kind, which we know only at compile time.
-       * The naming of matrices are taken from the
-       * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
-       *
-       * @tparam ProcessModel a process model class, which is needed to determine the number of state dimensions
+       * Constructor.
+       * Measurement matrix is of the form
+       *   1 0 0 0 ...
+       *   0 1 0 0 ...
+       * where the number of columns equal to the number of state dimensions.
        */
-      template<class ProcessModel>
-      class MeasurementModel :
-        public ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-                                                         ROMeasurementVectorView, ProcessModel,
-                                                         MMKind::Lidar, kIsLinear>
+      LidarMeasurementModel()
+          : ser94mor::sensor_fusion::MeasurementModel<LidarMeasurementVector, LidarMeasurementCovarianceMatrix,
+          LidarROMeasurementVectorView, ProcessModel, MMKind::Lidar, kLidarIsLinear>{},
+            measurement_matrix_{MeasurementMatrix_type::Identity()}
       {
-      public:
-        using MeasurementMatrix_type =
-          Eigen::Matrix<double_t, MeasurementModel::MeasurementDims(), MeasurementModel::StateDims()>;
 
-        /**
-         * Constructor.
-         * Measurement matrix is of the form
-         *   1 0 0 0 ...
-         *   0 1 0 0 ...
-         * where the number of columns equal to the number of state dimensions.
-         */
-        MeasurementModel()
-        : ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-            ROMeasurementVectorView, ProcessModel, MMKind::Lidar, kIsLinear>{},
-          measurement_matrix_{MeasurementMatrix_type::Identity()}
-        {
+      }
 
-        }
+      /**
+       * @return a measurement matrix
+       */
+      const MeasurementMatrix_type& C() const
+      {
+        return measurement_matrix_;
+      }
 
-        /**
-         * @return a measurement matrix
-         */
-        const MeasurementMatrix_type& C() const
-        {
-          return measurement_matrix_;
-        }
+      /**
+       * Calculate a difference between two measurement vectors. In Lidar case, it is simply a vector subtraction.
+       *
+       * @param measurement_vector_1 the first measurement vector
+       * @param measurement_vector_2 the second measurement vector
+       * @return the difference between the two measurement vectors
+       */
+      static LidarMeasurementVector Diff(const LidarMeasurementVector& measurement_vector_1,
+                                         const LidarMeasurementVector& measurement_vector_2)
+      {
+        return (measurement_vector_1 - measurement_vector_2);
+      }
 
-        /**
-         * Calculate a difference between two measurement vectors. In Lidar case, it is simply a vector subtraction.
-         *
-         * @param measurement_vector_1 the first measurement vector
-         * @param measurement_vector_2 the second measurement vector
-         * @return the difference between the two measurement vectors
-         */
-        static MeasurementVector Diff(const MeasurementVector& measurement_vector_1,
-                                      const MeasurementVector& measurement_vector_2)
-        {
-          return (measurement_vector_1 - measurement_vector_2);
-        }
+    private:
+      MeasurementMatrix_type measurement_matrix_;
+    };
 
-      private:
-        MeasurementMatrix_type measurement_matrix_;
-      };
 
-    }
   }
 }
 

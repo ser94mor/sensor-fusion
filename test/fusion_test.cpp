@@ -18,7 +18,6 @@
 
 #include "process_models.hpp"
 #include "measurement_models.hpp"
-#include "sensors.hpp"
 #include "filters.hpp"
 #include "fusion.hpp"
 
@@ -36,7 +35,7 @@ TEST_CASE("Fusion::ProcessMeasurement", "[fusion]")
   p_mtx << 3.0, 7.0,
            7.0, 5.0;
 
-  Lidar::MeasurementCovarianceMatrix m_mtx;
+  LidarMeasurementCovarianceMatrix m_mtx;
   m_mtx << 5., 4.,
            4., 3.;
 
@@ -62,12 +61,12 @@ TEST_CASE("Fusion::ProcessMeasurement", "[fusion]")
 
   BEL belief_posterior_expected{2, state_vector_expected, state_covariance_matrix_expected};
 
-  Fusion<KalmanFilter, CVProcessModel, Lidar::MeasurementModel>
+  Fusion<KalmanFilter, CVProcessModel, LidarMeasurementModel>
   fusion{p_mtx, m_mtx};
 
-  Lidar::MeasurementVector meas_vect;
+  LidarMeasurementVector meas_vect;
   meas_vect << 11., 8.;
-  Lidar::Measurement measurement{2, meas_vect};
+  LidarMeasurement measurement{2, meas_vect};
 
   fusion.ProcessMeasurement(measurement); // increments processed counter and initializes initial belief
   fusion.SetBelief(belief_initial); // override initial belief for testing purposes

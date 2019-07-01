@@ -143,23 +143,28 @@ namespace ser94mor
     // MEASUREMENT MODELS //
     ////////////////////////
 
-    namespace Lidar
-    {
-      const size_t kMeasurementVectorDims{2};
-      const bool kIsLinear{true};
+    //
+    // Lidar measurement model definitions.
+    //
+    const size_t kLidarMeasurementVectorDims{2};
+    const bool kLidarIsLinear{true};
 
-      using MeasurementVector = Eigen::Matrix<double_t, kMeasurementVectorDims, 1>;
-      using MeasurementCovarianceMatrix = Eigen::Matrix<double_t, kMeasurementVectorDims, kMeasurementVectorDims>;
-    }
+    using LidarMeasurementVector = Eigen::Matrix<double_t, kLidarMeasurementVectorDims, 1>;
+    using LidarMeasurementCovarianceMatrix =
+        Eigen::Matrix<double_t, kLidarMeasurementVectorDims, kLidarMeasurementVectorDims>;
 
-    namespace Radar
-    {
-      const size_t kMeasurementVectorDims{3};
-      const bool kIsLinear{false};
 
-      using MeasurementVector = Eigen::Matrix<double_t, kMeasurementVectorDims, 1>;
-      using MeasurementCovarianceMatrix = Eigen::Matrix<double_t, kMeasurementVectorDims, kMeasurementVectorDims>;
-    }
+    //
+    // Radar measurement model definitions.
+    //
+    const size_t kRadarMeasurementVectorDims{3};
+    const bool kRadarIsLinear{false};
+
+    using RadarMeasurementVector = Eigen::Matrix<double_t, kRadarMeasurementVectorDims, 1>;
+    using RadarMeasurementCovarianceMatrix =
+        Eigen::Matrix<double_t, kRadarMeasurementVectorDims, kRadarMeasurementVectorDims>;
+
+
 
     enum class MMKind
     {

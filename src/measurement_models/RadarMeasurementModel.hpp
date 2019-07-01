@@ -29,148 +29,145 @@ namespace ser94mor
 {
   namespace sensor_fusion
   {
-    namespace Radar
+
+    /**
+     * A concrete (Radar) measurement model. It is still a template because the dimensionality of
+     * the measurement matrix depends on the process model kind, which we know only at compile time.
+     * The naming of matrices and vectors are taken from the
+     * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
+     *
+     * @tparam ProcessModel a process model class, which is needed to determine the number of state dimensions
+     */
+    template<class ProcessModel>
+    class RadarMeasurementModel
+    : public ser94mor::sensor_fusion::MeasurementModel<RadarMeasurementVector, RadarMeasurementCovarianceMatrix,
+                                                       RadarROMeasurementVectorView, ProcessModel,
+                                                       MMKind::Radar, kRadarIsLinear>
     {
+    public:
+      using MeasurementMatrix_type =
+      Eigen::Matrix<double_t, RadarMeasurementModel::MeasurementDims(), RadarMeasurementModel::StateDims()>;
+      using StateVector_type = typename ProcessModel::StateVector_type;
+      using ROStateVectorView_type = typename ProcessModel::ROStateVectorView_type;
+
 
       /**
-       * A concrete (Radar) measurement model. It is still a template because the dimensionality of
-       * the measurement matrix depends on the process model kind, which we know only at compile time.
-       * The naming of matrices and vectors are taken from the
-       * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
-       *
-       * @tparam ProcessModel a process model class, which is needed to determine the number of state dimensions
+       * Constructor.
        */
-      template<class ProcessModel>
-      class MeasurementModel
-      : public ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-                                                         ROMeasurementVectorView, ProcessModel,
-                                                         MMKind::Radar, kIsLinear>
+      RadarMeasurementModel()
+          : ser94mor::sensor_fusion::MeasurementModel<RadarMeasurementVector, RadarMeasurementCovarianceMatrix,
+          RadarROMeasurementVectorView, ProcessModel,
+          MMKind::Radar, kRadarIsLinear>{}
       {
-      public:
-        using MeasurementMatrix_type =
-          Eigen::Matrix<double_t, MeasurementModel::MeasurementDims(), MeasurementModel::StateDims()>;
-        using StateVector_type = typename ProcessModel::StateVector_type;
-        using ROStateVectorView_type = typename ProcessModel::ROStateVectorView_type;
 
+      }
 
-        /**
-         * Constructor.
-         */
-        MeasurementModel()
-        : ser94mor::sensor_fusion::MeasurementModel<MeasurementVector, MeasurementCovarianceMatrix,
-                                                    ROMeasurementVectorView, ProcessModel,
-                                                    MMKind::Radar, kIsLinear>{}
+      /**
+       * A measurement function. It transforms the a vector from the state space into a measurement space.
+       * @param state_vector a state vector
+       * @return a corresponding vector in measurement space
+       */
+      static RadarMeasurementVector h(const StateVector_type& state_vector)
+      {
+        const auto sv{state_vector};
+        const ROStateVectorView_type svv{sv};
+
+        RadarMeasurementVector measurement_vector;
+        measurement_vector << svv.range(), svv.bearing(), svv.range_rate();
+
+        return measurement_vector;
+      }
+
+      /**
+       * A Jacobian for non-linear case corresponding to the measurement matrix "C" for the linear case.
+       * It depends on the process model kind.
+       *
+       * @param state_vector a state vector
+       * @return a measurement matrix
+       */
+      static MeasurementMatrix_type H(const StateVector_type& state_vector)
+      {
+        const auto sv{state_vector};
+        const ROStateVectorView_type svv{sv};
+
+        const auto rho{svv.range()};
+        const auto rho_2{rho*rho};
+        const auto rho_3{rho_2*rho};
+        const auto tmp1{svv.px()/rho};
+        const auto tmp2{svv.py()/rho};
+
+        MeasurementMatrix_type measurement_matrix{MeasurementMatrix_type::Zero()};
+        switch (ProcessModel::Kind())
         {
-
-        }
-
-        /**
-         * A measurement function. It transforms the a vector from the state space into a measurement space.
-         * @param state_vector a state vector
-         * @return a corresponding vector in measurement space
-         */
-        static MeasurementVector h(const StateVector_type& state_vector)
-        {
-          const auto sv{state_vector};
-          const ROStateVectorView_type svv{sv};
-
-          MeasurementVector measurement_vector;
-          measurement_vector << svv.range(), svv.bearing(), svv.range_rate();
-
-          return measurement_vector;
-        }
-
-        /**
-         * A Jacobian for non-linear case corresponding to the measurement matrix "C" for the linear case.
-         * It depends on the process model kind.
-         * 
-         * @param state_vector a state vector
-         * @return a measurement matrix
-         */
-        static MeasurementMatrix_type H(const StateVector_type& state_vector)
-        {
-          const auto sv{state_vector};
-          const ROStateVectorView_type svv{sv};
-
-          const auto rho{svv.range()};
-          const auto rho_2{rho*rho};
-          const auto rho_3{rho_2*rho};
-          const auto tmp1{svv.px()/rho};
-          const auto tmp2{svv.py()/rho};
-
-          MeasurementMatrix_type measurement_matrix{MeasurementMatrix_type::Zero()};
-          switch (ProcessModel::Kind())
+          case PMKind::CV:
           {
-            case PMKind::CV:
-            {
-              const auto tmp3{svv.vx()*svv.py()-svv.vy()*svv.px()};
+            const auto tmp3{svv.vx()*svv.py()-svv.vy()*svv.px()};
 
-              measurement_matrix(0,0) = tmp1;
-              measurement_matrix(0,1) = tmp2;
+            measurement_matrix(0,0) = tmp1;
+            measurement_matrix(0,1) = tmp2;
 
-              measurement_matrix(1,0) = -svv.py() / rho_2;
-              measurement_matrix(1,1) =  svv.px() / rho_2;
+            measurement_matrix(1,0) = -svv.py() / rho_2;
+            measurement_matrix(1,1) =  svv.px() / rho_2;
 
-              measurement_matrix(2,0) =  svv.py() * tmp3 / rho_3;
-              measurement_matrix(2,1) = -svv.px() * tmp3 / rho_3;
-              measurement_matrix(2,2) = tmp1;
-              measurement_matrix(2,3) = tmp2;
+            measurement_matrix(2,0) =  svv.py() * tmp3 / rho_3;
+            measurement_matrix(2,1) = -svv.px() * tmp3 / rho_3;
+            measurement_matrix(2,2) = tmp1;
+            measurement_matrix(2,3) = tmp2;
 
-              break;
-            }
-
-            case PMKind::CTRV:
-            {
-              const auto sin1{std::sin(svv.yaw())};
-              const auto cos1{std::cos(svv.yaw())};
-              const auto tmp4{svv.v()/rho};
-              const auto tmp5{svv.px()*cos1 + svv.py()*sin1};
-
-              measurement_matrix(0,0) = tmp1;
-              measurement_matrix(0,1) = tmp2;
-
-              measurement_matrix(1,0) = -svv.py() / rho_2;
-              measurement_matrix(1,1) =  svv.px() / rho_2;
-
-              measurement_matrix(2,0) = tmp4 * (cos1 - svv.px() * tmp5 / rho_2);
-              measurement_matrix(2,1) = tmp4 * (sin1 - svv.py() * tmp5 / rho_2);
-              measurement_matrix(2,2) = tmp5 / rho;
-              measurement_matrix(2,3) = tmp4 * (svv.py()*cos1 - svv.px()*sin1);
-
-              break;
-            }
-
-            default:
-            {
-              throw std::logic_error("unknown process model");
-            }
+            break;
           }
 
-          return measurement_matrix;
+          case PMKind::CTRV:
+          {
+            const auto sin1{std::sin(svv.yaw())};
+            const auto cos1{std::cos(svv.yaw())};
+            const auto tmp4{svv.v()/rho};
+            const auto tmp5{svv.px()*cos1 + svv.py()*sin1};
+
+            measurement_matrix(0,0) = tmp1;
+            measurement_matrix(0,1) = tmp2;
+
+            measurement_matrix(1,0) = -svv.py() / rho_2;
+            measurement_matrix(1,1) =  svv.px() / rho_2;
+
+            measurement_matrix(2,0) = tmp4 * (cos1 - svv.px() * tmp5 / rho_2);
+            measurement_matrix(2,1) = tmp4 * (sin1 - svv.py() * tmp5 / rho_2);
+            measurement_matrix(2,2) = tmp5 / rho;
+            measurement_matrix(2,3) = tmp4 * (svv.py()*cos1 - svv.px()*sin1);
+
+            break;
+          }
+
+          default:
+          {
+            throw std::logic_error("unknown process model");
+          }
         }
 
-        /**
-         * Calculate the difference between two measurement vectors. In Radar case, there is a need to "normalize"
-         * the bearing dimension because after the vector subtraction the bearing angle may fall out of the [-pi, pi]
-         * interval.
-         *
-         * @param measurement_vector_1 the first measurement vector
-         * @param measurement_vector_2 the second measurement vector
-         * @return the difference between the two measurement vectors
-         */
-        static MeasurementVector Diff(const MeasurementVector& measurement_vector_1,
-                                      const MeasurementVector& measurement_vector_2)
-        {
-          MeasurementVector diff{measurement_vector_1 - measurement_vector_2};
-          const RWMeasurementVectorView mvv{diff};
-          Utils::NormalizeAngle(&mvv.bearing());
+        return measurement_matrix;
+      }
 
-          return diff;
-        }
+      /**
+       * Calculate the difference between two measurement vectors. In Radar case, there is a need to "normalize"
+       * the bearing dimension because after the vector subtraction the bearing angle may fall out of the [-pi, pi]
+       * interval.
+       *
+       * @param measurement_vector_1 the first measurement vector
+       * @param measurement_vector_2 the second measurement vector
+       * @return the difference between the two measurement vectors
+       */
+      static RadarMeasurementVector Diff(const RadarMeasurementVector& measurement_vector_1,
+                                         const RadarMeasurementVector& measurement_vector_2)
+      {
+        RadarMeasurementVector diff{measurement_vector_1 - measurement_vector_2};
+        const RadarRWMeasurementVectorView mvv{diff};
+        Utils::NormalizeAngle(&mvv.bearing());
 
-      };
+        return diff;
+      }
 
-    }
+    };
+
   }
 }
 
