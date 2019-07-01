@@ -21,8 +21,6 @@
 
 #include "definitions.hpp"
 
-#include <ctime>
-
 
 namespace ser94mor
 {
@@ -70,48 +68,48 @@ namespace ser94mor
 
       }
 
-      Belief(const Belief& belief)
-          : timestamp_{belief.timestamp_}, state_vector_{belief.state_vector_},
-            state_covariance_matrix_{belief.state_covariance_matrix_}
+      Belief(const Belief& bel)
+          : timestamp_{bel.timestamp_}, state_vector_{bel.state_vector_},
+            state_covariance_matrix_{bel.state_covariance_matrix_}
       {
 
       }
 
-      Belief(Belief&& belief) noexcept
-          : timestamp_{belief.timestamp_},
-            state_vector_{std::move(belief.state_vector_)},
-            state_covariance_matrix_{std::move(belief.state_covariance_matrix_)}
+      Belief(Belief&& bel) noexcept
+          : timestamp_{bel.timestamp_},
+            state_vector_{std::move(bel.state_vector_)},
+            state_covariance_matrix_{std::move(bel.state_covariance_matrix_)}
       {
 
       }
 
-      Belief& operator=(const Belief& belief)
+      Belief& operator=(const Belief& bel)
       {
-        if (&belief != this)
+        if (&bel != this)
         {
-          timestamp_ = belief.timestamp_;
-          state_vector_ = belief.state_vector_;
-          state_covariance_matrix_ = belief.state_covariance_matrix_;
+          timestamp_ = bel.timestamp_;
+          state_vector_ = bel.state_vector_;
+          state_covariance_matrix_ = bel.state_covariance_matrix_;
         }
         return *this;
       }
 
-      Belief& operator=(Belief&& belief) noexcept
+      Belief& operator=(Belief&& bel) noexcept
       {
-        if (&belief != this)
+        if (&bel != this)
         {
-          timestamp_ = belief.timestamp_;
-          state_vector_ = std::move(belief.state_vector_);
-          state_covariance_matrix_ = std::move(belief.state_covariance_matrix_);
+          timestamp_ = bel.timestamp_;
+          state_vector_ = std::move(bel.state_vector_);
+          state_covariance_matrix_ = std::move(bel.state_covariance_matrix_);
         }
         return *this;
       }
 
-      bool operator==(const Belief& belief) const
+      bool operator==(const Belief& bel) const
       {
-        return timestamp_ == belief.timestamp_
-               && state_vector_.isApprox(belief.state_vector_)
-               && state_covariance_matrix_.isApprox(belief.state_covariance_matrix_);
+        return timestamp_ == bel.timestamp_
+               && state_vector_.isApprox(bel.state_vector_)
+               && state_covariance_matrix_.isApprox(bel.state_covariance_matrix_);
       }
 
     private:
