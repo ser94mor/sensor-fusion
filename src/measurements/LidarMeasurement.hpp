@@ -28,8 +28,7 @@ namespace ser94mor
   namespace sensor_fusion
   {
 
-    using LidarMeasurementBase =
-    ser94mor::sensor_fusion::Measurement<LidarMeasurementVector, LidarMeasurementCovarianceMatrix, MMKind::Lidar>;
+    using LidarMeasurementBase = Measurement<LidarMeasurementVector, LidarMeasurementCovarianceMatrix, MMKind::Lidar>;
 
     class LidarMeasurement : public LidarMeasurementBase
     {

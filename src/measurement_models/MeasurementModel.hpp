@@ -31,42 +31,42 @@ namespace ser94mor
     /**
      * A base template class representing a measurement model. It contains methods and functions common for
      * all concrete measurement models. Notice that in addition to
-     * {@tparam MeasurementVector} and {@tparam MeasurementCovarianceMatrix} template parameters it also accepts
-     * {@tparam ProcessModel} parameter.
+     * {@tparam MeasurementVector_t} and {@tparam MeasurementCovarianceMatrix_t} template parameters it also accepts
+     * {@tparam ProcessModel_t} parameter.
      *
-     * @tparam MeasurementVector a class of the measurement vector
-     * @tparam MeasurementCovarianceMatrix a class of the measurement covariance matrix
+     * @tparam MeasurementVector_t a class of the measurement vector
+     * @tparam MeasurementCovarianceMatrix_t a class of the measurement covariance matrix
      * @tparam MeasurementVectorView a class of the measurement vector view
      *                               (accessor to the measurement vector dimensions)
-     * @tparam ProcessModel a class of the process model
+     * @tparam ProcessModel_t a class of the process model
      * @tparam mmk a kind of a measurement model (from a corresponding enum class)
      * @tparam is_linear flag indicating whether this measurement model is linear or not
      */
-    template<class MeasurementVector, class MeasurementCovarianceMatrix, class ROMeasurementVectorView,
-             class ProcessModel, MMKind mmk, bool is_linear>
-    class MeasurementModel : public ModelEntity<EntityType::MeasurementModel, MMKind, mmk, is_linear>
+    template<class MeasurementVector_t, class MeasurementCovarianceMatrix_t, class ROMeasurementVectorView_t,
+             class ProcessModel_t, MMKind mmk, bool is_linear>
+    class MeasurementModel : public ModelEntity<EntityType::e_MeasurementModel, MMKind, mmk, is_linear>
     {
     public:
       /**
        * The typedefs below are needed in other places in the code. These typedefs, in fact, are attributes of the
        * measurement model.
        */
-      using Measurement_type = Measurement<MeasurementVector, MeasurementCovarianceMatrix, mmk>;
-      using MeasurementVector_type = MeasurementVector;
-      using ROMeasurementVectorView_type = ROMeasurementVectorView;
-      using MeasurementCovarianceMatrix_type = MeasurementCovarianceMatrix;
+      using Measurement_type = Measurement<MeasurementVector_t, MeasurementCovarianceMatrix_t, mmk>;
+      using MeasurementVector_type = MeasurementVector_t;
+      using ROMeasurementVectorView_type = ROMeasurementVectorView_t;
+      using MeasurementCovarianceMatrix_type = MeasurementCovarianceMatrix_t;
 
-      using RWStateVectorView_type = typename ProcessModel::RWStateVectorView_type;
-      using StateVector_type = typename ProcessModel::StateVector_type;
+      using RWStateVectorView_type = typename ProcessModel_t::RWStateVectorView_type;
+      using StateVector_type = typename ProcessModel_t::StateVector_type;
 
-      using Belief_type = typename ProcessModel::Belief_type;
+      using Belief_type = typename ProcessModel_t::Belief_type;
 
       /**
        * @return a number of dimensions in measurement vector
        */
       constexpr static size_t MeasurementDims()
       {
-        return static_cast<size_t>(MeasurementVector::SizeAtCompileTime);
+        return static_cast<size_t>(MeasurementVector_t::SizeAtCompileTime);
       }
 
       /**
@@ -74,7 +74,7 @@ namespace ser94mor
        */
       constexpr static size_t StateDims()
       {
-        return ProcessModel::StateDims();
+        return ProcessModel_t::StateDims();
       }
 
       /**
@@ -82,7 +82,7 @@ namespace ser94mor
        * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
        * @return a measurement covariance matrix
        */
-      const MeasurementCovarianceMatrix& Q() const
+      const MeasurementCovarianceMatrix_t& Q() const
       {
         return measurement_covariance_matrix_;
       }
@@ -92,7 +92,7 @@ namespace ser94mor
        * due to the variadic templates used in this code. MeasurementModel needs a default constructor.
        * @param mtx a measurement covariance matrix
        */
-      void SetMeasurementCovarianceMatrix(const MeasurementCovarianceMatrix& mtx)
+      void SetMeasurementCovarianceMatrix(const MeasurementCovarianceMatrix_t& mtx)
       {
         measurement_covariance_matrix_ = mtx;
       }
@@ -117,13 +117,13 @@ namespace ser94mor
         svv.px() = mvv.px();
         svv.py() = mvv.py();
 
-        const typename ProcessModel::StateCovarianceMatrix_type
-          state_covariance_matrix{ProcessModel::StateCovarianceMatrix_type::Identity()};
+        const typename ProcessModel_t::StateCovarianceMatrix_type
+          state_covariance_matrix{ProcessModel_t::StateCovarianceMatrix_type::Identity()};
         return Belief_type{meas.t(), sv, state_covariance_matrix};
       }
 
     private:
-      MeasurementCovarianceMatrix measurement_covariance_matrix_;
+      MeasurementCovarianceMatrix_t measurement_covariance_matrix_;
     };
 
   }

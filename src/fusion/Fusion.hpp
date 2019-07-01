@@ -34,25 +34,28 @@ namespace ser94mor
      * as a template arguments a process model class and an arbitrary number of measurement models. The Fusion
      * class implements Predict-Update cycle for all variations of Kalman filters.
      *
-     * @tparam Filter a template class for of concrete kind of a filter
-     * @tparam ProcessModel a concrete process model
-     * @tparam MeasurementModel concrete measurement models (arbitrary number)
+     * @tparam FilterTemplate_t a template class for a filter
+     * @tparam ProcessModel_t a concrete process model
+     * @tparam MeasurementModelTemplate_t a template class for (a) measurement model(s) (arbitrary number)
      */
-    template<template<class, class> class Filter, class ProcessModel,
-        template<class> class... MeasurementModel>
+    template<template<class, class> class FilterTemplate_t, class ProcessModel_t,
+        template<class> class... MeasurementModelTemplate_t>
     class Fusion
     {
-      using Belief = typename ProcessModel::Belief_type;
+    private:
+      using Belief_type = typename ProcessModel_t::Belief_type;
+      using ProcessNoiseCovarianceMatrix_type = typename ProcessModel_t::ProcessNoiseCovarianceMatrix_type;
 
     public:
       /**
        * Constructor.
-       * @param process_noise_covariance_matrix an process noise covariance matrix
-       * @param measurement_covariance_matrices
+       * @param process_noise_covariance_matrix a process noise covariance matrix for the selected process model
+       * @param measurement_covariance_matrices a measurement covariance matrices for the selected measurement models
        */
-      explicit Fusion(const typename ProcessModel::ProcessNoiseCovarianceMatrix_type& process_noise_covariance_matrix,
-                      const typename MeasurementModel<ProcessModel>::MeasurementCovarianceMatrix_type&...
-                      measurement_covariance_matrices)
+      explicit
+      Fusion(const ProcessNoiseCovarianceMatrix_type& process_noise_covariance_matrix,
+             const typename MeasurementModelTemplate_t<ProcessModel_t>::MeasurementCovarianceMatrix_type&...
+               measurement_covariance_matrices)
       : processed_measurements_counter_{0}, belief_{0, {}, {}}, process_model_{}, measurement_models_{}
       {
 
@@ -60,11 +63,11 @@ namespace ser94mor
 
         InitializeMeasurementCovarianceMatrices(
             std::forward_as_tuple(measurement_covariance_matrices...),
-            std::index_sequence_for<MeasurementModel<ProcessModel>...>{});
+            std::index_sequence_for<MeasurementModelTemplate_t<ProcessModel_t>...>{});
       }
 
-      template <class Measurement>
-      Belief ProcessMeasurement(const Measurement& measurement)
+      template <class Measurement_type>
+      Belief_type ProcessMeasurement(const Measurement_type& measurement)
       {
         ser94mor::sensor_fusion::apply(
             [this, &measurement](const auto... measurement_model)
@@ -79,12 +82,12 @@ namespace ser94mor
         return belief_;
       }
 
-      void SetBelief(const Belief& belief)
+      void SetBelief(const Belief_type& belief)
       {
         belief_ = belief;
       }
 
-      const Belief& GetBelief() const
+      const Belief_type& GetBelief() const
       {
         return belief_;
       }
@@ -110,7 +113,7 @@ namespace ser94mor
       auto ProcessMeasurement(const Measurement_type& measurement, const MeasurementModel_type& measurement_model)
       -> std::enable_if_t<Measurement_type::MeasurementModelKind() == MeasurementModel_type::Kind(), void>
       {
-        using ControlVector = typename ProcessModel::ControlVector_type;
+        using ControlVector = typename ProcessModel_t::ControlVector_type;
 
         if (processed_measurements_counter_ == 0)
         {
@@ -118,7 +121,7 @@ namespace ser94mor
         }
         else
         {
-          belief_ = Filter<ProcessModel, MeasurementModel_type>::
+          belief_ = FilterTemplate_t<ProcessModel_t, MeasurementModel_type>::
                       PredictUpdate(belief_, ControlVector::Zero(), measurement, process_model_, measurement_model);
         }
 
@@ -135,9 +138,9 @@ namespace ser94mor
       // counter of processed measurements
       uint64_t processed_measurements_counter_;
 
-      Belief belief_;
-      ProcessModel process_model_;
-      std::tuple<MeasurementModel<ProcessModel>...> measurement_models_;
+      Belief_type belief_;
+      ProcessModel_t process_model_;
+      std::tuple<MeasurementModelTemplate_t<ProcessModel_t>...> measurement_models_;
     };
 
   }

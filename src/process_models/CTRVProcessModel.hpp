@@ -30,16 +30,17 @@ namespace ser94mor
 {
   namespace sensor_fusion
   {
+    using CTRVProcessModelBase = ProcessModel<CTRVStateVector, CTRVStateCovarianceMatrix, CTRVControlVector,
+                                              CTRVProcessNoiseCovarianceMatrix, CTRVROStateVectorView,
+                                              CTRVRWStateVectorView, PMKind::CTRV, kCTRVIsLinear>;
+
     /**
      * A concrete process model class for CTRV process model. The State vector for process model consists of
      *   [ px, py, v, yaw, yaw_rate ].
      * The naming of matrices and functions are taken from the
      * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
      */
-    class CTRVProcessModel
-    : public ser94mor::sensor_fusion::ProcessModel<CTRVStateVector, CTRVStateCovarianceMatrix, CTRVControlVector,
-                                                   CTRVProcessNoiseCovarianceMatrix, CTRVROStateVectorView,
-                                                   CTRVRWStateVectorView, PMKind::CTRV, kCTRVIsLinear>
+    class CTRVProcessModel : public CTRVProcessModelBase
     {
     public:
       /**

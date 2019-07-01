@@ -32,7 +32,7 @@ namespace ser94mor
     /**
      * A base (template) class for representation of "belief" concept from Bayesian filtering.
      */
-    template<class StateVector, class StateCovarianceMatrix>
+    template<class StateVector_t, class StateCovarianceMatrix_t>
     class Belief
     {
     public:
@@ -49,7 +49,7 @@ namespace ser94mor
        * State vector notation from the Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press.
        * @return state vector
        */
-      const StateVector& mu() const
+      const StateVector_t& mu() const
       {
         return state_vector_;
       }
@@ -59,13 +59,13 @@ namespace ser94mor
        * Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press.
        * @return state covariance matrix
        */
-      const StateCovarianceMatrix& Sigma() const
+      const StateCovarianceMatrix_t& Sigma() const
       {
         return state_covariance_matrix_;
       }
 
-      Belief(double_t t, const StateVector& sv, const StateCovarianceMatrix& scm)
-      : timestamp_{t}, state_vector_{sv}, state_covariance_matrix_{scm}
+      Belief(double_t tm, const StateVector_t& sv, const StateCovarianceMatrix_t& scm)
+      : timestamp_{tm}, state_vector_{sv}, state_covariance_matrix_{scm}
       {
 
       }
@@ -116,8 +116,8 @@ namespace ser94mor
 
     private:
       double_t timestamp_;
-      StateVector state_vector_;
-      StateCovarianceMatrix state_covariance_matrix_;
+      StateVector_t state_vector_;
+      StateCovarianceMatrix_t state_covariance_matrix_;
     };
 
   }

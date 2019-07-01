@@ -34,7 +34,7 @@ namespace ser94mor
      * A read-only wrapper around MeasurementVector for Radar measurement model
      * that provides meaningful accessors to the MeasurementVector components.
      */
-    class RadarROMeasurementVectorView : ser94mor::sensor_fusion::ROMeasurementVectorView<RadarMeasurementVector>
+    class RadarROMeasurementVectorView : ROMeasurementVectorView<RadarMeasurementVector>
     {
     public:
       /**
@@ -42,7 +42,7 @@ namespace ser94mor
        * @param measurement_vector a measurement vector
        */
       explicit RadarROMeasurementVectorView(const RadarMeasurementVector& measurement_vector)
-          : ser94mor::sensor_fusion::ROMeasurementVectorView<RadarMeasurementVector>{measurement_vector}
+      : ROMeasurementVectorView<RadarMeasurementVector>{measurement_vector}
       {
 
       }
@@ -95,7 +95,7 @@ namespace ser94mor
      * A read-write wrapper around MeasurementVector for Radar measurement model
      * that provides meaningful accessors and setters to the MeasurementVector components.
      */
-    class RadarRWMeasurementVectorView : ser94mor::sensor_fusion::RWMeasurementVectorView<RadarMeasurementVector>
+    class RadarRWMeasurementVectorView : RWMeasurementVectorView<RadarMeasurementVector>
     {
     public:
       /**
@@ -103,7 +103,7 @@ namespace ser94mor
        * @param measurement_vector a measurement vector
        */
       explicit RadarRWMeasurementVectorView(RadarMeasurementVector& measurement_vector)
-          : ser94mor::sensor_fusion::RWMeasurementVectorView<RadarMeasurementVector>{measurement_vector}
+      : RWMeasurementVectorView<RadarMeasurementVector>{measurement_vector}
       {
 
       }

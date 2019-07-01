@@ -21,7 +21,7 @@ namespace ser94mor
      * A read-only wrapper around StateVector for CTRV process model
      * that provides meaningful accessors to the StateVector components.
      */
-    class CTRVROStateVectorView : ser94mor::sensor_fusion::ROStateVectorView<CTRVStateVector>
+    class CTRVROStateVectorView : ROStateVectorView<CTRVStateVector>
     {
     public:
 
@@ -30,7 +30,7 @@ namespace ser94mor
        * @param state_vector a state vector
        */
       explicit CTRVROStateVectorView(const CTRVStateVector& state_vector)
-          : ser94mor::sensor_fusion::ROStateVectorView<CTRVStateVector>{state_vector}
+      : ROStateVectorView<CTRVStateVector>{state_vector}
       {
 
       }
@@ -126,7 +126,7 @@ namespace ser94mor
      * @tparam StateVector_type a class of a state vector
     */
     template<class StateVector_type>
-    class CTRVRWStateVectorViewBase : ser94mor::sensor_fusion::RWStateVectorView<StateVector_type>
+    class CTRVRWStateVectorViewBase : RWStateVectorView<StateVector_type>
     {
     public:
       /**
@@ -134,7 +134,7 @@ namespace ser94mor
        * @param state_vector a state vector
        */
       explicit CTRVRWStateVectorViewBase(StateVector_type& state_vector)
-          : ser94mor::sensor_fusion::RWStateVectorView<StateVector_type>{state_vector}
+      : RWStateVectorView<StateVector_type>{state_vector}
       {
 
       }
@@ -193,7 +193,7 @@ namespace ser94mor
        * @param state_vector a state vector
        */
       explicit CTRVRWStateVectorView(CTRVStateVector& state_vector)
-          : CTRVRWStateVectorViewBase<CTRVStateVector>{state_vector}
+      : CTRVRWStateVectorViewBase<CTRVStateVector>{state_vector}
       {
 
       }
@@ -203,7 +203,7 @@ namespace ser94mor
      * A read-only wrapper around ProcessNoiseVector for CTRV process model
      * that provides meaningful accessors to the ProcessNoiseVector components.
      */
-    class CTRVROProcessNoiseVectorView : ser94mor::sensor_fusion::ROProcessNoiseVectorView<CTRVProcessNoiseVector>
+    class CTRVROProcessNoiseVectorView : ROProcessNoiseVectorView<CTRVProcessNoiseVector>
     {
     public:
       /**
@@ -211,7 +211,7 @@ namespace ser94mor
        * @param process_noise_vector a process noise vector
        */
       explicit CTRVROProcessNoiseVectorView(const CTRVProcessNoiseVector& process_noise_vector)
-          : ser94mor::sensor_fusion::ROProcessNoiseVectorView<CTRVProcessNoiseVector>{process_noise_vector}
+      : ROProcessNoiseVectorView<CTRVProcessNoiseVector>{process_noise_vector}
       {
 
       }

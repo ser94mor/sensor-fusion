@@ -30,17 +30,17 @@ namespace ser94mor
 {
   namespace sensor_fusion
   {
+    using CVProcessModelBase = ProcessModel<CVStateVector, CVStateCovarianceMatrix, CVControlVector,
+                                            CVProcessNoiseCovarianceMatrix, CVROStateVectorView, CVRWStateVectorView,
+                                            PMKind::CV, kCVIsLinear>;
+
     /**
      * A concrete process model class for CV process model. The State vector for process model consists of
      *   [ px, py, vx, vy ].
      * The naming of matrices are taken from the
      * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
      */
-    class CVProcessModel
-        : public ser94mor::sensor_fusion::ProcessModel<CVStateVector, CVStateCovarianceMatrix, CVControlVector,
-            CVProcessNoiseCovarianceMatrix,
-            CVROStateVectorView, CVRWStateVectorView,
-            PMKind::CV, kCVIsLinear>
+    class CVProcessModel : public CVProcessModelBase
     {
     public:
       /**

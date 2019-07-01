@@ -29,11 +29,11 @@ namespace ser94mor
 
     /**
      * A template class representing a measurement.
-     * @tparam MeasurementVector a measurement vector class
-     * @tparam MeasurementCovarianceMatrix a measurement covariance matrix class
+     * @tparam MeasurementVector_t a measurement vector class
+     * @tparam MeasurementCovarianceMatrix_t a measurement covariance matrix class
      * @tparam mmk a measurement model kind
      */
-    template<class MeasurementVector, class MeasurementCovarianceMatrix, MMKind mmk>
+    template<class MeasurementVector_t, class MeasurementCovarianceMatrix_t, MMKind mmk>
     class Measurement
     {
     public:
@@ -51,7 +51,7 @@ namespace ser94mor
        * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
        * @return a measurement vector
        */
-      const MeasurementVector& z() const
+      const MeasurementVector_t& z() const
       {
         return measurement_vector_;
       }
@@ -71,14 +71,14 @@ namespace ser94mor
        * @param t a timestamp
        * @param mv a measurement vector
        */
-      Measurement(double_t t, const MeasurementVector& mv) : timestamp_{t}, measurement_vector_{mv}
+      Measurement(double_t t, const MeasurementVector_t& mv) : timestamp_{t}, measurement_vector_{mv}
       {
 
       }
 
     private:
       double_t timestamp_;
-      MeasurementVector measurement_vector_;
+      MeasurementVector_t measurement_vector_;
     };
 
   }

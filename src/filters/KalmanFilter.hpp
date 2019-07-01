@@ -34,18 +34,18 @@ namespace ser94mor
      * The naming of vectors and matrices are taken from the
      * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
      *
-     * @tparam ProcessModel a class of the process model to use
-     * @tparam MeasurementModel a class of measurement model to use; notice that here it is not a template class
-     * @tparam DerivedKalmanFilter a concrete sub-template-class of the KalmanFilterBase;
-     *                             it is needed to invoke methods from that class
+     * @tparam ProcessModel_t a class of the process model to use
+     * @tparam MeasurementModel_t a class of measurement model to use; notice that here it is not a template class
+     * @tparam DerivedKalmanFilterTemplate_t a concrete sub-template-class of the KalmanFilterBase;
+     *                                       it is needed to invoke methods from that class
      */
-    template<class ProcessModel, class MeasurementModel, template<class, class> class DerivedKalmanFilter>
+    template<class ProcessModel_t, class MeasurementModel_t, template<class, class> class DerivedKalmanFilterTemplate_t>
     class KalmanFilterBase
     {
-    protected:
-      using Belief = typename ProcessModel::Belief_type;
-      using ControlVector = typename ProcessModel::ControlVector_type;
-      using Measurement = typename MeasurementModel::Measurement_type;
+    private:
+      using Belief_type = typename ProcessModel_t::Belief_type;
+      using ControlVector_type = typename ProcessModel_t::ControlVector_type;
+      using Measurement_type = typename MeasurementModel_t::Measurement_type;
     public:
 
       /**
@@ -61,8 +61,8 @@ namespace ser94mor
        */
       template <bool enable = true>
       static auto
-      Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
-      -> std::enable_if_t<ProcessModel::IsLinear() && enable, Belief>
+      Predict(const Belief_type& bel, const ControlVector_type& ut, double_t dt, const ProcessModel_t& process_model)
+      -> std::enable_if_t<ProcessModel_t::IsLinear() && enable, Belief_type>
       {
         auto At{process_model.A(dt)};
         return {
@@ -84,14 +84,16 @@ namespace ser94mor
        */
       template <bool enable = true>
       static auto
-      Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
-      -> std::enable_if_t<MeasurementModel::IsLinear() && enable, Belief>
+      Update(
+          const Belief_type& bel, const Measurement_type& measurement, const MeasurementModel_t& measurement_model)
+      -> std::enable_if_t<MeasurementModel_t::IsLinear() && enable, Belief_type>
       {
         const auto Ct{measurement_model.C()};
         const auto mu{bel.mu()};
         const auto Sigma{bel.Sigma()};
         const auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + measurement_model.Q()).inverse()};
-        const auto I{Eigen::Matrix<double_t, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
+        const auto I{
+          Eigen::Matrix<double_t, ProcessModel_t::StateDims(), ProcessModel_t::StateDims()>::Identity()};
 
         return {
             /* timestamp */               measurement.t(),
@@ -114,15 +116,17 @@ namespace ser94mor
        * @param measurement_model an instance of the measurement model
        * @return a posterior belief, that is, after the prediction and incorporation of the measurement
        */
-      static Belief
-      PredictUpdate(const Belief& bel, const ControlVector& ut, const Measurement& measurement,
-                    const ProcessModel& process_model, const MeasurementModel& measurement_model)
+      static Belief_type
+      PredictUpdate(const Belief_type& bel, const ControlVector_type& ut, const Measurement_type& measurement,
+                    const ProcessModel_t& process_model, const MeasurementModel_t& measurement_model)
       {
         const auto dt = measurement.t() - bel.t();
 
-        const auto bel_prior{DerivedKalmanFilter<ProcessModel, MeasurementModel>::Predict(bel, ut, dt, process_model)};
+        const auto bel_prior{
+          DerivedKalmanFilterTemplate_t<ProcessModel_t, MeasurementModel_t>::Predict(bel, ut, dt, process_model)};
 
-        return DerivedKalmanFilter<ProcessModel, MeasurementModel>::Update(bel_prior, measurement, measurement_model);
+        return DerivedKalmanFilterTemplate_t<ProcessModel_t, MeasurementModel_t>::
+                 Update(bel_prior, measurement, measurement_model);
       }
     };
 
@@ -130,11 +134,11 @@ namespace ser94mor
     /**
      * A concrete class representing Kalman filter. All the equations are the same as in its base class.
      *
-     * @tparam ProcessModel a class of the process model to use
-     * @tparam MeasurementModel a class of measurement model to use; notice that here it is not a template class
+     * @tparam ProcessModel_t a class of the process model to use
+     * @tparam MeasurementModel_t a class of measurement model to use; notice that here it is not a template class
      */
-    template <class ProcessModel, class MeasurementModel>
-    class KalmanFilter : public KalmanFilterBase<ProcessModel, MeasurementModel, KalmanFilter>
+    template <class ProcessModel_t, class MeasurementModel_t>
+    class KalmanFilter : public KalmanFilterBase<ProcessModel_t, MeasurementModel_t, KalmanFilter>
     {
 
     };

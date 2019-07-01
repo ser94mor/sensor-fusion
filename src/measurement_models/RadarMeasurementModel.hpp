@@ -21,14 +21,18 @@
 
 #include "definitions.hpp"
 #include "utils.hpp"
+#include "measurement_vector_views.hpp"
 #include "MeasurementModel.hpp"
-#include "../measurement_vector_views/RadarMeasurementVectorView.hpp"
 
 
 namespace ser94mor
 {
   namespace sensor_fusion
   {
+    template<class ProcessModel_t>
+    using RadarMeasurementModelBase =
+        MeasurementModel<RadarMeasurementVector, RadarMeasurementCovarianceMatrix, RadarROMeasurementVectorView,
+        ProcessModel_t, MMKind::Radar, kRadarIsLinear>;
 
     /**
      * A concrete (Radar) measurement model. It is still a template because the dimensionality of
@@ -36,28 +40,22 @@ namespace ser94mor
      * The naming of matrices and vectors are taken from the
      * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
      *
-     * @tparam ProcessModel a process model class, which is needed to determine the number of state dimensions
+     * @tparam ProcessModel_t a process model class, which is needed to determine the number of state dimensions
      */
-    template<class ProcessModel>
-    class RadarMeasurementModel
-    : public ser94mor::sensor_fusion::MeasurementModel<RadarMeasurementVector, RadarMeasurementCovarianceMatrix,
-                                                       RadarROMeasurementVectorView, ProcessModel,
-                                                       MMKind::Radar, kRadarIsLinear>
+    template<class ProcessModel_t>
+    class RadarMeasurementModel : public RadarMeasurementModelBase<ProcessModel_t>
     {
     public:
       using MeasurementMatrix_type =
-      Eigen::Matrix<double_t, RadarMeasurementModel::MeasurementDims(), RadarMeasurementModel::StateDims()>;
-      using StateVector_type = typename ProcessModel::StateVector_type;
-      using ROStateVectorView_type = typename ProcessModel::ROStateVectorView_type;
+          Eigen::Matrix<double_t, RadarMeasurementModel::MeasurementDims(), RadarMeasurementModel::StateDims()>;
+      using StateVector_type = typename ProcessModel_t::StateVector_type;
+      using ROStateVectorView_type = typename ProcessModel_t::ROStateVectorView_type;
 
 
       /**
        * Constructor.
        */
-      RadarMeasurementModel()
-          : ser94mor::sensor_fusion::MeasurementModel<RadarMeasurementVector, RadarMeasurementCovarianceMatrix,
-          RadarROMeasurementVectorView, ProcessModel,
-          MMKind::Radar, kRadarIsLinear>{}
+      RadarMeasurementModel() : RadarMeasurementModelBase<ProcessModel_t>{}
       {
 
       }
@@ -97,7 +95,7 @@ namespace ser94mor
         const auto tmp2{svv.py()/rho};
 
         MeasurementMatrix_type measurement_matrix{MeasurementMatrix_type::Zero()};
-        switch (ProcessModel::Kind())
+        switch (ProcessModel_t::Kind())
         {
           case PMKind::CV:
           {

@@ -24,8 +24,7 @@ namespace ser94mor
   namespace sensor_fusion
   {
 
-    using RadarMeasurementBase =
-    ser94mor::sensor_fusion::Measurement<RadarMeasurementVector, RadarMeasurementCovarianceMatrix, MMKind::Radar>;
+    using RadarMeasurementBase = Measurement<RadarMeasurementVector, RadarMeasurementCovarianceMatrix, MMKind::Radar>;
 
     class RadarMeasurement : public RadarMeasurementBase
     {

@@ -79,8 +79,8 @@ TEST_CASE("LidarMeasurementModel<*>::Q", "[measurement_models]")
 
 TEST_CASE("LidarMeasurementModel<*>::Type", "[measurement_models]")
 {
-  REQUIRE(LidarMeasurementModel<CVProcessModel>::Type() == EntityType::MeasurementModel);
-  REQUIRE(LidarMeasurementModel<CTRVProcessModel>::Type() == EntityType::MeasurementModel);
+  REQUIRE(LidarMeasurementModel<CVProcessModel>::Type() == EntityType::e_MeasurementModel);
+  REQUIRE(LidarMeasurementModel<CTRVProcessModel>::Type() == EntityType::e_MeasurementModel);
 }
 
 
@@ -257,8 +257,8 @@ TEST_CASE("RadarMeasurementModel<*>::Q", "[measurement_models]")
 
 TEST_CASE("RadarMeasurementModel<*>::Type", "[measurement_models]")
 {
-  REQUIRE(RadarMeasurementModel<CVProcessModel>::Type() == EntityType::MeasurementModel);
-  REQUIRE(RadarMeasurementModel<CTRVProcessModel>::Type() == EntityType::MeasurementModel);
+  REQUIRE(RadarMeasurementModel<CVProcessModel>::Type() == EntityType::e_MeasurementModel);
+  REQUIRE(RadarMeasurementModel<CTRVProcessModel>::Type() == EntityType::e_MeasurementModel);
 }
 
 

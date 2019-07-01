@@ -31,23 +31,25 @@ namespace ser94mor
   namespace  sensor_fusion
   {
 
+    template <class ProcessModel_t>
+    using LidarMeasurementModelBase =
+        MeasurementModel<LidarMeasurementVector, LidarMeasurementCovarianceMatrix, LidarROMeasurementVectorView,
+                         ProcessModel_t, MMKind::Lidar, kLidarIsLinear>;
+
     /**
      * A concrete (Lidar) measurement model. It is still a template because the dimensionality of
      * the measurement matrix depends on the process model kind, which we know only at compile time.
      * The naming of matrices are taken from the
      * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
      *
-     * @tparam ProcessModel a process model class, which is needed to determine the number of state dimensions
+     * @tparam ProcessModel_t a process model class, which is needed to determine the number of state dimensions
      */
-    template<class ProcessModel>
-    class LidarMeasurementModel :
-        public ser94mor::sensor_fusion::MeasurementModel<LidarMeasurementVector, LidarMeasurementCovarianceMatrix,
-            LidarROMeasurementVectorView, ProcessModel,
-            MMKind::Lidar, kLidarIsLinear>
+    template<class ProcessModel_t>
+    class LidarMeasurementModel : public LidarMeasurementModelBase<ProcessModel_t>
     {
     public:
       using MeasurementMatrix_type =
-      Eigen::Matrix<double_t, LidarMeasurementModel::MeasurementDims(), LidarMeasurementModel::StateDims()>;
+          Eigen::Matrix<double_t, LidarMeasurementModel::MeasurementDims(), LidarMeasurementModel::StateDims()>;
 
       /**
        * Constructor.
@@ -57,9 +59,7 @@ namespace ser94mor
        * where the number of columns equal to the number of state dimensions.
        */
       LidarMeasurementModel()
-          : ser94mor::sensor_fusion::MeasurementModel<LidarMeasurementVector, LidarMeasurementCovarianceMatrix,
-          LidarROMeasurementVectorView, ProcessModel, MMKind::Lidar, kLidarIsLinear>{},
-            measurement_matrix_{MeasurementMatrix_type::Identity()}
+      : LidarMeasurementModelBase<ProcessModel_t>{}, measurement_matrix_{MeasurementMatrix_type::Identity()}
       {
 
       }

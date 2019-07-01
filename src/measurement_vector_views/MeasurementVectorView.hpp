@@ -28,10 +28,10 @@ namespace ser94mor
      * A base class for read-only wrappers around MeasurementVector for some measurement model
      * that provides meaningful accessors to the MeasurementVector components.
      *
-     * @tparam MeasurementVector a class of the measurement vector
+     * @tparam MeasurementVector_t a class of the measurement vector
      */
-    template <class MeasurementVector>
-    class ROMeasurementVectorView : public ROVectorView<MeasurementVector>
+    template <class MeasurementVector_t>
+    class ROMeasurementVectorView : public ROVectorView<MeasurementVector_t>
     {
     public:
       /**
@@ -49,8 +49,8 @@ namespace ser94mor
        * Constructor.
        * @param measurement_vector a measurement vector
        */
-      explicit ROMeasurementVectorView(const MeasurementVector& measurement_vector)
-      : ROVectorView<MeasurementVector>{measurement_vector}
+      explicit ROMeasurementVectorView(const MeasurementVector_t& measurement_vector)
+      : ROVectorView<MeasurementVector_t>{measurement_vector}
       {
 
       }
@@ -65,18 +65,18 @@ namespace ser94mor
      * A base class for read-write wrappers around MeasurementVector for some measurement model
      * that provides meaningful accessors and setters to the MeasurementVector components.
      *
-     * @tparam MeasurementVector a class of the measurement vector
+     * @tparam MeasurementVector_t a class of the measurement vector
      */
-    template <class MeasurementVector>
-    class RWMeasurementVectorView : public RWVectorView<MeasurementVector>
+    template <class MeasurementVector_t>
+    class RWMeasurementVectorView : public RWVectorView<MeasurementVector_t>
     {
     protected:
       /**
        * Constructor.
        * @param measurement_vector a measurement vector
        */
-      explicit RWMeasurementVectorView(MeasurementVector& measurement_vector)
-      : RWVectorView<MeasurementVector>{measurement_vector}
+      explicit RWMeasurementVectorView(MeasurementVector_t& measurement_vector)
+      : RWVectorView<MeasurementVector_t>{measurement_vector}
       {
 
       }

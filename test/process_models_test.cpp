@@ -96,7 +96,7 @@ TEST_CASE("CVProcessModel::R", "[process_models]")
 
 TEST_CASE("CVProcessModel::Type", "[process_models]")
 {
-  REQUIRE(CVProcessModel::Type() == EntityType::ProcessModel);
+  REQUIRE(CVProcessModel::Type() == EntityType::e_ProcessModel);
 }
 
 
@@ -201,7 +201,7 @@ TEST_CASE("CTRVProcessModel::R", "[process_models]")
 
 TEST_CASE("CTRVProcessModel::Type", "[process_models]")
 {
-  REQUIRE(CTRVProcessModel::Type() == EntityType::ProcessModel);
+  REQUIRE(CTRVProcessModel::Type() == EntityType::e_ProcessModel);
 }
 
 

@@ -35,36 +35,37 @@ namespace ser94mor
      * A base template class representing a process model.
      * It contains methods and functions common for all concrete process models.
      *
-     * @tparam StateVector a state vector class
-     * @tparam StateCovarianceMatrix a state covariance matrix class
+     * @tparam StateVector_t a state vector class
+     * @tparam StateCovarianceMatrix_t a state covariance matrix class
      * @tparam StateVectorView a state vector view (accessor to the state vector dimensions)
-     * @tparam ControlVector a control vector class
+     * @tparam ControlVector_t a control vector class
      * @tparam pmk a process model kind
      * @tparam is_linear a flag indicating whether the process model is linear or not
      */
-    template<class StateVector, class StateCovarianceMatrix, class ControlVector, class ProcessNoiseCovarianceMatrix,
-             class ROStateVectorView, class RWStateVectorView, PMKind pmk, bool is_linear>
-    class ProcessModel : public ModelEntity<EntityType::ProcessModel, PMKind, pmk, is_linear>
+    template<class StateVector_t, class StateCovarianceMatrix_t, class ControlVector_t,
+             class ProcessNoiseCovarianceMatrix_t, class ROStateVectorView_t, class RWStateVectorView_t,
+             PMKind pmk, bool is_linear>
+    class ProcessModel : public ModelEntity<EntityType::e_ProcessModel, PMKind, pmk, is_linear>
     {
     public:
       /**
        * The typedefs below are needed in other places in the code. These typedefs, in fact, are attributes of the
        * process model.
        */
-      using Belief_type = Belief<StateVector, StateCovarianceMatrix>;
-      using StateVector_type = StateVector;
-      using StateCovarianceMatrix_type = StateCovarianceMatrix;
-      using ControlVector_type = ControlVector;
-      using ProcessNoiseCovarianceMatrix_type = ProcessNoiseCovarianceMatrix;
-      using RWStateVectorView_type = RWStateVectorView;
-      using ROStateVectorView_type = ROStateVectorView;
+      using Belief_type = Belief<StateVector_t, StateCovarianceMatrix_t>;
+      using StateVector_type = StateVector_t;
+      using StateCovarianceMatrix_type = StateCovarianceMatrix_t;
+      using ControlVector_type = ControlVector_t;
+      using ProcessNoiseCovarianceMatrix_type = ProcessNoiseCovarianceMatrix_t;
+      using RWStateVectorView_type = RWStateVectorView_t;
+      using ROStateVectorView_type = ROStateVectorView_t;
 
       /**
        * @return a number of dimensions in the state vector
        */
       constexpr static size_t StateDims()
       {
-        return static_cast<size_t>(StateVector::SizeAtCompileTime);
+        return static_cast<size_t>(StateVector_t::SizeAtCompileTime);
       }
 
       /**
@@ -72,7 +73,7 @@ namespace ser94mor
        */
       constexpr static size_t ControlDims()
       {
-        return static_cast<size_t>(ControlVector::SizeAtCompileTime);
+        return static_cast<size_t>(ControlVector_t::SizeAtCompileTime);
       }
 
       /**
@@ -80,7 +81,7 @@ namespace ser94mor
        */
       constexpr static size_t ProcessNoiseDims()
       {
-        return static_cast<size_t>(ProcessNoiseCovarianceMatrix::RowsAtCompileTime);
+        return static_cast<size_t>(ProcessNoiseCovarianceMatrix_t::RowsAtCompileTime);
       }
 
       /**
@@ -88,7 +89,7 @@ namespace ser94mor
        * due to the variadic templates used in this code. ProcessModel needs a default constructor.
        * @param mtx a process noise covariance matrix
        */
-      void SetProcessNoiseCovarianceMatrix(const ProcessNoiseCovarianceMatrix& mtx)
+      void SetProcessNoiseCovarianceMatrix(const ProcessNoiseCovarianceMatrix_t& mtx)
       {
         process_noise_covariance_matrix_ = mtx;
       }
@@ -97,13 +98,13 @@ namespace ser94mor
        * Get a process noise covariance matrix.
        * @return a process noise covariance matirx.
        */
-      const ProcessNoiseCovarianceMatrix& GetProcessNoiseCovarianceMatrix() const
+      const ProcessNoiseCovarianceMatrix_t& GetProcessNoiseCovarianceMatrix() const
       {
         return process_noise_covariance_matrix_;
       }
 
     private:
-      ProcessNoiseCovarianceMatrix process_noise_covariance_matrix_;
+      ProcessNoiseCovarianceMatrix_t process_noise_covariance_matrix_;
     };
 
   }

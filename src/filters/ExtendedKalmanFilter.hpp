@@ -32,17 +32,17 @@ namespace ser94mor
      * The naming of vectors and matrices are taken from the
      * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
      *
-     * @tparam ProcessModel a class of the process model to use
-     * @tparam MeasurementModel a class of measurement model to use; notice that here it is not a template class
+     * @tparam ProcessModel_t a class of the process model to use
+     * @tparam MeasurementModel_t a class of measurement model to use; notice that here it is not a template class
      */
-    template<class ProcessModel, class MeasurementModel>
-    class ExtendedKalmanFilter : public KalmanFilterBase<ProcessModel, MeasurementModel, ExtendedKalmanFilter>
+    template<class ProcessModel_t, class MeasurementModel_t>
+    class ExtendedKalmanFilter : public KalmanFilterBase<ProcessModel_t, MeasurementModel_t, ExtendedKalmanFilter>
     {
     private:
-      using KF = KalmanFilter<ProcessModel, MeasurementModel>;
-      using Belief = typename ProcessModel::Belief_type;
-      using ControlVector = typename ProcessModel::ControlVector_type;
-      using Measurement = typename MeasurementModel::Measurement_type;
+      using KF_type = KalmanFilter<ProcessModel_t, MeasurementModel_t>;
+      using Belief_type = typename ProcessModel_t::Belief_type;
+      using ControlVector_type = typename ProcessModel_t::ControlVector_type;
+      using Measurement_type = typename MeasurementModel_t::Measurement_type;
 
     public:
       /**
@@ -59,8 +59,8 @@ namespace ser94mor
        */
       template<bool enable = true>
       static auto
-      Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
-      -> std::enable_if_t<!ProcessModel::IsLinear() && enable, Belief>
+      Predict(const Belief_type& bel, const ControlVector_type& ut, double_t dt, const ProcessModel_t& process_model)
+      -> std::enable_if_t<!ProcessModel_t::IsLinear() && enable, Belief_type>
       {
         const auto mu{bel.mu()};
         const auto Gt{process_model.G(dt, mu)};
@@ -87,10 +87,10 @@ namespace ser94mor
        */
       template<bool enable = true>
       static auto
-      Predict(const Belief& bel, const ControlVector& ut, double_t dt, const ProcessModel& process_model)
-      -> std::enable_if_t<ProcessModel::IsLinear() && enable, Belief>
+      Predict(const Belief_type& bel, const ControlVector_type& ut, double_t dt, const ProcessModel_t& process_model)
+      -> std::enable_if_t<ProcessModel_t::IsLinear() && enable, Belief_type>
       {
-        return KF::Predict(bel, ut, dt, process_model);
+        return KF_type::Predict(bel, ut, dt, process_model);
       }
 
       /**
@@ -106,18 +106,20 @@ namespace ser94mor
        */
       template<bool enable = true>
       static auto
-      Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
-      -> std::enable_if_t<!MeasurementModel::IsLinear() && enable, Belief>
+      Update(
+          const Belief_type& bel, const Measurement_type& measurement, const MeasurementModel_t& measurement_model)
+      -> std::enable_if_t<!MeasurementModel_t::IsLinear() && enable, Belief_type>
       {
         const auto mu{bel.mu()};
         const auto Sigma{bel.Sigma()};
         const auto Ht{measurement_model.H(mu)};
         const auto Kt{Sigma * Ht.transpose() * (Ht * Sigma * Ht.transpose() + measurement_model.Q()).inverse()};
-        const auto I{Eigen::Matrix<double_t, ProcessModel::StateDims(), ProcessModel::StateDims()>::Identity()};
+        const auto I{
+          Eigen::Matrix<double_t, ProcessModel_t::StateDims(), ProcessModel_t::StateDims()>::Identity()};
 
         return {
           /* timestamp */               measurement.t(),
-          /* state vector */            mu + Kt * MeasurementModel::Diff(measurement.z(), measurement_model.h(mu)),
+          /* state vector */            mu + Kt * MeasurementModel_t::Diff(measurement.z(), measurement_model.h(mu)),
           /* state covariance matrix */ (I - Kt * Ht) * Sigma,
         };
       }
@@ -137,10 +139,11 @@ namespace ser94mor
        */
       template<bool enable = true>
       static auto
-      Update(const Belief& bel, const Measurement& measurement, const MeasurementModel& measurement_model)
-      -> std::enable_if_t<MeasurementModel::IsLinear() && enable, Belief>
+      Update(
+          const Belief_type& bel, const Measurement_type& measurement, const MeasurementModel_t& measurement_model)
+      -> std::enable_if_t<MeasurementModel_t::IsLinear() && enable, Belief_type>
       {
-        return KF::Update(bel, measurement, measurement_model);
+        return KF_type::Update(bel, measurement, measurement_model);
       }
 
     };

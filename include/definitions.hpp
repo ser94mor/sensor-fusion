@@ -37,9 +37,8 @@ namespace ser94mor
 
     enum class EntityType
     {
-      ProcessModel = 0,
-      MeasurementModel = 1,
-      Sensor = 2,
+      e_ProcessModel = 0,
+      e_MeasurementModel = 1,
     };
 
     inline constexpr const char* EntityNameByType(EntityType et)
@@ -47,19 +46,14 @@ namespace ser94mor
       const char* ret{nullptr};
       switch (et)
       {
-        case EntityType::ProcessModel:
+        case EntityType::e_ProcessModel:
         {
           ret = "PROCESS_MODEL";
           break;
         }
-        case EntityType::MeasurementModel:
+        case EntityType::e_MeasurementModel:
         {
           ret = "MEASUREMENT_MODEL";
-          break;
-        }
-        case EntityType::Sensor:
-        {
-          ret = "SENSOR";
           break;
         }
         default:
@@ -228,7 +222,7 @@ namespace ser94mor
     }
 
 
-    template <EntityType type, class Kind_type, Kind_type kind>
+    template <EntityType type, class Kind_t, Kind_t kind>
     class Entity
     {
     public:
@@ -237,44 +231,44 @@ namespace ser94mor
 
       constexpr static const char* TypeName();
 
-      constexpr static Kind_type Kind();
+      constexpr static Kind_t Kind();
 
       constexpr static const char* KindName();
     };
 
-    template<EntityType type, class Kind_type, Kind_type kind>
-    constexpr EntityType Entity<type, Kind_type, kind>::Type()
+    template<EntityType type, class Kind_t, Kind_t kind>
+    constexpr EntityType Entity<type, Kind_t, kind>::Type()
     {
       return type;
     }
 
-    template<EntityType type, class Kind_type, Kind_type kind>
-    constexpr const char* Entity<type, Kind_type, kind>::TypeName()
+    template<EntityType type, class Kind_t, Kind_t kind>
+    constexpr const char* Entity<type, Kind_t, kind>::TypeName()
     {
       return EntityNameByType(Type());
     }
 
-    template<EntityType type, class Kind_type, Kind_type kind>
-    constexpr Kind_type Entity<type, Kind_type, kind>::Kind()
+    template<EntityType type, class Kind_t, Kind_t kind>
+    constexpr Kind_t Entity<type, Kind_t, kind>::Kind()
     {
       return kind;
     }
 
-    template<EntityType type, class Kind_type, Kind_type kind>
-    constexpr const char* Entity<type, Kind_type, kind>::KindName()
+    template<EntityType type, class Kind_t, Kind_t kind>
+    constexpr const char* Entity<type, Kind_t, kind>::KindName()
     {
       return NameByKind(Kind());
     }
 
-    template <EntityType type, class Kind_type, Kind_type kind, bool is_linear>
-    class ModelEntity : public Entity<type, Kind_type, kind>
+    template <EntityType type, class Kind_t, Kind_t kind, bool is_linear>
+    class ModelEntity : public Entity<type, Kind_t, kind>
     {
     public:
       constexpr static bool IsLinear();
     };
 
-    template<EntityType type, class Kind_type, Kind_type kind, bool is_linear>
-    constexpr bool ModelEntity<type, Kind_type, kind, is_linear>::IsLinear()
+    template<EntityType type, class Kind_t, Kind_t kind, bool is_linear>
+    constexpr bool ModelEntity<type, Kind_t, kind, is_linear>::IsLinear()
     {
       return is_linear;
     }
@@ -283,9 +277,9 @@ namespace ser94mor
      * A base class for read-write vector views.
      * Read-write vector views provide read-write meaningful access to vector dimensions.
      *
-     * @tparam Vector a class of the vector
+     * @tparam Vector_t a class of the vector
      */
-    template<class Vector>
+    template<class Vector_t>
     class RWVectorView
     {
     protected:
@@ -293,7 +287,7 @@ namespace ser94mor
        * Constructor.
        * @param vector a vector
        */
-      explicit RWVectorView(Vector& vector) : vector_{vector}
+      explicit RWVectorView(Vector_t& vector) : vector_{vector}
       {
 
       }
@@ -306,22 +300,22 @@ namespace ser94mor
       /**
        * @return reference to a vector
        */
-      Vector& GetVector() const
+      Vector_t& GetVector() const
       {
         return vector_;
       }
 
     private:
-      Vector& vector_;
+      Vector_t& vector_;
     };
 
     /**
      * A base class for read-only vector views.
      * Read-only vector views provide read-only meaningful access to vector dimensions.
      *
-     * @tparam Vector a class of the vector
+     * @tparam Vector_t a class of the vector
      */
-    template<class Vector>
+    template<class Vector_t>
     class ROVectorView
     {
     protected:
@@ -329,7 +323,7 @@ namespace ser94mor
        * Constructor.
        * @param vector a vector
        */
-      explicit ROVectorView(const Vector& vector) : vector_{vector}
+      explicit ROVectorView(const Vector_t& vector) : vector_{vector}
       {
 
       }
@@ -342,13 +336,13 @@ namespace ser94mor
       /**
        * @return const reference to a vector
        */
-      const Vector& GetVector() const
+      const Vector_t& GetVector() const
       {
         return vector_;
       }
 
     private:
-      const Vector& vector_;
+      const Vector_t& vector_;
     };
 
 

@@ -30,10 +30,7 @@ namespace ser94mor
   {
 
 
-    CTRVProcessModel::CTRVProcessModel()
-    : ser94mor::sensor_fusion::ProcessModel<CTRVStateVector, CTRVStateCovarianceMatrix, CTRVControlVector,
-                                            CTRVProcessNoiseCovarianceMatrix, CTRVROStateVectorView,
-                                            CTRVRWStateVectorView, PMKind::CTRV, kCTRVIsLinear>{},
+    CTRVProcessModel::CTRVProcessModel() : CTRVProcessModelBase{},
       state_transition_matrix_prototype_{CTRVStateTransitionMatrix::Identity()}
     {
 

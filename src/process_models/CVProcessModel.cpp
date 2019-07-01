@@ -23,10 +23,7 @@ namespace ser94mor
 {
   namespace sensor_fusion
   {
-    CVProcessModel::CVProcessModel()
-    : ser94mor::sensor_fusion::ProcessModel<CVStateVector, CVStateCovarianceMatrix, CVControlVector,
-                                            CVProcessNoiseCovarianceMatrix, CVROStateVectorView, CVRWStateVectorView,
-                                            PMKind::CV, kCVIsLinear>{},
+    CVProcessModel::CVProcessModel() : CVProcessModelBase{},
       state_transition_matrix_prototype_{CVStateTransitionMatrix::Identity()}
     {
 

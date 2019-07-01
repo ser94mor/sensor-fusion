@@ -29,17 +29,17 @@ namespace ser94mor
      * A base class for read-write wrappers around StateVector for some process model
      * that provides meaningful accessors and setters to the StateVector components.
      *
-     * @tparam StateVector a class of the state vector
+     * @tparam StateVector_t a class of the state vector
      */
-    template <class StateVector>
-    class RWStateVectorView : public RWVectorView<StateVector>
+    template <class StateVector_t>
+    class RWStateVectorView : public RWVectorView<StateVector_t>
     {
     protected:
       /**
        * Constructor.
        * @param state_vector a state vector
        */
-      explicit RWStateVectorView(StateVector& state_vector) : RWVectorView<StateVector>{state_vector}
+      explicit RWStateVectorView(StateVector_t& state_vector) : RWVectorView<StateVector_t>{state_vector}
       {
 
       }
@@ -55,10 +55,10 @@ namespace ser94mor
      * A base class for read-only wrappers around StateVector for some process model
      * that provides meaningful accessors to the StateVector components.
      *
-     *  @tparam StateVector a class of the state vector
+     *  @tparam StateVector_t a class of the state vector
      */
-    template <class StateVector>
-    class ROStateVectorView : public ROVectorView<StateVector>
+    template <class StateVector_t>
+    class ROStateVectorView : public ROVectorView<StateVector_t>
     {
     public:
       /**
@@ -117,7 +117,7 @@ namespace ser94mor
        * Constructor.
        * @param state_vector a state vector
        */
-      explicit ROStateVectorView(const StateVector& state_vector) : ROVectorView<StateVector>{state_vector}
+      explicit ROStateVectorView(const StateVector_t& state_vector) : ROVectorView<StateVector_t>{state_vector}
       {
 
       }
@@ -132,18 +132,18 @@ namespace ser94mor
      * A base class for read-only wrappers around ProcessNoiseVector for some process model
      * that provides meaningful accessors to the ProcessNoiseVector components.
      *
-     *  @tparam ProcessNoiseVector a class of the process noise vector
+     *  @tparam ProcessNoiseVector_t a class of the process noise vector
      */
-    template <class ProcessNoiseVector>
-    class ROProcessNoiseVectorView : public ROVectorView<ProcessNoiseVector>
+    template <class ProcessNoiseVector_t>
+    class ROProcessNoiseVectorView : public ROVectorView<ProcessNoiseVector_t>
     {
     protected:
       /**
        * Constructor.
        * @param process_noise_vector a process noise vector
        */
-      explicit ROProcessNoiseVectorView(const ProcessNoiseVector& process_noise_vector)
-      : ROVectorView<ProcessNoiseVector>{process_noise_vector}
+      explicit ROProcessNoiseVectorView(const ProcessNoiseVector_t& process_noise_vector)
+      : ROVectorView<ProcessNoiseVector_t>{process_noise_vector}
       {
 
       }
