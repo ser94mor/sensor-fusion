@@ -38,85 +38,120 @@ namespace ser94mor
        * Belief's timestamp.
        * @return timestamp
        */
-      double_t t() const
-      {
-        return timestamp_;
-      }
+      double_t t() const;
 
       /**
        * State vector notation from the Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press.
        * @return state vector
        */
-      const StateVector_t& mu() const
-      {
-        return state_vector_;
-      }
+      const StateVector_t& mu() const;
 
       /**
        * State covariance matrix notation from the
        * Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press.
        * @return state covariance matrix
        */
-      const StateCovarianceMatrix_t& Sigma() const
-      {
-        return state_covariance_matrix_;
-      }
+      const StateCovarianceMatrix_t& Sigma() const;
 
-      Belief(double_t tm, const StateVector_t& sv, const StateCovarianceMatrix_t& scm)
-      : timestamp_{tm}, state_vector_{sv}, state_covariance_matrix_{scm}
-      {
+      Belief(double_t tm, const StateVector_t& sv, const StateCovarianceMatrix_t& scm);
 
-      }
+      Belief(const Belief& bel);
 
-      Belief(const Belief& bel)
-          : timestamp_{bel.timestamp_}, state_vector_{bel.state_vector_},
-            state_covariance_matrix_{bel.state_covariance_matrix_}
-      {
+      Belief(Belief&& bel) noexcept;
 
-      }
+      Belief& operator=(const Belief& bel);
 
-      Belief(Belief&& bel) noexcept
-          : timestamp_{bel.timestamp_},
-            state_vector_{std::move(bel.state_vector_)},
-            state_covariance_matrix_{std::move(bel.state_covariance_matrix_)}
-      {
+      Belief& operator=(Belief&& bel) noexcept;
 
-      }
-
-      Belief& operator=(const Belief& bel)
-      {
-        if (&bel != this)
-        {
-          timestamp_ = bel.timestamp_;
-          state_vector_ = bel.state_vector_;
-          state_covariance_matrix_ = bel.state_covariance_matrix_;
-        }
-        return *this;
-      }
-
-      Belief& operator=(Belief&& bel) noexcept
-      {
-        if (&bel != this)
-        {
-          timestamp_ = bel.timestamp_;
-          state_vector_ = std::move(bel.state_vector_);
-          state_covariance_matrix_ = std::move(bel.state_covariance_matrix_);
-        }
-        return *this;
-      }
-
-      bool operator==(const Belief& bel) const
-      {
-        return timestamp_ == bel.timestamp_
-               && state_vector_.isApprox(bel.state_vector_)
-               && state_covariance_matrix_.isApprox(bel.state_covariance_matrix_);
-      }
+      bool operator==(const Belief& bel) const;
 
     private:
       double_t timestamp_;
       StateVector_t state_vector_;
       StateCovarianceMatrix_t state_covariance_matrix_;
     };
+
+    ////////////////////
+    // IMPLEMENTATION //
+    ////////////////////
+
+    template<class StateVector_t, class StateCovarianceMatrix_t>
+    const StateVector_t& Belief<StateVector_t, StateCovarianceMatrix_t>::mu() const
+    {
+      return state_vector_;
+    }
+
+    template<class StateVector_t, class StateCovarianceMatrix_t>
+    double_t Belief<StateVector_t, StateCovarianceMatrix_t>::t() const
+    {
+      return timestamp_;
+    }
+
+    template<class StateVector_t, class StateCovarianceMatrix_t>
+    const StateCovarianceMatrix_t& Belief<StateVector_t, StateCovarianceMatrix_t>::Sigma() const
+    {
+      return state_covariance_matrix_;
+    }
+
+    template<class StateVector_t, class StateCovarianceMatrix_t>
+    Belief<StateVector_t, StateCovarianceMatrix_t>::Belief(double_t tm, const StateVector_t& sv,
+                                                           const StateCovarianceMatrix_t& scm)
+        : timestamp_{tm}, state_vector_{sv}, state_covariance_matrix_{scm}
+    {
+
+    }
+
+    template<class StateVector_t, class StateCovarianceMatrix_t>
+    Belief<StateVector_t, StateCovarianceMatrix_t>::Belief(const Belief& bel)
+        : timestamp_{bel.timestamp_}, state_vector_{bel.state_vector_},
+          state_covariance_matrix_{bel.state_covariance_matrix_}
+    {
+
+    }
+
+    template<class StateVector_t, class StateCovarianceMatrix_t>
+    Belief<StateVector_t, StateCovarianceMatrix_t>::Belief(Belief&& bel) noexcept
+        : timestamp_{bel.timestamp_},
+          state_vector_{std::move(bel.state_vector_)},
+          state_covariance_matrix_{std::move(bel.state_covariance_matrix_)}
+    {
+
+    }
+
+    template<class StateVector_t, class StateCovarianceMatrix_t>
+    Belief<StateVector_t, StateCovarianceMatrix_t>&
+    Belief<StateVector_t, StateCovarianceMatrix_t>::operator=(const Belief& bel)
+    {
+      if (&bel != this)
+      {
+        timestamp_ = bel.timestamp_;
+        state_vector_ = bel.state_vector_;
+        state_covariance_matrix_ = bel.state_covariance_matrix_;
+      }
+      return *this;
+    }
+
+    template<class StateVector_t, class StateCovarianceMatrix_t>
+    Belief<StateVector_t, StateCovarianceMatrix_t>&
+    Belief<StateVector_t, StateCovarianceMatrix_t>::operator=(Belief&& bel) noexcept
+    {
+      if (&bel != this)
+      {
+        timestamp_ = bel.timestamp_;
+        state_vector_ = std::move(bel.state_vector_);
+        state_covariance_matrix_ = std::move(bel.state_covariance_matrix_);
+      }
+      return *this;
+    }
+
+    template<class StateVector_t, class StateCovarianceMatrix_t>
+    bool Belief<StateVector_t, StateCovarianceMatrix_t>::operator==(const Belief& bel) const
+    {
+      return timestamp_ == bel.timestamp_
+             && state_vector_.isApprox(bel.state_vector_)
+             && state_covariance_matrix_.isApprox(bel.state_covariance_matrix_);
+    }
+
 
   }
 }

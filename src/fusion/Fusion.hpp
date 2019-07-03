@@ -54,85 +54,30 @@ namespace ser94mor
        */
       explicit
       Fusion(const ProcessNoiseCovarianceMatrix_type& pncm,
-             const typename MeasurementModelTemplate_t<ProcessModel_t>::MeasurementCovarianceMatrix_type&... mcm)
-      : processed_measurements_counter_{0}, belief_{0, {}, {}}, process_model_{}, measurement_models_{}
-      {
+             const typename MeasurementModelTemplate_t<ProcessModel_t>::MeasurementCovarianceMatrix_type&... mcm);
 
-        process_model_.SetProcessNoiseCovarianceMatrix(pncm);
-
-        InitializeMeasurementCovarianceMatrices(
-            std::forward_as_tuple(mcm...),
-            std::index_sequence_for<MeasurementModelTemplate_t<ProcessModel_t>...>{});
-      }
 
       template <class Measurement_type>
-      Belief_type ProcessMeasurement(const Measurement_type& meas)
-      {
-        ser94mor::sensor_fusion::apply(
-            [this, &meas](const auto&... mm)
-            {
-              static_cast<void>(
-                  std::initializer_list<int>{(this->ProcessMeasurement(meas, mm), void(), 0)...}
-              );
-            },
-            measurement_models_
-        );
+      Belief_type ProcessMeasurement(const Measurement_type& meas);
 
-        return belief_;
-      }
 
-      void SetBelief(const Belief_type& bel)
-      {
-        belief_ = bel;
-      }
+      void SetBelief(const Belief_type& bel);
 
-      const Belief_type& GetBelief() const
-      {
-        return belief_;
-      }
+      const Belief_type& GetBelief() const;
+
 
     private:
       template<class TupleOfMeasurementConvarianceMatrices, std::size_t... Is>
       void InitializeMeasurementCovarianceMatrices(
-          const TupleOfMeasurementConvarianceMatrices& tup, std::index_sequence<Is...>)
-      {
-        // For C++17:
-        // ((std::get<Is>(measurement_model_sensor_map_).first.SetMeasurementCovarianceMatrix(std::get<Is>(tup))), ...);
-
-        // For C++14:
-        static_cast<void>(
-            std::initializer_list<int>
-                {
-                    (std::get<Is>(measurement_models_).SetMeasurementCovarianceMatrix(std::get<Is>(tup)), void(), 0)...
-                }
-        );
-      }
+          const TupleOfMeasurementConvarianceMatrices& tup, std::index_sequence<Is...>);
 
       template<class Measurement_t, class MeasurementModel_t>
       auto ProcessMeasurement(const Measurement_t& meas, const MeasurementModel_t& mm)
-      -> std::enable_if_t<Measurement_t::MeasurementModelKind() == MeasurementModel_t::Kind(), void>
-      {
-        using ControlVector = typename ProcessModel_t::ControlVector_type;
-
-        if (processed_measurements_counter_ == 0)
-        {
-          belief_ = mm.GetInitialBeliefBasedOn(meas);
-        }
-        else
-        {
-          belief_ = FilterTemplate_t<ProcessModel_t, MeasurementModel_t>::
-                      PredictUpdate(belief_, ControlVector::Zero(), meas, process_model_, mm);
-        }
-
-        ++processed_measurements_counter_;
-      }
+      -> std::enable_if_t<Measurement_t::MeasurementModelKind() == MeasurementModel_t::Kind(), void>;
 
       template<class Measurement_type, class MeasurementModel_type>
       auto ProcessMeasurement(const Measurement_type&, const MeasurementModel_type&)
-      -> std::enable_if_t<Measurement_type::MeasurementModelKind() != MeasurementModel_type::Kind(), void>
-      {
-        // Do nothing.
-      }
+      -> std::enable_if_t<Measurement_type::MeasurementModelKind() != MeasurementModel_type::Kind(), void>;
 
       // counter of processed measurements
       uint64_t processed_measurements_counter_;
@@ -142,8 +87,121 @@ namespace ser94mor
       std::tuple<MeasurementModelTemplate_t<ProcessModel_t>...> measurement_models_;
     };
 
+
+    ////////////////////
+    // IMPLEMENTATION //
+    ////////////////////
+
+    template<template<class, class> class FilterTemplate_t,
+        class ProcessModel_t,
+        template<class> class... MeasurementModelTemplate_t>
+    Fusion<FilterTemplate_t, ProcessModel_t, MeasurementModelTemplate_t...>::Fusion(
+        const ProcessNoiseCovarianceMatrix_type& pncm,
+        const typename MeasurementModelTemplate_t<ProcessModel_t>::MeasurementCovarianceMatrix_type& ... mcm)
+        : processed_measurements_counter_{0}, belief_{0, {}, {}}, process_model_{}, measurement_models_{}
+    {
+
+      process_model_.SetProcessNoiseCovarianceMatrix(pncm);
+
+      InitializeMeasurementCovarianceMatrices(
+          std::forward_as_tuple(mcm...),
+          std::index_sequence_for<MeasurementModelTemplate_t<ProcessModel_t>...>{});
+    }
+
+    template<template<class, class> class FilterTemplate_t,
+        class ProcessModel_t,
+        template<class> class... MeasurementModelTemplate_t>
+    template<class Measurement_type>
+    typename Fusion<FilterTemplate_t, ProcessModel_t, MeasurementModelTemplate_t...>::Belief_type
+    Fusion<FilterTemplate_t, ProcessModel_t, MeasurementModelTemplate_t...>::ProcessMeasurement(
+        const Measurement_type& meas)
+    {
+      ser94mor::sensor_fusion::apply(
+          [this, &meas](const auto&... mm)
+          {
+            static_cast<void>(
+                std::initializer_list<int>{(this->ProcessMeasurement(meas, mm), void(), 0)...}
+            );
+          },
+          measurement_models_
+      );
+
+      return belief_;
+    }
+
+    template<template<class, class> class FilterTemplate_t,
+        class ProcessModel_t,
+        template<class> class... MeasurementModelTemplate_t>
+    void Fusion<FilterTemplate_t, ProcessModel_t, MeasurementModelTemplate_t...>::SetBelief(const Belief_type& bel)
+    {
+      belief_ = bel;
+    }
+
+    template<template<class, class> class FilterTemplate_t,
+        class ProcessModel_t,
+        template<class> class... MeasurementModelTemplate_t>
+    const typename Fusion<FilterTemplate_t, ProcessModel_t, MeasurementModelTemplate_t...>::Belief_type&
+    Fusion<FilterTemplate_t, ProcessModel_t, MeasurementModelTemplate_t...>::GetBelief() const
+    {
+      return belief_;
+    }
+
+    template<template<class, class> class FilterTemplate_t,
+        class ProcessModel_t,
+        template<class> class... MeasurementModelTemplate_t>
+    template<class TupleOfMeasurementConvarianceMatrices, size_t... Is>
+    void
+    Fusion<FilterTemplate_t, ProcessModel_t, MeasurementModelTemplate_t...>::InitializeMeasurementCovarianceMatrices(
+        const TupleOfMeasurementConvarianceMatrices& tup, std::index_sequence<Is...>)
+    {
+      // For C++17:
+      // ((std::get<Is>(measurement_model_sensor_map_).first.SetMeasurementCovarianceMatrix(std::get<Is>(tup))), ...);
+
+      // For C++14:
+      static_cast<void>(
+          std::initializer_list<int>
+              {
+                  (std::get<Is>(measurement_models_).SetMeasurementCovarianceMatrix(std::get<Is>(tup)), void(), 0)...
+              }
+      );
+    }
+
+    template<template<class, class> class FilterTemplate_t,
+        class ProcessModel_t,
+        template<class> class... MeasurementModelTemplate_t>
+    template<class Measurement_t, class MeasurementModel_t>
+    auto Fusion<FilterTemplate_t, ProcessModel_t, MeasurementModelTemplate_t...>::ProcessMeasurement(
+        const Measurement_t& meas, const MeasurementModel_t& mm)
+    -> std::enable_if_t<Measurement_t::MeasurementModelKind() == MeasurementModel_t::Kind(), void>
+    {
+      using ControlVector = typename ProcessModel_t::ControlVector_type;
+
+      if (processed_measurements_counter_ == 0)
+      {
+        belief_ = mm.GetInitialBeliefBasedOn(meas);
+      }
+      else
+      {
+        belief_ = FilterTemplate_t<ProcessModel_t, MeasurementModel_t>::
+        PredictUpdate(belief_, ControlVector::Zero(), meas, process_model_, mm);
+      }
+
+      ++processed_measurements_counter_;
+    }
+
+    template<template<class, class> class FilterTemplate_t,
+        class ProcessModel_t,
+        template<class> class... MeasurementModelTemplate_t>
+    template<class Measurement_type, class MeasurementModel_type>
+    auto Fusion<FilterTemplate_t, ProcessModel_t, MeasurementModelTemplate_t...>::ProcessMeasurement(
+        const Measurement_type&, const MeasurementModel_type&)
+    -> std::enable_if_t<Measurement_type::MeasurementModelKind() != MeasurementModel_type::Kind(), void>
+    {
+      // Do nothing.
+    }
+
+
   }
 }
-
 
 #endif //SENSOR_FUSION_FUSION_HPP
