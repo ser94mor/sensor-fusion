@@ -21,6 +21,7 @@
 
 #include "definitions.hpp"
 #include "beliefs.hpp"
+#include "state_vector_views.hpp"
 
 #include <ctime>
 

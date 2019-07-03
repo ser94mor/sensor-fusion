@@ -19,7 +19,7 @@
 #define SENSOR_FUSION_MEASUREMENT_HPP
 
 
-#include <ctime>
+#include "definitions.hpp"
 
 
 namespace ser94mor
