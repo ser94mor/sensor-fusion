@@ -28,10 +28,7 @@ namespace ser94mor
   namespace sensor_fusion
   {
 
-    class CTRVBelief : public ser94mor::sensor_fusion::Belief<CTRVStateVector, CTRVStateCovarianceMatrix>
-    {
-
-    };
+    using CTRVBelief = Belief<CTRVStateVector, CTRVStateCovarianceMatrix>;
 
   }
 }

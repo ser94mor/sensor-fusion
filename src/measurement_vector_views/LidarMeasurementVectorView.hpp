@@ -39,27 +39,17 @@ namespace ser94mor
        * Constructor.
        * @param mv a measurement vector
        */
-      explicit LidarROMeasurementVectorView(const LidarMeasurementVector& mv)
-      : ROMeasurementVectorView<LidarMeasurementVector>{mv}
-      {
-
-      }
+      explicit LidarROMeasurementVectorView(const LidarMeasurementVector& mv);
 
       /**
        * @return X-axis coordinate
        */
-      virtual double_t px() const override
-      {
-        return GetVector()(0);
-      }
+      virtual double_t px() const override;
 
       /**
        * @return Y-axis coordinate
        */
-      virtual double_t py() const override
-      {
-        return GetVector()(1);
-      }
+      virtual double_t py() const override;
     };
 
     /**
@@ -73,27 +63,17 @@ namespace ser94mor
        * Constructor.
        * @param mv a measurement vector
        */
-      explicit LidarRWMeasurementVectorView(LidarMeasurementVector& mv)
-      : RWMeasurementVectorView<LidarMeasurementVector>{mv}
-      {
-
-      }
+      explicit LidarRWMeasurementVectorView(LidarMeasurementVector& mv);
 
       /**
        * @return X-axis coordinate
        */
-      double_t& px() const
-      {
-        return GetVector()(0);
-      }
+      double_t& px() const;
 
       /**
        * @return Y-axis coordinate
        */
-      double_t& py() const
-      {
-        return GetVector()(1);
-      }
+      double_t& py() const;
     };
 
   }

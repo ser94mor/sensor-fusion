@@ -15,22 +15,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SENSOR_FUSION_LIDARMEASUREMENT_HPP
-#define SENSOR_FUSION_LIDARMEASUREMENT_HPP
-
-
-#include "definitions.hpp"
-#include "Measurement.hpp"
-
+#include "LidarMeasurementVectorView.hpp"
 
 namespace ser94mor
 {
   namespace sensor_fusion
   {
 
-    using LidarMeasurement = Measurement<LidarMeasurementVector, LidarMeasurementCovarianceMatrix, MMKind::e_Lidar>;
+
+    LidarROMeasurementVectorView::LidarROMeasurementVectorView(const LidarMeasurementVector& mv)
+    : ROMeasurementVectorView<LidarMeasurementVector>{mv}
+    {
+
+    }
+
+    double_t LidarROMeasurementVectorView::px() const
+    {
+      return GetVector()(0);
+    }
+
+
+    double_t LidarROMeasurementVectorView::py() const
+    {
+      return GetVector()(1);
+    }
+
+    LidarRWMeasurementVectorView::LidarRWMeasurementVectorView(LidarMeasurementVector& mv)
+        : RWMeasurementVectorView<LidarMeasurementVector>{mv}
+    {
+
+    }
+
+    double_t& LidarRWMeasurementVectorView::px() const
+    {
+      return GetVector()(0);
+    }
+
+    double_t& LidarRWMeasurementVectorView::py() const
+    {
+      return GetVector()(1);
+    }
 
   }
 }
-
-#endif //SENSOR_FUSION_LIDARMEASUREMENT_HPP

@@ -19,6 +19,11 @@
 #define SENSOR_FUSION_KALMANFILTER_HPP
 
 
+#include "beliefs.hpp"
+#include "measurements.hpp"
+#include "measurement_models.hpp"
+#include "process_models.hpp"
+
 #include <ctime>
 #include <tuple>
 #include <Eigen/Dense>
@@ -93,9 +98,10 @@ namespace ser94mor
        * @param mm an instance of the measurement model
        * @return a posterior belief, that is, after the prediction and incorporation of the measurement
        */
-      static Belief_type
+      static auto
       PredictUpdate(const Belief_type& bel, const ControlVector_type& ut, const Measurement_type& meas,
-                    const ProcessModel_t& pm, const MeasurementModel_t& mm);
+                    const ProcessModel_t& pm, const MeasurementModel_t& mm)
+      -> Belief_type;
     };
 
 
@@ -142,8 +148,7 @@ namespace ser94mor
       const auto mu{bel.mu()};
       const auto Sigma{bel.Sigma()};
       const auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + mm.Q()).inverse()};
-      const auto I{
-          Eigen::Matrix<double_t, ProcessModel_t::StateDims(), ProcessModel_t::StateDims()>::Identity()};
+      const auto I{Eigen::Matrix<double_t, ProcessModel_t::StateDims(), ProcessModel_t::StateDims()>::Identity()};
 
       return {
           /* timestamp */               meas.t(),
@@ -153,15 +158,16 @@ namespace ser94mor
     }
 
     template<class ProcessModel_t, class MeasurementModel_t, template<class, class> class DerivedKalmanFilterTemplate_t>
-    typename KalmanFilterBase<ProcessModel_t, MeasurementModel_t, DerivedKalmanFilterTemplate_t>::Belief_type
+    auto
     KalmanFilterBase<ProcessModel_t, MeasurementModel_t, DerivedKalmanFilterTemplate_t>::PredictUpdate(
         const Belief_type& bel, const ControlVector_type& ut, const Measurement_type& meas, const ProcessModel_t& pm,
         const MeasurementModel_t& mm)
+    -> Belief_type
     {
       const auto dt = meas.t() - bel.t();
 
-      const auto bel_prior{
-          DerivedKalmanFilterTemplate_t<ProcessModel_t, MeasurementModel_t>::Predict(bel, ut, dt, pm)};
+      const auto
+      bel_prior{DerivedKalmanFilterTemplate_t<ProcessModel_t, MeasurementModel_t>::Predict(bel, ut, dt, pm)};
 
       return DerivedKalmanFilterTemplate_t<ProcessModel_t, MeasurementModel_t>::Update(bel_prior, meas, mm);
     }

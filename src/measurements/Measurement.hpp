@@ -41,29 +41,20 @@ namespace ser94mor
       /**
        * @return a measurement timestamp
        */
-      double_t t() const
-      {
-        return timestamp_;
-      }
+      double_t t() const;
 
       /**
        * A naming for measurement vector is taken from the
        * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
        * @return a measurement vector
        */
-      const MeasurementVector_t& z() const
-      {
-        return measurement_vector_;
-      }
+      const MeasurementVector_t& z() const;
 
       /**
        * @return a measurement model kind, which is determined by the sensor and measurement model which handles such
        *         a measurement
        */
-      constexpr static enum MMKind MeasurementModelKind()
-      {
-        return mmk;
-      }
+      constexpr static enum MMKind MeasurementModelKind();
 
       /**
        * Constructor.
@@ -71,15 +62,43 @@ namespace ser94mor
        * @param tm a timestamp
        * @param mv a measurement vector
        */
-      Measurement(double_t tm, const MeasurementVector_t& mv) : timestamp_{tm}, measurement_vector_{mv}
-      {
-
-      }
+      Measurement(double_t tm, const MeasurementVector_t& mv);
 
     private:
       double_t timestamp_;
       MeasurementVector_t measurement_vector_;
     };
+
+
+
+    ////////////////////
+    // IMPLEMENTATION //
+    ////////////////////
+
+    template<class MeasurementVector_t, class MeasurementCovarianceMatrix_t, MMKind mmk>
+    double_t Measurement<MeasurementVector_t, MeasurementCovarianceMatrix_t, mmk>::t() const
+    {
+      return timestamp_;
+    }
+
+    template<class MeasurementVector_t, class MeasurementCovarianceMatrix_t, MMKind mmk>
+    const MeasurementVector_t& Measurement<MeasurementVector_t, MeasurementCovarianceMatrix_t, mmk>::z() const
+    {
+      return measurement_vector_;
+    }
+
+    template<class MeasurementVector_t, class MeasurementCovarianceMatrix_t, MMKind mmk>
+    constexpr enum MMKind Measurement<MeasurementVector_t, MeasurementCovarianceMatrix_t, mmk>::MeasurementModelKind()
+    {
+      return mmk;
+    }
+
+    template<class MeasurementVector_t, class MeasurementCovarianceMatrix_t, MMKind mmk>
+    Measurement<MeasurementVector_t, MeasurementCovarianceMatrix_t, mmk>::Measurement(
+        double_t tm,const MeasurementVector_t& mv) : timestamp_{tm}, measurement_vector_{mv}
+    {
+
+    }
 
   }
 

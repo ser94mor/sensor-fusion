@@ -18,9 +18,9 @@
 #ifndef SENSOR_FUSION_LIDARMEASUREMENTMODEL_HPP
 #define SENSOR_FUSION_LIDARMEASUREMENTMODEL_HPP
 
-
-#include "definitions.hpp"
 #include "MeasurementModel.hpp"
+#include "definitions.hpp"
+#include "process_models.hpp"
 #include "measurement_vector_views.hpp"
 
 #include <ctime>
@@ -58,19 +58,12 @@ namespace ser94mor
        *   0 1 0 0 ...
        * where the number of columns equal to the number of state dimensions.
        */
-      LidarMeasurementModel()
-      : LidarMeasurementModelBase<ProcessModel_t>{}, measurement_matrix_{MeasurementMatrix_type::Identity()}
-      {
-
-      }
+      LidarMeasurementModel();
 
       /**
        * @return a measurement matrix
        */
-      const MeasurementMatrix_type& C() const
-      {
-        return measurement_matrix_;
-      }
+      auto C() const -> const MeasurementMatrix_type&;
 
       /**
        * Calculate a difference between two measurement vectors. In Lidar case, it is simply a vector subtraction.
@@ -80,14 +73,37 @@ namespace ser94mor
        * @return the difference between the two measurement vectors
        */
       static LidarMeasurementVector Diff(const LidarMeasurementVector& mv_1,
-                                         const LidarMeasurementVector& mv_2)
-      {
-        return (mv_1 - mv_2);
-      }
+                                         const LidarMeasurementVector& mv_2);
 
     private:
       MeasurementMatrix_type measurement_matrix_;
     };
+
+
+
+    ////////////////////
+    // IMPLEMENTATION //
+    ////////////////////
+
+    template<class ProcessModel_t>
+    LidarMeasurementModel<ProcessModel_t>::LidarMeasurementModel()
+    : LidarMeasurementModelBase<ProcessModel_t>{}, measurement_matrix_{MeasurementMatrix_type::Identity()}
+    {
+
+    }
+
+    template<class ProcessModel_t>
+    auto LidarMeasurementModel<ProcessModel_t>::C() const -> const MeasurementMatrix_type&
+    {
+      return measurement_matrix_;
+    }
+
+    template<class ProcessModel_t>
+    LidarMeasurementVector
+    LidarMeasurementModel<ProcessModel_t>::Diff(const LidarMeasurementVector& mv_1, const LidarMeasurementVector& mv_2)
+    {
+      return (mv_1 - mv_2);
+    }
 
 
   }

@@ -24,24 +24,7 @@ namespace ser94mor
   namespace sensor_fusion
   {
 
-    using RadarMeasurementBase = Measurement<RadarMeasurementVector, RadarMeasurementCovarianceMatrix, MMKind::e_Radar>;
-
-    class RadarMeasurement : public RadarMeasurementBase
-    {
-    public:
-
-      /**
-       * Constructor.
-       *
-       * @param tm a timestamp
-       * @param mv a measurement vector
-       */
-      RadarMeasurement(double_t tm, const RadarMeasurementVector& mv) : RadarMeasurementBase{tm, mv}
-      {
-
-      }
-
-    };
+    using RadarMeasurement = Measurement<RadarMeasurementVector, RadarMeasurementCovarianceMatrix, MMKind::e_Radar>;
 
   }
 }

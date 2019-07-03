@@ -21,7 +21,6 @@
 
 #include "definitions.hpp"
 #include "beliefs.hpp"
-#include "measurement_models.hpp"
 
 #include <ctime>
 
@@ -63,49 +62,91 @@ namespace ser94mor
       /**
        * @return a number of dimensions in the state vector
        */
-      constexpr static size_t StateDims()
-      {
-        return static_cast<size_t>(StateVector_t::SizeAtCompileTime);
-      }
+      constexpr static size_t StateDims();
 
       /**
        * @return a number of dimensions in the control vector
        */
-      constexpr static size_t ControlDims()
-      {
-        return static_cast<size_t>(ControlVector_t::SizeAtCompileTime);
-      }
+      constexpr static size_t ControlDims();
 
       /**
        * @return a number of dimensions in the process noise vector
        */
-      constexpr static size_t ProcessNoiseDims()
-      {
-        return static_cast<size_t>(ProcessNoiseCovarianceMatrix_t::RowsAtCompileTime);
-      }
+      constexpr static size_t ProcessNoiseDims();
 
       /**
        * Set a process noise covariance matrix. It is done explicitly by the user of the process model
        * due to the variadic templates used in this code. ProcessModel needs a default constructor.
        * @param mtx a process noise covariance matrix
        */
-      void SetProcessNoiseCovarianceMatrix(const ProcessNoiseCovarianceMatrix_t& mtx)
-      {
-        process_noise_covariance_matrix_ = mtx;
-      }
+      void SetProcessNoiseCovarianceMatrix(const ProcessNoiseCovarianceMatrix_t& mtx);
 
       /**
        * Get a process noise covariance matrix.
        * @return a process noise covariance matirx.
        */
-      const ProcessNoiseCovarianceMatrix_t& GetProcessNoiseCovarianceMatrix() const
-      {
-        return process_noise_covariance_matrix_;
-      }
+      const ProcessNoiseCovarianceMatrix_t& GetProcessNoiseCovarianceMatrix() const;
 
     private:
       ProcessNoiseCovarianceMatrix_t process_noise_covariance_matrix_;
     };
+
+
+
+    ////////////////////
+    // IMPLEMENTATION //
+    ////////////////////
+
+    template<class StateVector_t, class StateCovarianceMatrix_t, class ControlVector_t,
+             class ProcessNoiseCovarianceMatrix_t, class ROStateVectorView_t,
+             class RWStateVectorView_t, PMKind pmk, bool is_linear>
+    constexpr size_t
+    ProcessModel<StateVector_t, StateCovarianceMatrix_t, ControlVector_t, ProcessNoiseCovarianceMatrix_t,
+                 ROStateVectorView_t, RWStateVectorView_t, pmk, is_linear>::StateDims()
+    {
+      return static_cast<size_t>(StateVector_t::SizeAtCompileTime);
+    }
+
+    template<class StateVector_t, class StateCovarianceMatrix_t, class ControlVector_t,
+             class ProcessNoiseCovarianceMatrix_t, class ROStateVectorView_t,
+             class RWStateVectorView_t, PMKind pmk, bool is_linear>
+    constexpr size_t
+    ProcessModel<StateVector_t, StateCovarianceMatrix_t, ControlVector_t, ProcessNoiseCovarianceMatrix_t,
+                 ROStateVectorView_t, RWStateVectorView_t, pmk, is_linear>::ControlDims()
+    {
+      return static_cast<size_t>(ControlVector_t::SizeAtCompileTime);
+    }
+
+    template<class StateVector_t, class StateCovarianceMatrix_t, class ControlVector_t,
+             class ProcessNoiseCovarianceMatrix_t, class ROStateVectorView_t,
+             class RWStateVectorView_t, PMKind pmk, bool is_linear>
+    constexpr size_t
+    ProcessModel<StateVector_t, StateCovarianceMatrix_t, ControlVector_t, ProcessNoiseCovarianceMatrix_t,
+                 ROStateVectorView_t, RWStateVectorView_t, pmk, is_linear>::ProcessNoiseDims()
+    {
+      return static_cast<size_t>(ProcessNoiseCovarianceMatrix_t::RowsAtCompileTime);
+    }
+
+    template<class StateVector_t, class StateCovarianceMatrix_t, class ControlVector_t,
+             class ProcessNoiseCovarianceMatrix_t, class ROStateVectorView_t,
+             class RWStateVectorView_t, PMKind pmk, bool is_linear>
+    void
+    ProcessModel<StateVector_t, StateCovarianceMatrix_t, ControlVector_t, ProcessNoiseCovarianceMatrix_t,
+                 ROStateVectorView_t, RWStateVectorView_t, pmk, is_linear>::SetProcessNoiseCovarianceMatrix(
+        const ProcessNoiseCovarianceMatrix_t& mtx)
+    {
+      process_noise_covariance_matrix_ = mtx;
+    }
+
+    template<class StateVector_t, class StateCovarianceMatrix_t, class ControlVector_t,
+             class ProcessNoiseCovarianceMatrix_t, class ROStateVectorView_t,
+             class RWStateVectorView_t, PMKind pmk, bool is_linear>
+    const ProcessNoiseCovarianceMatrix_t&
+    ProcessModel<StateVector_t, StateCovarianceMatrix_t, ControlVector_t, ProcessNoiseCovarianceMatrix_t,
+                 ROStateVectorView_t, RWStateVectorView_t, pmk, is_linear>::GetProcessNoiseCovarianceMatrix() const
+    {
+      return process_noise_covariance_matrix_;
+    }
 
   }
 }

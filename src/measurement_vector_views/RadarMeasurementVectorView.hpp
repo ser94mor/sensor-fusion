@@ -41,52 +41,33 @@ namespace ser94mor
        * Constructor.
        * @param mv a measurement vector
        */
-      explicit RadarROMeasurementVectorView(const RadarMeasurementVector& mv)
-      : ROMeasurementVectorView<RadarMeasurementVector>{mv}
-      {
-
-      }
+      explicit RadarROMeasurementVectorView(const RadarMeasurementVector& mv);
 
       /**
        * @return X-axis coordinate
        */
-      virtual double_t px() const override
-      {
-        return GetVector()(0) * std::cos(GetVector()(1));
-      }
+      virtual double_t px() const override;
 
       /**
        * @return Y-axis coordinate
        */
-      virtual double_t py() const override
-      {
-        return GetVector()(0) * std::sin(GetVector()(1));
-      }
+      virtual double_t py() const override;
 
       /**
        * @return range: radial distance from origin
        */
-      double_t range() const
-      {
-        return GetVector()(0);
-      }
+      double_t range() const;
 
       /**
        * @return bearing: angle between range and X-axis
        * (which points into the direction of heading of our car, where sensors are installed)
        */
-      double_t bearing() const
-      {
-        return GetVector()(1);
-      }
+      double_t bearing() const;
 
       /**
        * @return radial velocity: change of range, i.e., range rate
        */
-      double_t range_rate() const
-      {
-        return GetVector()(2);
-      }
+      double_t range_rate() const;
 
     };
 
@@ -102,36 +83,23 @@ namespace ser94mor
        * Constructor.
        * @param mv a measurement vector
        */
-      explicit RadarRWMeasurementVectorView(RadarMeasurementVector& mv)
-      : RWMeasurementVectorView<RadarMeasurementVector>{mv}
-      {
-
-      }
+      explicit RadarRWMeasurementVectorView(RadarMeasurementVector& mv);
 
       /**
        * @return range: radial distance from origin
        */
-      double_t& range() const
-      {
-        return GetVector()(0);
-      }
+      double_t& range() const;
 
       /**
        * @return bearing: angle between range and X-axis
        * (which points into the direction of heading of our car, where sensors are installed)
        */
-      double_t& bearing() const
-      {
-        return GetVector()(1);
-      }
+      double_t& bearing() const;
 
       /**
        * @return radial velocity: change of range, i.e., range rate
        */
-      double_t& range_rate() const
-      {
-        return GetVector()(2);
-      }
+      double_t& range_rate() const;
     };
 
   }

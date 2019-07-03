@@ -19,6 +19,9 @@
 #define SENSOR_FUSION_MEASUREMENTVECTORVIEW_HPP
 
 
+#include "definitions.hpp"
+
+
 namespace ser94mor
 {
   namespace sensor_fusion
@@ -49,10 +52,7 @@ namespace ser94mor
        * Constructor.
        * @param mv a measurement vector
        */
-      explicit ROMeasurementVectorView(const MeasurementVector_t& mv) : ROVectorView<MeasurementVector_t>{mv}
-      {
-
-      }
+      explicit ROMeasurementVectorView(const MeasurementVector_t& mv);
 
       /**
        * Destructor.
@@ -74,16 +74,31 @@ namespace ser94mor
        * Constructor.
        * @param mv a measurement vector
        */
-      explicit RWMeasurementVectorView(MeasurementVector_t& mv) : RWVectorView<MeasurementVector_t>{mv}
-      {
-
-      }
+      explicit RWMeasurementVectorView(MeasurementVector_t& mv);
 
       /**
        * Destructor.
        */
       virtual ~RWMeasurementVectorView() = default;
     };
+
+
+
+    ////////////////////
+    // IMPLEMENTATION //
+    ////////////////////
+
+    template<class MeasurementVector_t>
+    RWMeasurementVectorView<MeasurementVector_t>::RWMeasurementVectorView(MeasurementVector_t& mv) : RWVectorView<MeasurementVector_t>{mv}
+    {
+
+    }
+
+    template<class MeasurementVector_t>
+    ROMeasurementVectorView<MeasurementVector_t>::ROMeasurementVectorView(const MeasurementVector_t& mv) : ROVectorView<MeasurementVector_t>{mv}
+    {
+
+    }
 
   }
 }

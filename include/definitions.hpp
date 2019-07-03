@@ -248,10 +248,7 @@ namespace ser94mor
        * Constructor.
        * @param v a vector
        */
-      explicit RWVectorView(Vector_t& v) : vector_{v}
-      {
-
-      }
+      explicit RWVectorView(Vector_t& v);
 
       /**
        * Destructor.
@@ -261,13 +258,22 @@ namespace ser94mor
       /**
        * @return reference to a vector
        */
-      Vector_t& GetVector() const
-      {
-        return vector_;
-      }
+      Vector_t& GetVector() const;
 
       Vector_t& vector_;
     };
+
+    template<class Vector_t>
+    RWVectorView<Vector_t>::RWVectorView(Vector_t& v) : vector_{v}
+    {
+
+    }
+
+    template<class Vector_t>
+    Vector_t& RWVectorView<Vector_t>::GetVector() const
+    {
+      return vector_;
+    }
 
     /**
      * A base class for read-only vector views.
@@ -283,10 +289,7 @@ namespace ser94mor
        * Constructor.
        * @param v a vector
        */
-      explicit ROVectorView(const Vector_t& v) : vector_{v}
-      {
-
-      }
+      explicit ROVectorView(const Vector_t& v);
 
       /**
        * Destructor.
@@ -296,14 +299,23 @@ namespace ser94mor
       /**
        * @return const reference to a vector
        */
-      const Vector_t& GetVector() const
-      {
-        return vector_;
-      }
+      const Vector_t& GetVector() const;
 
     private:
       const Vector_t& vector_;
     };
+
+    template<class Vector_t>
+    ROVectorView<Vector_t>::ROVectorView(const Vector_t& v) : vector_{v}
+    {
+
+    }
+
+    template<class Vector_t>
+    const Vector_t& ROVectorView<Vector_t>::GetVector() const
+    {
+      return vector_;
+    }
 
 
     /////////////

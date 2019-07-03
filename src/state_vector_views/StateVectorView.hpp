@@ -32,24 +32,7 @@ namespace ser94mor
      * @tparam StateVector_t a class of the state vector
      */
     template <class StateVector_t>
-    class RWStateVectorView : public RWVectorView<StateVector_t>
-    {
-    protected:
-      /**
-       * Constructor.
-       * @param sv a state vector
-       */
-      explicit RWStateVectorView(StateVector_t& sv) : RWVectorView<StateVector_t>{sv}
-      {
-
-      }
-
-      /**
-       * Destructor.
-       */
-      virtual ~RWStateVectorView() = default;
-
-    };
+    using RWStateVectorView = RWVectorView<StateVector_t>;
 
     /**
      * A base class for read-only wrappers around StateVector for some process model
@@ -117,16 +100,14 @@ namespace ser94mor
        * Constructor.
        * @param sv a state vector
        */
-      explicit ROStateVectorView(const StateVector_t& sv) : ROVectorView<StateVector_t>{sv}
-      {
-
-      }
+      explicit ROStateVectorView(const StateVector_t& sv);
 
       /**
        * Destructor.
        */
       virtual ~ROStateVectorView() = default;
     };
+
 
     /**
      * A base class for read-only wrappers around ProcessNoiseVector for some process model
@@ -135,24 +116,19 @@ namespace ser94mor
      *  @tparam ProcessNoiseVector_t a class of the process noise vector
      */
     template <class ProcessNoiseVector_t>
-    class ROProcessNoiseVectorView : public ROVectorView<ProcessNoiseVector_t>
+    using ROProcessNoiseVectorView = ROVectorView<ProcessNoiseVector_t>;
+
+
+
+    ////////////////////
+    // IMPLEMENTATION //
+    ////////////////////
+
+    template<class StateVector_t>
+    ROStateVectorView<StateVector_t>::ROStateVectorView(const StateVector_t& sv) : ROVectorView<StateVector_t>{sv}
     {
-    protected:
-      /**
-       * Constructor.
-       * @param pnv a process noise vector
-       */
-      explicit ROProcessNoiseVectorView(const ProcessNoiseVector_t& pnv)
-      : ROVectorView<ProcessNoiseVector_t>{pnv}
-      {
 
-      }
-
-      /**
-       * Destructor.
-       */
-      virtual ~ROProcessNoiseVectorView() = default;
-    };
+    }
 
   }
 }

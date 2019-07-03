@@ -40,42 +40,27 @@ namespace ser94mor
        * Constructor.
        * @param sv a state vector
        */
-      explicit CVRWStateVectorView(CVStateVector& sv) : RWStateVectorView<CVStateVector>{sv}
-      {
-
-      }
+      explicit CVRWStateVectorView(CVStateVector& sv);
 
       /**
        * @return X-axis coordinate
        */
-      double_t& px() const
-      {
-        return GetVector()(0);
-      }
+      double_t& px() const;
 
       /**
        * @return Y-axis coordinate
        */
-      double_t& py() const
-      {
-        return GetVector()(1);
-      }
+      double_t& py() const;
 
       /**
        * @return X-axis velocity
        */
-      double_t& vx() const
-      {
-        return GetVector()(2);
-      }
+      double_t& vx() const;
 
       /**
        * @return Y-axis velocity
        */
-      double_t& vy() const
-      {
-        return GetVector()(3);
-      }
+      double_t& vy() const;
     };
 
     /**
@@ -90,92 +75,58 @@ namespace ser94mor
        * Constructor.
        * @param sv a state vector
        */
-      explicit CVROStateVectorView(const CVStateVector& sv) : ROStateVectorView<CVStateVector>{sv}
-      {
-
-      }
+      explicit CVROStateVectorView(const CVStateVector& sv);
 
       /**
        * @return X-axis coordinate
        */
-      virtual double_t px() const override
-      {
-        return GetVector()(0);
-      }
+      virtual double_t px() const override;
 
       /**
        * @return Y-axis coordinate
        */
-      virtual double_t py() const override
-      {
-        return GetVector()(1);
-      }
+      virtual double_t py() const override;
 
       /**
        * @return X-axis velocity
        */
-      virtual double_t vx() const override
-      {
-        return GetVector()(2);
-      }
+      virtual double_t vx() const override;
 
       /**
        * @return Y-axis velocity
        */
-      virtual double_t vy() const override
-      {
-        return GetVector()(3);
-      }
+      virtual double_t vy() const override;
 
       /**
        * @return velocity module
        */
-      virtual double_t v() const override
-      {
-        return std::sqrt(vx()*vx() + vy()*vy());
-      }
+      virtual double_t v() const override;
 
       /**
        * @return yaw rotation angle
        */
-      virtual double_t yaw() const override
-      {
-        return std::acos(vx()/v());
-      }
+      virtual double_t yaw() const override;
 
       /**
        * @return angular velocity of yaw rotation
        */
-      virtual double_t yaw_rate() const override
-      {
-        return 0.0;
-      }
+      virtual double_t yaw_rate() const override;
 
       /**
        * @return range: radial distance from origin
        */
-      virtual double_t range() const override
-      {
-        const double_t rho{std::sqrt(px()*px() + py()*py())};
-        return (rho < kEpsilon) ? kEpsilon : rho;
-      }
+      virtual double_t range() const override;
 
       /**
        * @return bearing: angle between range and X-axis
        * (which points into the direction of heading of our car, where sensors are installed)
        */
-      virtual double_t bearing() const override
-      {
-        return std::atan2(py(), px());
-      }
+      virtual double_t bearing() const override;
 
       /**
        * @return radial velocity: change of range, i.e., range rate
        */
-      virtual double_t range_rate() const override
-      {
-        return (px()*vx() + py()*vy()) / range();
-      }
+      virtual double_t range_rate() const override;
 
     };
   }

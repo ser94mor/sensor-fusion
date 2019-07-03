@@ -132,6 +132,5 @@ namespace ser94mor
       return sv_copy;
     }
 
-
   }
 }

@@ -21,6 +21,10 @@
 
 #include "definitions.hpp"
 #include "measurements.hpp"
+#include "measurement_vector_views.hpp"
+#include "state_vector_views.hpp"
+#include "process_models.hpp"
+#include "beliefs.hpp"
 
 
 namespace ser94mor
@@ -36,7 +40,7 @@ namespace ser94mor
      *
      * @tparam MeasurementVector_t a class of the measurement vector
      * @tparam MeasurementCovarianceMatrix_t a class of the measurement covariance matrix
-     * @tparam MeasurementVectorView a class of the measurement vector view
+     * @tparam ROMeasurementVectorView_t a class of the measurement vector view
      *                               (accessor to the measurement vector dimensions)
      * @tparam ProcessModel_t a class of the process model
      * @tparam mmk a kind of a measurement model (from a corresponding enum class)
@@ -64,38 +68,26 @@ namespace ser94mor
       /**
        * @return a number of dimensions in measurement vector
        */
-      constexpr static size_t MeasurementDims()
-      {
-        return static_cast<size_t>(MeasurementVector_t::SizeAtCompileTime);
-      }
+      constexpr static size_t MeasurementDims();
 
       /**
        * @return a number of state dimensions
        */
-      constexpr static size_t StateDims()
-      {
-        return ProcessModel_t::StateDims();
-      }
+      constexpr static size_t StateDims();
 
       /**
        * The naming of measurement covariance matrix is taken from the
        * "Thrun, S., Burgard, W. and Fox, D., 2005. Probabilistic robotics. MIT press."
        * @return a measurement covariance matrix
        */
-      const MeasurementCovarianceMatrix_t& Q() const
-      {
-        return measurement_covariance_matrix_;
-      }
+      const MeasurementCovarianceMatrix_t& Q() const;
 
       /**
        * Set measurement covariance matrix. It is done explicitly by the user of measurement model
        * due to the variadic templates used in this code. MeasurementModel needs a default constructor.
        * @param mtx a measurement covariance matrix
        */
-      void SetMeasurementCovarianceMatrix(const MeasurementCovarianceMatrix_t& mtx)
-      {
-        measurement_covariance_matrix_ = mtx;
-      }
+      void SetMeasurementCovarianceMatrix(const MeasurementCovarianceMatrix_t& mtx);
 
       /**
        * During the sensor fusion process, we need to initialize our initial belief based on something. When we receive
@@ -108,23 +100,73 @@ namespace ser94mor
        * @param meas the first received measurement
        * @return an initial belief
        */
-      static Belief_type GetInitialBeliefBasedOn(const Measurement_type& meas)
-      {
-        StateVector_type sv{StateVector_type::Zero()};
-        const RWStateVectorView_type svv{sv};
-        const ROMeasurementVectorView_type mvv{meas.z()};
-
-        svv.px() = mvv.px();
-        svv.py() = mvv.py();
-
-        const typename ProcessModel_t::StateCovarianceMatrix_type
-          state_covariance_matrix{ProcessModel_t::StateCovarianceMatrix_type::Identity()};
-        return Belief_type{meas.t(), sv, state_covariance_matrix};
-      }
+      static auto GetInitialBeliefBasedOn(const Measurement_type& meas) -> Belief_type;
 
     private:
       MeasurementCovarianceMatrix_t measurement_covariance_matrix_;
     };
+
+
+
+    ////////////////////
+    // IMPLEMENTATION //
+    ////////////////////
+
+    template<class MeasurementVector_t, class MeasurementCovarianceMatrix_t, class ROMeasurementVectorView_t,
+             class ProcessModel_t, MMKind mmk, bool is_linear>
+    constexpr size_t
+    MeasurementModel<MeasurementVector_t, MeasurementCovarianceMatrix_t, ROMeasurementVectorView_t,
+                     ProcessModel_t, mmk, is_linear>::MeasurementDims()
+    {
+      return static_cast<size_t>(MeasurementVector_t::SizeAtCompileTime);
+    }
+
+    template<class MeasurementVector_t, class MeasurementCovarianceMatrix_t, class ROMeasurementVectorView_t,
+             class ProcessModel_t, MMKind mmk, bool is_linear>
+    constexpr size_t
+    MeasurementModel<MeasurementVector_t, MeasurementCovarianceMatrix_t, ROMeasurementVectorView_t,
+                     ProcessModel_t, mmk, is_linear>::StateDims()
+    {
+      return ProcessModel_t::StateDims();
+    }
+
+    template<class MeasurementVector_t, class MeasurementCovarianceMatrix_t, class ROMeasurementVectorView_t,
+             class ProcessModel_t, MMKind mmk, bool is_linear>
+    const MeasurementCovarianceMatrix_t&
+    MeasurementModel<MeasurementVector_t, MeasurementCovarianceMatrix_t, ROMeasurementVectorView_t,
+                     ProcessModel_t, mmk, is_linear>::Q() const
+    {
+      return measurement_covariance_matrix_;
+    }
+
+    template<class MeasurementVector_t, class MeasurementCovarianceMatrix_t, class ROMeasurementVectorView_t,
+             class ProcessModel_t, MMKind mmk, bool is_linear>
+    void
+    MeasurementModel<MeasurementVector_t, MeasurementCovarianceMatrix_t, ROMeasurementVectorView_t,
+                     ProcessModel_t, mmk, is_linear>::SetMeasurementCovarianceMatrix(
+        const MeasurementCovarianceMatrix_t& mtx)
+    {
+      measurement_covariance_matrix_ = mtx;
+    }
+
+    template<class MeasurementVector_t, class MeasurementCovarianceMatrix_t, class ROMeasurementVectorView_t,
+             class ProcessModel_t, MMKind mmk, bool is_linear>
+    auto
+    MeasurementModel<MeasurementVector_t, MeasurementCovarianceMatrix_t, ROMeasurementVectorView_t,
+                     ProcessModel_t, mmk, is_linear>::GetInitialBeliefBasedOn(
+        const MeasurementModel::Measurement_type& meas) -> Belief_type
+    {
+      StateVector_type sv{StateVector_type::Zero()};
+      const RWStateVectorView_type svv{sv};
+      const ROMeasurementVectorView_type mvv{meas.z()};
+
+      svv.px() = mvv.px();
+      svv.py() = mvv.py();
+
+      const typename ProcessModel_t::StateCovarianceMatrix_type
+          state_covariance_matrix{ProcessModel_t::StateCovarianceMatrix_type::Identity()};
+      return Belief_type{meas.t(), sv, state_covariance_matrix};
+    }
 
   }
 }

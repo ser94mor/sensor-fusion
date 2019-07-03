@@ -20,6 +20,10 @@
 
 
 #include "KalmanFilter.hpp"
+#include "process_models.hpp"
+#include "measurement_models.hpp"
+#include "beliefs.hpp"
+#include "measurements.hpp"
 
 
 namespace ser94mor

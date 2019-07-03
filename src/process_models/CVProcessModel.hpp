@@ -19,11 +19,9 @@
 #define SENSOR_FUSION_CONSTANTVELOCITY_HPP
 
 
-#include "definitions.hpp"
-#include "../state_vector_views/CVStateVectorView.hpp"
 #include "ProcessModel.hpp"
-
-#include <ctime>
+#include "definitions.hpp"
+#include "state_vector_views.hpp"
 
 
 namespace ser94mor

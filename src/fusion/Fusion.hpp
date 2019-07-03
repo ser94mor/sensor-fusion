@@ -62,12 +62,12 @@ namespace ser94mor
 
 
       template <class Measurement_type>
-      Belief_type ProcessMeasurement(const Measurement_type& meas);
+      auto ProcessMeasurement(const Measurement_type& meas) -> const Belief_type&;
 
 
       void SetBelief(const Belief_type& bel);
 
-      const Belief_type& GetBelief() const;
+      auto GetBelief() const -> const Belief_type&;
 
 
     private:
@@ -116,9 +116,10 @@ namespace ser94mor
         class ProcessModel_t,
         template<class> class... MeasurementModelTemplate_t>
     template<class Measurement_type>
-    typename Fusion<FilterTemplate_t, ProcessModel_t, MeasurementModelTemplate_t...>::Belief_type
+    auto
     Fusion<FilterTemplate_t, ProcessModel_t, MeasurementModelTemplate_t...>::ProcessMeasurement(
         const Measurement_type& meas)
+    -> const Belief_type&
     {
       ser94mor::sensor_fusion::apply(
           [this, &meas](const auto&... mm)
@@ -144,8 +145,9 @@ namespace ser94mor
     template<template<class, class> class FilterTemplate_t,
         class ProcessModel_t,
         template<class> class... MeasurementModelTemplate_t>
-    const typename Fusion<FilterTemplate_t, ProcessModel_t, MeasurementModelTemplate_t...>::Belief_type&
+    auto
     Fusion<FilterTemplate_t, ProcessModel_t, MeasurementModelTemplate_t...>::GetBelief() const
+    -> const Belief_type&
     {
       return belief_;
     }

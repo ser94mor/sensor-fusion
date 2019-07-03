@@ -25,10 +25,9 @@ namespace ser94mor
 {
   namespace sensor_fusion
   {
-    class CVBelief : public ser94mor::sensor_fusion::Belief<CVStateVector, CVStateCovarianceMatrix>
-    {
 
-    };
+    using CVBelief = Belief<CVStateVector, CVStateCovarianceMatrix>;
+
   }
 }
 
