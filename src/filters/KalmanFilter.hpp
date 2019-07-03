@@ -62,7 +62,15 @@ namespace ser94mor
       template <bool enable = true>
       static auto
       Predict(const Belief_type& bel, const ControlVector_type& ut, double_t dt, const ProcessModel_t& pm)
-      -> std::enable_if_t<ProcessModel_t::IsLinear() && enable, Belief_type>;
+      -> std::enable_if_t<ProcessModel_t::IsLinear() && enable, Belief_type>
+      {
+        auto At{pm.A(dt)};
+        return {
+            /* timestamp */               bel.t() + dt,
+            /* state vector */            At * bel.mu() + pm.B() * ut,
+            /* state covariance matrix */ At * bel.Sigma() * At.transpose() + pm.R(dt),
+        };
+      }
 
       /**
        * Update step of the Kalman filter. Incorporates the sensor measurement into the given prior belief.
@@ -76,8 +84,23 @@ namespace ser94mor
        */
       template <bool enable = true>
       static auto
-      Update(const Belief_type& bel, const Measurement_type& meas, const MeasurementModel_t& mm)
-      -> std::enable_if_t<MeasurementModel_t::IsLinear() && enable, Belief_type>;
+      Update(
+          const Belief_type& bel, const Measurement_type& meas, const MeasurementModel_t& mm)
+      -> std::enable_if_t<MeasurementModel_t::IsLinear() && enable, Belief_type>
+      {
+        const auto Ct{mm.C()};
+        const auto mu{bel.mu()};
+        const auto Sigma{bel.Sigma()};
+        const auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + mm.Q()).inverse()};
+        const auto I{
+          Eigen::Matrix<double_t, ProcessModel_t::StateDims(), ProcessModel_t::StateDims()>::Identity()};
+
+        return {
+            /* timestamp */               meas.t(),
+            /* state vector */            mu + Kt * (meas.z() - Ct * mu),
+            /* state covariance matrix */ (I - Kt * Ct) * Sigma,
+        };
+      }
 
       /**
        * Combined Predict and Update steps of the derived Kalman filter.
@@ -95,7 +118,15 @@ namespace ser94mor
        */
       static Belief_type
       PredictUpdate(const Belief_type& bel, const ControlVector_type& ut, const Measurement_type& meas,
-                    const ProcessModel_t& pm, const MeasurementModel_t& mm);
+                    const ProcessModel_t& pm, const MeasurementModel_t& mm)
+      {
+        const auto dt = meas.t() - bel.t();
+
+        const auto bel_prior{
+          DerivedKalmanFilterTemplate_t<ProcessModel_t, MeasurementModel_t>::Predict(bel, ut, dt, pm)};
+
+        return DerivedKalmanFilterTemplate_t<ProcessModel_t, MeasurementModel_t>::Update(bel_prior, meas, mm);
+      }
     };
 
 
@@ -111,63 +142,7 @@ namespace ser94mor
 
     };
 
-
-
-    ////////////////////
-    // IMPLEMENTATION //
-    ////////////////////
-
-
-    template<class ProcessModel_t, class MeasurementModel_t, template<class, class> class DerivedKalmanFilterTemplate_t>
-    template<bool enable>
-    auto KalmanFilterBase<ProcessModel_t, MeasurementModel_t, DerivedKalmanFilterTemplate_t>::Predict(
-        const Belief_type& bel, const ControlVector_type& ut, double_t dt, const ProcessModel_t& pm)
-    -> std::enable_if_t<ProcessModel_t::IsLinear() && enable, Belief_type>
-    {
-      auto At{pm.A(dt)};
-      return {
-          /* timestamp */               bel.t() + dt,
-          /* state vector */            At * bel.mu() + pm.B() * ut,
-          /* state covariance matrix */ At * bel.Sigma() * At.transpose() + pm.R(dt),
-      };
-    }
-
-    template<class ProcessModel_t, class MeasurementModel_t, template<class, class> class DerivedKalmanFilterTemplate_t>
-    template<bool enable>
-    auto KalmanFilterBase<ProcessModel_t, MeasurementModel_t, DerivedKalmanFilterTemplate_t>::Update(
-        const Belief_type& bel, const Measurement_type& meas, const MeasurementModel_t& mm)
-    -> std::enable_if_t<MeasurementModel_t::IsLinear() && enable, Belief_type>
-    {
-      const auto Ct{mm.C()};
-      const auto mu{bel.mu()};
-      const auto Sigma{bel.Sigma()};
-      const auto Kt{Sigma * Ct.transpose() * (Ct * Sigma * Ct.transpose() + mm.Q()).inverse()};
-      const auto I{
-          Eigen::Matrix<double_t, ProcessModel_t::StateDims(), ProcessModel_t::StateDims()>::Identity()};
-
-      return {
-          /* timestamp */               meas.t(),
-          /* state vector */            mu + Kt * (meas.z() - Ct * mu),
-          /* state covariance matrix */ (I - Kt * Ct) * Sigma,
-      };
-    }
-
-    template<class ProcessModel_t, class MeasurementModel_t, template<class, class> class DerivedKalmanFilterTemplate_t>
-    typename KalmanFilterBase<ProcessModel_t, MeasurementModel_t, DerivedKalmanFilterTemplate_t>::Belief_type
-    KalmanFilterBase<ProcessModel_t, MeasurementModel_t, DerivedKalmanFilterTemplate_t>::PredictUpdate(
-        const Belief_type& bel, const ControlVector_type& ut, const Measurement_type& meas, const ProcessModel_t& pm,
-        const MeasurementModel_t& mm)
-    {
-      const auto dt = meas.t() - bel.t();
-
-      const auto bel_prior{
-          DerivedKalmanFilterTemplate_t<ProcessModel_t, MeasurementModel_t>::Predict(bel, ut, dt, pm)};
-
-      return DerivedKalmanFilterTemplate_t<ProcessModel_t, MeasurementModel_t>::Update(bel_prior, meas, mm);
-    }
-
   }
 }
-
 
 #endif //SENSOR_FUSION_KALMANFILTER_HPP

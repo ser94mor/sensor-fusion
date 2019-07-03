@@ -60,7 +60,16 @@ namespace ser94mor
       template<bool enable = true>
       static auto
       Predict(const Belief_type& bel, const ControlVector_type& ut, double_t dt, const ProcessModel_t& pm)
-      -> std::enable_if_t<!ProcessModel_t::IsLinear() && enable, Belief_type>;
+      -> std::enable_if_t<!ProcessModel_t::IsLinear() && enable, Belief_type>
+      {
+        const auto mu{bel.mu()};
+        const auto Gt{pm.G(dt, mu)};
+        return {
+            /* timestamp */               bel.t() + dt,
+            /* state vector */            pm.g(dt, ut, mu),
+            /* state covariance matrix */ Gt * bel.Sigma() * Gt.transpose() + pm.R(dt, mu),
+        };
+      }
 
       /**
        * Prediction step of the Extended Kalman filter for linear process model.
@@ -79,7 +88,10 @@ namespace ser94mor
       template<bool enable = true>
       static auto
       Predict(const Belief_type& bel, const ControlVector_type& ut, double_t dt, const ProcessModel_t& pm)
-      -> std::enable_if_t<ProcessModel_t::IsLinear() && enable, Belief_type>;
+      -> std::enable_if_t<ProcessModel_t::IsLinear() && enable, Belief_type>
+      {
+        return KF_type::Predict(bel, ut, dt, pm);
+      }
 
       /**
        * Update step of the Extended Kalman filter for non-linear measurement model.
@@ -94,8 +106,23 @@ namespace ser94mor
        */
       template<bool enable = true>
       static auto
-      Update(const Belief_type& bel, const Measurement_type& meas, const MeasurementModel_t& mm)
-      -> std::enable_if_t<!MeasurementModel_t::IsLinear() && enable, Belief_type>;
+      Update(
+          const Belief_type& bel, const Measurement_type& meas, const MeasurementModel_t& mm)
+      -> std::enable_if_t<!MeasurementModel_t::IsLinear() && enable, Belief_type>
+      {
+        const auto mu{bel.mu()};
+        const auto Sigma{bel.Sigma()};
+        const auto Ht{mm.H(mu)};
+        const auto Kt{Sigma * Ht.transpose() * (Ht * Sigma * Ht.transpose() + mm.Q()).inverse()};
+        const auto I{
+          Eigen::Matrix<double_t, ProcessModel_t::StateDims(), ProcessModel_t::StateDims()>::Identity()};
+
+        return {
+          /* timestamp */               meas.t(),
+          /* state vector */            mu + Kt * MeasurementModel_t::Diff(meas.z(), mm.h(mu)),
+          /* state covariance matrix */ (I - Kt * Ht) * Sigma,
+        };
+      }
 
       /**
        * Update step of the Extended Kalman filter for linear measurement model.
@@ -112,72 +139,14 @@ namespace ser94mor
        */
       template<bool enable = true>
       static auto
-      Update(const Belief_type& bel, const Measurement_type& meas, const MeasurementModel_t& mm)
-      -> std::enable_if_t<MeasurementModel_t::IsLinear() && enable, Belief_type>;
+      Update(
+          const Belief_type& bel, const Measurement_type& meas, const MeasurementModel_t& mm)
+      -> std::enable_if_t<MeasurementModel_t::IsLinear() && enable, Belief_type>
+      {
+        return KF_type::Update(bel, meas, mm);
+      }
 
     };
-
-
-    ////////////////////
-    // IMPLEMENTATION //
-    ////////////////////
-
-    template<class ProcessModel_t, class MeasurementModel_t>
-    template<bool enable>
-    auto ExtendedKalmanFilter<ProcessModel_t, MeasurementModel_t>::Predict(const Belief_type& bel,
-                                                                           const ControlVector_type& ut, double_t dt,
-                                                                           const ProcessModel_t& pm)
-    -> std::enable_if_t<!ProcessModel_t::IsLinear() && enable, Belief_type>
-    {
-      const auto mu{bel.mu()};
-      const auto Gt{pm.G(dt, mu)};
-      return {
-          /* timestamp */               bel.t() + dt,
-          /* state vector */            pm.g(dt, ut, mu),
-          /* state covariance matrix */ Gt * bel.Sigma() * Gt.transpose() + pm.R(dt, mu),
-      };
-    }
-
-    template<class ProcessModel_t, class MeasurementModel_t>
-    template<bool enable>
-    auto ExtendedKalmanFilter<ProcessModel_t, MeasurementModel_t>::Update(const Belief_type& bel,
-                                                                          const Measurement_type& meas,
-                                                                          const MeasurementModel_t& mm)
-    -> std::enable_if_t<!MeasurementModel_t::IsLinear() && enable, Belief_type>
-    {
-      const auto mu{bel.mu()};
-      const auto Sigma{bel.Sigma()};
-      const auto Ht{mm.H(mu)};
-      const auto Kt{Sigma * Ht.transpose() * (Ht * Sigma * Ht.transpose() + mm.Q()).inverse()};
-      const auto I{
-          Eigen::Matrix<double_t, ProcessModel_t::StateDims(), ProcessModel_t::StateDims()>::Identity()};
-
-      return {
-          /* timestamp */               meas.t(),
-          /* state vector */            mu + Kt * MeasurementModel_t::Diff(meas.z(), mm.h(mu)),
-          /* state covariance matrix */ (I - Kt * Ht) * Sigma,
-      };
-    }
-
-    template<class ProcessModel_t, class MeasurementModel_t>
-    template<bool enable>
-    auto ExtendedKalmanFilter<ProcessModel_t, MeasurementModel_t>::Update(const Belief_type& bel,
-                                                                          const Measurement_type& meas,
-                                                                          const MeasurementModel_t& mm)
-    -> std::enable_if_t<MeasurementModel_t::IsLinear() && enable, Belief_type>
-    {
-      return KF_type::Update(bel, meas, mm);
-    }
-
-    template<class ProcessModel_t, class MeasurementModel_t>
-    template<bool enable>
-    auto ExtendedKalmanFilter<ProcessModel_t, MeasurementModel_t>::Predict(const Belief_type& bel,
-                                                                           const ControlVector_type& ut, double_t dt,
-                                                                           const ProcessModel_t& pm)
-    -> std::enable_if_t<ProcessModel_t::IsLinear() && enable, Belief_type>
-    {
-      return KF_type::Predict(bel, ut, dt, pm);
-    }
 
   }
 }
